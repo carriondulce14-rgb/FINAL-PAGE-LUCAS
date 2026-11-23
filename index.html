@@ -3,176 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Señas en Misión: El viaje de Lucas. Aventura interactiva para aprender vocabulario básico de Lengua de Señas Colombiana (LSC) en escenarios de Bogotá.">
     <title>Señas en Misión: El viaje de Lucas (LSC)</title>
-    <!-- Tailwind CSS -->
+
+    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
+    <!-- Lucide Icons (CDN) -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Nunito', 'sans-serif'],
-                        kids: ['Fredoka', 'cursive'],
+        /* Configuración de Tailwind: solo se aplica si el CDN cargó correctamente.
+           Si falla, los estilos base del bloque <style> mantienen la página usable. */
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['Nunito', 'system-ui', 'sans-serif'],
+                            kids: ['"Baloo 2"', 'Nunito', 'system-ui', 'sans-serif'],
+                        }
                     }
                 }
-            }
+            };
         }
     </script>
 
     <style>
+        /* ---- Tipografía base de respaldo (por si falla el CDN de fuentes) ---- */
+        :root {
+            --ink: #1f2937;          /* texto principal, buen contraste */
+            --ink-soft: #475569;     /* texto secundario */
+            --brand: #2563eb;        /* azul profundo, menos saturado que el sky anterior */
+            --brand-2: #0d9488;      /* teal en vez de verde lima */
+            --accent: #d97706;       /* ámbar más terroso */
+            --surface: #ffffff;
+            --line: #cbd5e1;
+        }
+        body { font-family: 'Nunito', system-ui, -apple-system, sans-serif; }
+        .font-kids { font-family: '"Baloo 2"', 'Nunito', system-ui, sans-serif; }
+
+        /* ---- Tarjetas 3D del juego de memoria ---- */
         .perspective-1000 { perspective: 1000px; }
         .transform-style-3d { transform-style: preserve-3d; }
-        .backface-hidden { backface-visibility: hidden; }
+        .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
         .rotate-y-180 { transform: rotateY(180deg); }
 
+        /* ---- Sombra de tarjeta más sutil y profesional ---- */
         .comic-card {
-            box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.22), 0 4px 10px -2px rgba(15, 23, 42, 0.12);
+            box-shadow: 0 10px 24px -10px rgba(15, 23, 42, 0.28), 0 2px 6px -2px rgba(15, 23, 42, 0.10);
         }
-        .pill-shadow {
-            box-shadow: 0 3px 0 rgba(15, 23, 42, 0.14);
+        .pill-shadow { box-shadow: 0 2px 0 rgba(15, 23, 42, 0.12); }
+        .pill-shadow:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(15, 23, 42, 0.12); }
+
+        /* ---- Foco accesible y visible en TODOS los elementos interactivos ---- */
+        a:focus-visible, button:focus-visible, [tabindex]:focus-visible,
+        input:focus-visible, label:focus-visible, [role="button"]:focus-visible {
+            outline: 3px solid #1d4ed8;
+            outline-offset: 2px;
+            border-radius: 10px;
         }
-        .pill-shadow:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 rgba(15, 23, 42, 0.14);
+        /* Estado disabled genérico */
+        button:disabled, .is-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(0.3);
         }
 
+        /* ---- Animaciones más sutiles ---- */
         @keyframes pulseArrow {
-            0%, 100% { opacity: 0.85; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.07); }
+            0%, 100% { opacity: 0.9; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.04); }
         }
-        .lsc-arrow {
-            animation: pulseArrow 1.8s infinite ease-in-out;
-            transform-origin: center;
-        }
+        .lsc-arrow { animation: pulseArrow 2.4s infinite ease-in-out; transform-origin: center; }
 
         @keyframes floatAvatar {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-4px); }
+            50% { transform: translateY(-3px); }
         }
-        .avatar-float {
-            animation: floatAvatar 3s infinite ease-in-out;
+        .avatar-float { animation: floatAvatar 4s infinite ease-in-out; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .view-section.is-active { animation: fadeInUp 0.35s ease-out; }
+
+        /* ---- Preferencia del sistema: reducir movimiento ---- */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+            }
+        }
+        /* ---- Interruptor manual de reducir animaciones ---- */
+        body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        /* ---- Stepper de la ruta de aprendizaje ---- */
+        .step-item[aria-current="step"] .step-dot { background:#1d4ed8; color:#fff; border-color:#1d4ed8; }
+        .step-item[data-done="true"] .step-dot { background:#0d9488; color:#fff; border-color:#0d9488; }
+
+        /* ---- Oculto accesible (texto solo para lectores de pantalla) ---- */
+        .sr-only {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+        }
+
+        /* ---- Video / espacio multimedia preparado ---- */
+        .media-frame {
+            background:
+                repeating-linear-gradient(45deg, #e2e8f0 0 10px, #eef2f7 10px 20px);
         }
     </style>
 </head>
-<body class="h-full flex flex-col font-sans antialiased bg-sky-100 text-slate-800 select-none overflow-x-hidden">
+<body class="h-full flex flex-col font-sans antialiased bg-slate-100 text-slate-800 overflow-x-hidden">
+    <!-- Enlace de salto para accesibilidad por teclado -->
+    <a href="#mainContent" class="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:bg-blue-700 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:font-bold">Saltar al contenido</a>
 
     <!-- ======================================================================
          BARRA SUPERIOR DE NAVEGACIÓN (ESTILO TABLET EDUCATIVA ILUSTRADA)
          ====================================================================== -->
-    <header class="w-full bg-gradient-to-b from-sky-200 via-sky-100 to-sky-50 border-b-2 border-sky-300/80 px-3 sm:px-5 py-2.5 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2.5">
-            
-            <!-- LOGO COLORIDO "Señas en Misión" -->
-            <button onclick="navigateTo('inicio')" class="flex items-center gap-2 text-left group focus:outline-none">
-                <div class="leading-none">
-                    <div class="font-kids font-bold text-xl sm:text-2xl tracking-tight flex items-center drop-shadow-sm">
-                        <span class="text-sky-600">Se</span><span class="text-emerald-500">ñ</span><span class="text-amber-500">as</span>
-                        <span class="text-rose-500 ml-1.5 text-lg sm:text-xl">en</span>
-                        <span class="ml-1 text-base sm:text-lg">🖐️</span>
-                    </div>
-                    <div class="font-kids font-bold text-lg sm:text-xl -mt-1 tracking-tight drop-shadow-sm">
-                        <span class="text-indigo-700">Mi</span><span class="text-rose-500">si</span><span class="text-amber-500">ón</span>
-                    </div>
-                </div>
+    <header class="w-full bg-white border-b border-slate-200 px-3 sm:px-5 py-2.5 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-2.5">
+
+            <!-- LOGO "Señas en Misión" -->
+            <button onclick="navigateTo('inicio')" class="flex items-center gap-2.5 text-left group" aria-label="Ir a Inicio">
+                <span class="w-9 h-9 rounded-xl bg-blue-700 text-white flex items-center justify-center shadow-sm flex-shrink-0" aria-hidden="true">
+                    <i data-lucide="hand" class="w-5 h-5"></i>
+                </span>
+                <span class="leading-none">
+                    <span class="block font-kids font-extrabold text-lg sm:text-xl tracking-tight text-slate-900">Señas en Misión</span>
+                    <span class="block text-[11px] sm:text-xs font-semibold text-slate-500 -mt-0.5">El viaje de Lucas · LSC</span>
+                </span>
             </button>
 
-            <!-- BOTONES REDONDEADOS TIPO PÍLDORA -->
-            <nav class="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2" aria-label="Navegación principal">
-                <button onclick="navigateTo('inicio')" id="nav-inicio" class="nav-pill px-3.5 sm:px-4 py-1.5 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-700/80 bg-sky-200 text-slate-800 hover:bg-sky-300 transition pill-shadow">
-                    Inicio
-                </button>
-                <button onclick="navigateTo('mision')" id="nav-mision" class="nav-pill px-3.5 sm:px-4 py-1.5 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-700/80 bg-sky-200 text-slate-800 hover:bg-sky-300 transition pill-shadow">
-                    Misión
-                </button>
-                <button onclick="navigateTo('aventura')" id="nav-aventura" class="nav-pill px-3.5 sm:px-4 py-1.5 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-700/80 bg-sky-200 text-slate-800 hover:bg-sky-300 transition pill-shadow">
-                    Aventura
-                </button>
-                <button onclick="navigateTo('entrenamiento')" id="nav-entrenamiento" class="nav-pill px-3.5 sm:px-4 py-1.5 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-700/80 bg-sky-200 text-slate-800 hover:bg-sky-300 transition pill-shadow">
-                    Entrenamiento
-                </button>
-                <button onclick="navigateTo('diccionario')" id="nav-diccionario" class="nav-pill px-3.5 sm:px-4 py-1.5 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-700/80 bg-sky-200 text-slate-800 hover:bg-sky-300 transition pill-shadow">
-                    Diccionario
-                </button>
+            <!-- NAVEGACIÓN PRINCIPAL -->
+            <nav class="order-3 w-full lg:order-none lg:w-auto flex flex-wrap items-center justify-center gap-1.5" aria-label="Navegación principal" id="mainNav">
+                <button onclick="navigateTo('inicio')" id="nav-inicio" class="nav-pill px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Inicio</button>
+                <button onclick="navigateTo('mision')" id="nav-mision" class="nav-pill px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Misión</button>
+                <button onclick="navigateTo('entrenamiento')" id="nav-entrenamiento" class="nav-pill px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Entrenamiento</button>
+                <button onclick="navigateTo('aventura')" id="nav-aventura" class="nav-pill px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Aventura</button>
+                <button onclick="navigateTo('evaluacion')" id="nav-evaluacion" class="nav-pill px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Evaluación</button>
+                <button onclick="navigateTo('diccionario')" id="nav-diccionario" class="nav-pill px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Diccionario</button>
             </nav>
 
-            <!-- BARRA DE PROGRESO VERDE/AZUL Y CONTADOR DE ESTRELLAS -->
-            <div class="flex items-center gap-2.5 ml-auto sm:ml-0">
-                <div class="w-24 sm:w-32 h-5 bg-indigo-950 rounded-full p-0.5 border-2 border-slate-700 shadow-inner overflow-hidden" title="Progreso de la misión">
-                    <div id="topProgressBar" class="h-full bg-gradient-to-r from-emerald-400 to-lime-400 rounded-full transition-all duration-500" style="width: 20%;"></div>
+            <!-- PROGRESO, ESTRELLAS Y UTILIDADES -->
+            <div class="flex items-center gap-2 sm:gap-2.5 ml-auto lg:ml-0">
+                <div class="hidden sm:flex items-center gap-2" title="Progreso de la ruta de aprendizaje">
+                    <div class="w-24 md:w-28 h-2.5 bg-slate-200 rounded-full overflow-hidden" role="progressbar" aria-label="Progreso de la ruta de aprendizaje" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="topProgressRole">
+                        <div id="topProgressBar" class="h-full bg-blue-600 rounded-full transition-all duration-500" style="width: 0%;"></div>
+                    </div>
+                    <span id="topProgressPct" class="text-xs font-bold text-slate-500 w-8">0%</span>
                 </div>
-                <div class="flex items-center gap-1.5 bg-amber-300 border-2 border-slate-700 rounded-full px-3 py-1 pill-shadow">
-                    <span id="starScoreDisplay" class="font-kids font-bold text-xs sm:text-sm text-slate-900">100</span>
-                    <span class="w-5 h-5 rounded-full bg-amber-500 border border-amber-700 flex items-center justify-center text-[11px] text-white shadow-sm">★</span>
+                <div class="flex items-center gap-1.5 bg-amber-50 border border-amber-300 rounded-full px-2.5 py-1" title="Estrellas acumuladas por tu participación, práctica y evaluación">
+                    <i data-lucide="star" class="w-4 h-4 text-amber-500" aria-hidden="true"></i>
+                    <span id="starScoreDisplay" class="font-bold text-xs sm:text-sm text-slate-800">0</span>
+                    <span class="sr-only">estrellas</span>
                 </div>
+                <button onclick="toggleReduceMotion()" id="motionToggle" class="w-8 h-8 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 flex items-center justify-center text-slate-600 transition" aria-pressed="false" title="Reducir animaciones" aria-label="Reducir animaciones">
+                    <i data-lucide="sparkles" class="w-4 h-4" aria-hidden="true"></i>
+                </button>
+                <button onclick="confirmResetProgress()" class="w-8 h-8 rounded-lg border border-slate-300 bg-white hover:bg-rose-50 hover:border-rose-300 flex items-center justify-center text-slate-600 hover:text-rose-600 transition" title="Reiniciar mi progreso" aria-label="Reiniciar mi progreso">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4" aria-hidden="true"></i>
+                </button>
             </div>
         </div>
+
+        <!-- STEPPER: RUTA DE APRENDIZAJE RECOMENDADA -->
+        <div class="max-w-6xl mx-auto mt-2 pt-2 border-t border-slate-100 overflow-x-auto">
+            <ol id="learningStepper" class="flex items-center gap-1 sm:gap-2 min-w-max" aria-label="Ruta de aprendizaje recomendada">
+                <li class="step-item flex items-center gap-1.5" data-step="inicio"><button onclick="navigateTo('inicio')" class="flex items-center gap-1.5 group"><span class="step-dot w-5 h-5 rounded-full border border-slate-400 bg-white text-slate-500 text-[11px] font-bold flex items-center justify-center">1</span><span class="text-[11px] sm:text-xs font-semibold text-slate-600 group-hover:text-slate-900">Inicio</span></button></li>
+                <li aria-hidden="true" class="w-4 sm:w-6 h-px bg-slate-300"></li>
+                <li class="step-item flex items-center gap-1.5" data-step="mision"><button onclick="navigateTo('mision')" class="flex items-center gap-1.5 group"><span class="step-dot w-5 h-5 rounded-full border border-slate-400 bg-white text-slate-500 text-[11px] font-bold flex items-center justify-center">2</span><span class="text-[11px] sm:text-xs font-semibold text-slate-600 group-hover:text-slate-900">Misión</span></button></li>
+                <li aria-hidden="true" class="w-4 sm:w-6 h-px bg-slate-300"></li>
+                <li class="step-item flex items-center gap-1.5" data-step="entrenamiento"><button onclick="navigateTo('entrenamiento')" class="flex items-center gap-1.5 group"><span class="step-dot w-5 h-5 rounded-full border border-slate-400 bg-white text-slate-500 text-[11px] font-bold flex items-center justify-center">3</span><span class="text-[11px] sm:text-xs font-semibold text-slate-600 group-hover:text-slate-900">Entrenamiento</span></button></li>
+                <li aria-hidden="true" class="w-4 sm:w-6 h-px bg-slate-300"></li>
+                <li class="step-item flex items-center gap-1.5" data-step="aventura"><button onclick="navigateTo('aventura')" class="flex items-center gap-1.5 group"><span class="step-dot w-5 h-5 rounded-full border border-slate-400 bg-white text-slate-500 text-[11px] font-bold flex items-center justify-center">4</span><span class="text-[11px] sm:text-xs font-semibold text-slate-600 group-hover:text-slate-900">Aventura</span></button></li>
+                <li aria-hidden="true" class="w-4 sm:w-6 h-px bg-slate-300"></li>
+                <li class="step-item flex items-center gap-1.5" data-step="evaluacion"><button onclick="navigateTo('evaluacion')" class="flex items-center gap-1.5 group"><span class="step-dot w-5 h-5 rounded-full border border-slate-400 bg-white text-slate-500 text-[11px] font-bold flex items-center justify-center">5</span><span class="text-[11px] sm:text-xs font-semibold text-slate-600 group-hover:text-slate-900">Evaluación</span></button></li>
+                <li aria-hidden="true" class="w-4 sm:w-6 h-px bg-slate-300"></li>
+                <li class="step-item flex items-center gap-1.5" data-step="diccionario"><button onclick="navigateTo('diccionario')" class="flex items-center gap-1.5 group"><span class="step-dot w-5 h-5 rounded-full border border-slate-400 bg-white text-slate-500 text-[11px] font-bold flex items-center justify-center">6</span><span class="text-[11px] sm:text-xs font-semibold text-slate-600 group-hover:text-slate-900">Diccionario</span></button></li>
+            </ol>
+        </div>
     </header>
+
+    <!-- Región "live" para anuncios accesibles -->
+    <div id="liveRegion" class="sr-only" aria-live="polite" role="status"></div>
 
     <!-- ======================================================================
          CONTENEDOR PRINCIPAL DE VISTAS
          ====================================================================== -->
-    <main class="flex-1 w-full flex flex-col">
+    <main id="mainContent" class="flex-1 w-full flex flex-col">
 
         <!-- ==================================================================
-             VISTA 1: INICIO (BIENVENIDA TRANSMEDIA)
+             VISTA 1: INICIO (BIENVENIDA)
              ================================================================== -->
-        <section id="view-inicio" class="view-section flex-1 w-full relative flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+        <section id="view-inicio" class="view-section flex-1 w-full relative flex items-center justify-center p-4 sm:p-6 overflow-hidden" aria-labelledby="inicioTitle" role="region">
             <!-- Fondo panorámico de la Plaza de Bolívar -->
-            <div id="inicioBackdrop" class="absolute inset-0 z-0 pointer-events-none opacity-95"></div>
-            <div class="absolute inset-0 bg-slate-900/20 backdrop-blur-[1px] z-0"></div>
+            <div id="inicioBackdrop" class="absolute inset-0 z-0 pointer-events-none" aria-hidden="true"></div>
+            <div class="absolute inset-0 bg-slate-900/35 z-0" aria-hidden="true"></div>
 
-            <div class="relative z-10 max-w-3xl w-full bg-white/95 backdrop-blur-md border-4 border-slate-800 rounded-3xl p-6 sm:p-8 comic-card space-y-6">
-                <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-sky-100 pb-4">
-                    <span class="px-3.5 py-1 bg-amber-300 border-2 border-slate-800 text-slate-900 rounded-full font-kids font-bold text-xs">
-                        🇨🇴 Experiencia Transmedia LSC • Bogotá
+            <div class="relative z-10 max-w-3xl w-full bg-white/97 border border-slate-200 rounded-2xl p-6 sm:p-8 comic-card space-y-6">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-3 py-1 bg-blue-50 border border-blue-200 text-blue-800 rounded-full font-semibold text-xs">
+                        Experiencia LSC · Bogotá
                     </span>
-                    <span class="text-xs font-extrabold text-sky-700 bg-sky-100 px-3 py-1 rounded-full">
-                        5 Escenarios • 12 Señas Reales
+                    <span class="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-600 rounded-full font-semibold text-xs">
+                        5 escenarios · 12 señas · 3 finales
                     </span>
                 </div>
 
                 <div class="flex flex-col sm:flex-row items-center gap-6">
-                    <!-- Avatar de Lucas -->
-                    <div class="w-40 h-40 sm:w-44 sm:h-44 rounded-3xl border-4 border-slate-800 bg-sky-50 overflow-hidden flex-shrink-0 shadow-md avatar-float" id="inicioLucasAvatar"></div>
+                    <div class="w-36 h-36 sm:w-40 sm:h-40 rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden flex-shrink-0 shadow-sm avatar-float" id="inicioLucasAvatar" role="img" aria-label="Ilustración de Lucas saludando en Lengua de Señas"></div>
 
                     <div class="space-y-3 text-center sm:text-left">
-                        <h1 class="font-kids text-2xl sm:text-4xl font-bold text-sky-700 leading-tight">
-                            Señas en Misión: <span class="text-amber-500">El viaje de Lucas</span>
+                        <h1 id="inicioTitle" class="font-kids text-2xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
+                            Señas en Misión: <span class="text-blue-700">El viaje de Lucas</span>
                         </h1>
-                        <p class="text-sm sm:text-base font-bold text-slate-700 leading-relaxed">
-                            ¡Qué más, parcero! Acompaña a <strong>Lucas</strong> en un recorrido por los lugares más icónicos de Bogotá mientras aprendes a comunicarte en <strong>Lengua de Señas Colombiana (LSC)</strong> de forma natural, visual y divertida.
+                        <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+                            Acompaña a <strong class="text-slate-800">Lucas</strong> por lugares icónicos de Bogotá y aprende a comunicarte en <strong class="text-slate-800">Lengua de Señas Colombiana (LSC)</strong> de forma visual y situada en la vida cotidiana.
                         </p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-3.5">
-                        <div class="font-kids font-bold text-sky-700 text-sm mb-1">👀 100% Visual</div>
-                        <p class="text-xs font-bold text-slate-600">Observa la configuración de manos, dedos, movimiento y expresión facial de Lucas.</p>
+                <!-- Tarjeta de continuación (aparece si hay progreso guardado) -->
+                <div id="resumeCard" class="hidden rounded-xl border border-blue-200 bg-blue-50 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                    <div class="flex-1">
+                        <p class="font-bold text-sm text-blue-900">Tienes progreso guardado</p>
+                        <p id="resumeText" class="text-xs text-blue-800"></p>
                     </div>
-                    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-3.5">
-                        <div class="font-kids font-bold text-amber-700 text-sm mb-1">🏙️ Cultura Bogotana</div>
-                        <p class="text-xs font-bold text-slate-600">Desde tintos y empanadas en la Plaza de Bolívar hasta TransMilenio y la Virgilio Barco.</p>
+                    <button onclick="resumeProgress()" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold text-sm rounded-lg transition">Continuar</button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" aria-hidden="false">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                        <div class="flex items-center gap-2 font-bold text-slate-800 text-sm mb-1"><i data-lucide="eye" class="w-4 h-4 text-blue-700"></i> Aprendizaje visual</div>
+                        <p class="text-xs text-slate-600">Observa la configuración de las manos, el movimiento y la expresión en cada seña.</p>
                     </div>
-                    <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-3.5">
-                        <div class="font-kids font-bold text-emerald-700 text-sm mb-1">🎯 Decisiones Reales</div>
-                        <p class="text-xs font-bold text-slate-600">Elige la seña adecuada en cada situación cotidiana y gana estrellas por tus aciertos.</p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                        <div class="flex items-center gap-2 font-bold text-slate-800 text-sm mb-1"><i data-lucide="map-pin" class="w-4 h-4 text-teal-600"></i> Cultura bogotana</div>
+                        <p class="text-xs text-slate-600">Plaza de Bolívar, Parque Simón Bolívar, panadería, TransMilenio y la Virgilio Barco.</p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+                        <div class="flex items-center gap-2 font-bold text-slate-800 text-sm mb-1"><i data-lucide="git-branch" class="w-4 h-4 text-amber-600"></i> Decisiones reales</div>
+                        <p class="text-xs text-slate-600">Tus elecciones cambian la historia y te llevan a uno de tres finales posibles.</p>
                     </div>
                 </div>
 
+                <div class="rounded-xl bg-slate-50 border border-slate-200 p-4">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Ruta recomendada</p>
+                    <p class="text-sm text-slate-700">Inicio → Misión → Entrenamiento → Aventura → Evaluación → Diccionario. Puedes regresar a cualquier sección cuando quieras.</p>
+                </div>
+
                 <div class="flex flex-col sm:flex-row gap-3 pt-1">
-                    <button onclick="navigateTo('mision')" class="flex-1 py-3.5 px-6 bg-amber-300 hover:bg-amber-400 text-slate-900 border-2 border-slate-800 font-kids font-bold text-base sm:text-lg rounded-2xl transition flex items-center justify-center gap-2 pill-shadow">
-                        <span>Ver Misión con Lucas</span> <span>👉</span>
+                    <button onclick="navigateTo('mision')" class="flex-1 py-3 px-6 bg-blue-700 hover:bg-blue-800 text-white font-bold text-base rounded-xl transition flex items-center justify-center gap-2">
+                        <span>Comenzar la ruta</span> <i data-lucide="arrow-right" class="w-5 h-5"></i>
                     </button>
-                    <button onclick="navigateTo('aventura')" class="flex-1 py-3.5 px-6 bg-emerald-400 hover:bg-emerald-500 text-slate-900 border-2 border-slate-800 font-kids font-bold text-base sm:text-lg rounded-2xl transition flex items-center justify-center gap-2 pill-shadow">
-                        <span>¡Arrancar Aventura ya!</span> <span>🚀</span>
+                    <button onclick="navigateTo('entrenamiento')" class="flex-1 py-3 px-6 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-bold text-base rounded-xl transition flex items-center justify-center gap-2">
+                        <i data-lucide="dumbbell" class="w-5 h-5"></i> <span>Ir directo a entrenar</span>
                     </button>
                 </div>
             </div>
@@ -181,69 +276,72 @@
         <!-- ==================================================================
              VISTA 2: MISIÓN (PRESENTACIÓN INTERACTIVA DE LUCAS Y LOS 3 PASOS)
              ================================================================== -->
-        <section id="view-mision" class="view-section hidden flex-1 w-full relative flex items-center justify-center p-4 sm:p-6 overflow-hidden">
-            <div id="misionBackdrop" class="absolute inset-0 z-0 pointer-events-none opacity-95"></div>
-            <div class="absolute inset-0 bg-slate-900/20 backdrop-blur-[1px] z-0"></div>
+        <section id="view-mision" class="view-section hidden flex-1 w-full relative flex items-center justify-center p-4 sm:p-6 overflow-hidden" aria-labelledby="misionTitle" role="region">
+            <div id="misionBackdrop" class="absolute inset-0 z-0 pointer-events-none" aria-hidden="true"></div>
+            <div class="absolute inset-0 bg-slate-900/35 z-0" aria-hidden="true"></div>
 
-            <div class="relative z-10 max-w-4xl w-full bg-white/95 backdrop-blur-md border-4 border-slate-800 rounded-3xl p-6 sm:p-8 comic-card space-y-6">
-                <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-sky-100 pb-3">
-                    <span class="px-3.5 py-1 bg-amber-300 border-2 border-slate-800 text-slate-900 rounded-full font-kids font-bold text-xs">
-                        🎯 Briefing de la Misión
+            <div class="relative z-10 max-w-4xl w-full bg-white/97 border border-slate-200 rounded-2xl p-6 sm:p-8 comic-card space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <span class="px-3 py-1 bg-blue-50 border border-blue-200 text-blue-800 rounded-full font-semibold text-xs">
+                        Briefing de la misión
                     </span>
-                    <span class="text-xs font-extrabold text-sky-700">Toca cada tarjeta para que Lucas te explique 👇</span>
+                    <span class="text-xs font-semibold text-slate-500">Toca cada paso para que Lucas te explique</span>
                 </div>
 
-                <!-- Lucas en el centro sonriente y saludando -->
+                <!-- Lucas presentándose -->
                 <div class="flex flex-col items-center text-center space-y-3">
                     <div class="relative">
-                        <div id="misionLucasCenter" class="w-44 h-44 sm:w-52 sm:h-52 rounded-3xl border-4 border-slate-800 bg-white overflow-hidden shadow-lg avatar-float"></div>
-                        <span class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-emerald-400 border-2 border-slate-800 text-slate-900 font-kids font-bold text-xs px-4 py-1 rounded-full shadow-sm whitespace-nowrap">
-                            👋 ¡Hola! Soy Lucas
+                        <div id="misionLucasCenter" class="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm avatar-float" role="img" aria-label="Ilustración de Lucas"></div>
+                        <span class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-blue-700 text-white font-semibold text-xs px-4 py-1 rounded-full shadow-sm whitespace-nowrap">
+                            Hola, soy Lucas
                         </span>
                     </div>
 
-                    <h2 class="font-kids text-2xl sm:text-3xl font-bold text-sky-700 pt-2">
-                        ¿Cuál es nuestro plan hoy en Bogotá?
+                    <h2 id="misionTitle" class="font-kids text-2xl sm:text-3xl font-extrabold text-slate-900 pt-2">
+                        ¿Cuál es el plan hoy en Bogotá?
                     </h2>
 
-                    <div id="misionSpeechBox" class="max-w-2xl bg-sky-50 border-2 border-slate-800 rounded-2xl p-4 text-sm sm:text-base font-bold text-slate-800 leading-relaxed shadow-sm">
-                        "¡Qué hubo! Hoy voy a recorrer 5 puntos clave de Bogotá y necesito tu ayuda para comunicarme con personas Sordas usando <strong>Lengua de Señas Colombiana (LSC)</strong>. ¡Haz clic en los 3 pasos de abajo!"
+                    <div id="misionSpeechBox" class="max-w-2xl bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm sm:text-base text-slate-700 leading-relaxed">
+                        Hoy recorro 5 puntos clave de Bogotá y necesito tu ayuda para comunicarme con personas Sordas usando <strong class="text-slate-900">Lengua de Señas Colombiana (LSC)</strong>. Revisa los 3 pasos y luego pasa al Entrenamiento.
                     </div>
                 </div>
 
-                <!-- 3 Tarjetas interactivas -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <button onclick="selectMissionCard(1, this)" class="mision-card text-left p-4 rounded-2xl bg-sky-100 border-2 border-slate-800 hover:bg-sky-200 transition pill-shadow">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="w-7 h-7 rounded-full bg-sky-500 border-2 border-slate-800 text-white font-kids font-bold text-sm flex items-center justify-center">1</span>
-                            <span class="text-xl">🗺️</span>
+                <!-- 3 Pasos interactivos -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" role="group" aria-label="Pasos de la misión">
+                    <button onclick="selectMissionCard(1, this)" class="mision-card text-left p-4 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:bg-blue-50/40 transition">
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <span class="w-7 h-7 rounded-full bg-blue-700 text-white font-bold text-sm flex items-center justify-center">1</span>
+                            <i data-lucide="map" class="w-5 h-5 text-slate-400"></i>
                         </div>
-                        <h3 class="font-kids font-bold text-slate-900 text-base">Recorre 5 lugares de Bogotá</h3>
-                        <p class="text-xs font-bold text-slate-700 mt-1">Plaza de Bolívar, Parque Simón Bolívar, Panadería, TransMilenio y Biblioteca Virgilio Barco.</p>
+                        <h3 class="font-bold text-slate-900 text-base">Recorre 5 lugares</h3>
+                        <p class="text-xs text-slate-600 mt-1">Plaza de Bolívar, Parque Simón Bolívar, panadería, TransMilenio y la Virgilio Barco.</p>
                     </button>
 
-                    <button onclick="selectMissionCard(2, this)" class="mision-card text-left p-4 rounded-2xl bg-amber-100 border-2 border-slate-800 hover:bg-amber-200 transition pill-shadow">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="w-7 h-7 rounded-full bg-amber-400 border-2 border-slate-800 text-slate-900 font-kids font-bold text-sm flex items-center justify-center">2</span>
-                            <span class="text-xl">🖐️</span>
+                    <button onclick="selectMissionCard(2, this)" class="mision-card text-left p-4 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:bg-blue-50/40 transition">
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <span class="w-7 h-7 rounded-full bg-blue-700 text-white font-bold text-sm flex items-center justify-center">2</span>
+                            <i data-lucide="hand" class="w-5 h-5 text-slate-400"></i>
                         </div>
-                        <h3 class="font-kids font-bold text-slate-900 text-base">Entrena tus señas</h3>
-                        <p class="text-xs font-bold text-slate-700 mt-1">Practica Saludos, Pronombres y Cortesía con tarjetas interactivas y flechas de movimiento.</p>
+                        <h3 class="font-bold text-slate-900 text-base">Entrena las señas</h3>
+                        <p class="text-xs text-slate-600 mt-1">Practica Saludos, Pronombres y Cortesía con material multimedia antes de la aventura.</p>
                     </button>
 
-                    <button onclick="selectMissionCard(3, this)" class="mision-card text-left p-4 rounded-2xl bg-emerald-100 border-2 border-slate-800 hover:bg-emerald-200 transition pill-shadow">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="w-7 h-7 rounded-full bg-emerald-400 border-2 border-slate-800 text-slate-900 font-kids font-bold text-sm flex items-center justify-center">3</span>
-                            <span class="text-xl">⭐</span>
+                    <button onclick="selectMissionCard(3, this)" class="mision-card text-left p-4 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:bg-blue-50/40 transition">
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <span class="w-7 h-7 rounded-full bg-blue-700 text-white font-bold text-sm flex items-center justify-center">3</span>
+                            <i data-lucide="git-branch" class="w-5 h-5 text-slate-400"></i>
                         </div>
-                        <h3 class="font-kids font-bold text-slate-900 text-base">Toma decisiones en LSC</h3>
-                        <p class="text-xs font-bold text-slate-700 mt-1">Elige la seña correcta en cada diálogo cotidiano y suma estrellas para completar el viaje.</p>
+                        <h3 class="font-bold text-slate-900 text-base">Decide y avanza</h3>
+                        <p class="text-xs text-slate-600 mt-1">En cada capítulo eliges una seña. Tus decisiones cambian la historia y el final.</p>
                     </button>
                 </div>
 
-                <div class="flex justify-center pt-1">
-                    <button onclick="navigateTo('aventura')" class="w-full sm:w-auto px-8 py-3.5 bg-emerald-400 hover:bg-emerald-500 text-slate-900 border-2 border-slate-800 font-kids font-bold text-lg rounded-2xl transition flex items-center justify-center gap-2 pill-shadow">
-                        <span>¡Comenzar Capítulo 1!</span> <span>🎬</span>
+                <div class="flex flex-col sm:flex-row justify-center gap-3 pt-1">
+                    <button onclick="navigateTo('entrenamiento')" class="px-8 py-3 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-xl transition flex items-center justify-center gap-2">
+                        <span>Ir al Entrenamiento</span> <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="navigateTo('inicio')" class="px-6 py-3 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-semibold rounded-xl transition flex items-center justify-center gap-2">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i> <span>Volver a Inicio</span>
                     </button>
                 </div>
             </div>
@@ -252,203 +350,257 @@
         <!-- ==================================================================
              VISTA 3: AVENTURA (DISEÑO EXACTO DE LA IMAGEN DE REFERENCIA)
              ================================================================== -->
-        <section id="view-aventura" class="view-section hidden flex-1 w-full relative flex flex-col justify-between p-3 sm:p-6 overflow-hidden min-h-[calc(100vh-68px)]">
-            
-            <!-- FONDO 2D ILUSTRADO A PANTALLA COMPLETA DEL ESCENARIO BOGOTANO -->
-            <div id="adventureFullScene" class="absolute inset-0 z-0 w-full h-full">
-                <!-- Se renderiza dinámicamente el SVG 2D de Bogotá o la foto cargada por el usuario -->
-            </div>
+        <section id="view-aventura" class="view-section hidden flex-1 w-full relative flex flex-col justify-between p-3 sm:p-6 overflow-hidden min-h-[calc(100vh-120px)]" aria-labelledby="advChapPlace" role="region">
 
-            <!-- FILA SUPERIOR: TARJETA BLANCA DE TÍTULO DEL CAPÍTULO (ESQUINA SUPERIOR IZQUIERDA) -->
-            <div class="relative z-10 max-w-6xl w-full mx-auto flex items-start justify-between">
-                <div class="bg-white/95 backdrop-blur-sm border-2 border-slate-800 rounded-2xl px-4 sm:px-5 py-2.5 comic-card">
-                    <span id="advChapLabel" class="block text-xs sm:text-sm font-bold text-slate-600 leading-tight">
-                        Capítulo 1:
-                    </span>
-                    <h2 id="advChapPlace" class="font-kids font-bold text-base sm:text-xl text-slate-900 leading-tight">
-                        La Plaza de Bolívar
-                    </h2>
+            <!-- FONDO 2D ILUSTRADO DEL ESCENARIO BOGOTANO -->
+            <div id="adventureFullScene" class="absolute inset-0 z-0 w-full h-full" aria-hidden="true"></div>
+            <div class="absolute inset-0 bg-slate-900/25 z-0" aria-hidden="true"></div>
+
+            <!-- FILA SUPERIOR: TÍTULO DEL CAPÍTULO + SELECTOR -->
+            <div class="relative z-10 max-w-6xl w-full mx-auto flex items-start justify-between gap-3">
+                <div class="bg-white/95 border border-slate-200 rounded-xl px-4 py-2.5 comic-card">
+                    <span id="advChapLabel" class="block text-xs font-semibold text-slate-500 leading-tight">Capítulo 1</span>
+                    <h2 id="advChapPlace" class="font-kids font-extrabold text-base sm:text-xl text-slate-900 leading-tight">La Plaza de Bolívar</h2>
                 </div>
 
-                <!-- Selector rápido de capítulos -->
-                <div class="hidden md:flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border-2 border-slate-800 rounded-full px-2.5 py-1 shadow-md">
-                    <button onclick="loadAdventureChapter(1)" class="chap-dot w-7 h-7 rounded-full font-kids font-bold text-xs border border-slate-700 transition" data-chap="1">1</button>
-                    <button onclick="loadAdventureChapter(2)" class="chap-dot w-7 h-7 rounded-full font-kids font-bold text-xs border border-slate-700 transition" data-chap="2">2</button>
-                    <button onclick="loadAdventureChapter(3)" class="chap-dot w-7 h-7 rounded-full font-kids font-bold text-xs border border-slate-700 transition" data-chap="3">3</button>
-                    <button onclick="loadAdventureChapter(4)" class="chap-dot w-7 h-7 rounded-full font-kids font-bold text-xs border border-slate-700 transition" data-chap="4">4</button>
-                    <button onclick="loadAdventureChapter(5)" class="chap-dot w-7 h-7 rounded-full font-kids font-bold text-xs border border-slate-700 transition" data-chap="5">5</button>
+                <!-- Selector de capítulos (solo permite visitar capítulos desbloqueados) -->
+                <div class="flex items-center gap-1 bg-white/95 border border-slate-200 rounded-full px-2 py-1 shadow-sm" role="group" aria-label="Seleccionar capítulo">
+                    <button onclick="loadAdventureChapter(1)" class="chap-dot w-8 h-8 rounded-full font-bold text-xs border border-slate-300 transition" data-chap="1" aria-label="Capítulo 1">1</button>
+                    <button onclick="loadAdventureChapter(2)" class="chap-dot w-8 h-8 rounded-full font-bold text-xs border border-slate-300 transition" data-chap="2" aria-label="Capítulo 2">2</button>
+                    <button onclick="loadAdventureChapter(3)" class="chap-dot w-8 h-8 rounded-full font-bold text-xs border border-slate-300 transition" data-chap="3" aria-label="Capítulo 3">3</button>
+                    <button onclick="loadAdventureChapter(4)" class="chap-dot w-8 h-8 rounded-full font-bold text-xs border border-slate-300 transition" data-chap="4" aria-label="Capítulo 4">4</button>
+                    <button onclick="loadAdventureChapter(5)" class="chap-dot w-8 h-8 rounded-full font-bold text-xs border border-slate-300 transition" data-chap="5" aria-label="Capítulo 5">5</button>
                 </div>
             </div>
 
-            <!-- CENTRO Y PANEL INFERIOR FLOTANTE (EXACTO A LA REFERENCIA) -->
-            <div id="adventureInteractiveStage" class="relative z-10 max-w-4xl w-full mx-auto my-auto flex flex-col items-center pt-2 pb-10 sm:pb-4">
-                
-                <!-- TARJETA CENTRAL FLOTANTE CON EL AVATAR DE LUCAS -->
-                <div class="bg-white border-4 border-slate-800 rounded-3xl p-2 sm:p-2.5 comic-card mb-3 sm:mb-4 avatar-float">
-                    <div id="advLucasAvatarBox" class="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl overflow-hidden bg-sky-50 flex items-center justify-center">
-                        <!-- Avatar SVG de Lucas realizando la seña LSC -->
+            <!-- ESCENA INTERACTIVA -->
+            <div id="adventureInteractiveStage" class="relative z-10 max-w-3xl w-full mx-auto my-auto flex flex-col items-stretch gap-3 py-3">
+
+                <!-- SITUACIÓN NARRATIVA + PROBLEMA DE COMUNICACIÓN -->
+                <div class="bg-white/96 border border-slate-200 rounded-2xl p-4 sm:p-5 comic-card space-y-3">
+                    <div class="flex items-start gap-3">
+                        <div class="bg-white border border-slate-200 rounded-xl p-1 shadow-sm flex-shrink-0 avatar-float">
+                            <div id="advLucasAvatarBox" class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-slate-50" role="img" aria-label="Ilustración de Lucas en el capítulo"></div>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[11px] font-bold uppercase tracking-wide text-blue-700 mb-0.5">La situación</p>
+                            <p id="advDialogueText" class="text-sm sm:text-base text-slate-800 leading-snug"></p>
+                        </div>
+                    </div>
+                    <div class="rounded-lg bg-amber-50 border border-amber-200 p-2.5 flex items-start gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0"></i>
+                        <p id="advProblemText" class="text-xs sm:text-sm text-amber-900 leading-snug"></p>
                     </div>
                 </div>
 
-                <!-- PANEL INFERIOR FLOTANTE DE DIÁLOGO Y 3 OPCIONES HORIZONTALES -->
-                <div class="w-full max-w-2xl bg-white/95 backdrop-blur-md border-4 border-slate-800 rounded-3xl p-4 sm:p-5 comic-card space-y-3.5">
-                    
-                    <!-- Diálogo cercano y relajado en español colombiano -->
-                    <p id="advDialogueText" class="text-center font-sans font-extrabold text-sm sm:text-base text-slate-800 leading-snug px-1">
-                        ¡Hola! Qué bueno verte por acá en la Plaza de Bolívar. ¿Me ayudas a pedir un tinto y una empanada usando la seña correcta?
-                    </p>
+                <!-- 3 OPCIONES VISUALES, CADA UNA CON SU RECURSO LSC -->
+                <div>
+                    <p class="text-white text-sm font-bold mb-2 drop-shadow px-1">Observa las 3 señas y elige la adecuada:</p>
+                    <div id="advOptionsRow" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" role="group" aria-label="Opciones de seña"></div>
+                </div>
 
-                    <!-- Retroalimentación divertida al responder -->
-                    <div id="advFeedbackBanner" class="hidden rounded-2xl p-3 border-2 text-center space-y-2 transition-all">
-                        <p id="advFeedbackText" class="text-xs sm:text-sm font-extrabold"></p>
-                        <button id="advNextBtn" onclick="nextAdventureStep()" class="px-5 py-2 bg-emerald-400 hover:bg-emerald-500 text-slate-900 border-2 border-slate-800 font-kids font-bold text-xs sm:text-sm rounded-full pill-shadow transition">
-                            Continuar al siguiente lugar 👉
+                <!-- RETROALIMENTACIÓN + CONSECUENCIA NARRATIVA -->
+                <div id="advFeedbackBanner" class="hidden rounded-2xl p-4 border comic-card space-y-3" role="status" aria-live="polite">
+                    <div class="flex items-start gap-2">
+                        <i id="advFeedbackIcon" data-lucide="info" class="w-5 h-5 mt-0.5 flex-shrink-0"></i>
+                        <div class="flex-1">
+                            <p id="advFeedbackText" class="text-sm font-bold leading-snug"></p>
+                            <p id="advConsequenceText" class="text-xs sm:text-sm mt-1 leading-snug"></p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button id="advRetryBtn" onclick="retryAdventureChoice()" class="hidden px-4 py-2 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-semibold text-sm rounded-lg transition flex items-center gap-1.5">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Intentar de nuevo
+                        </button>
+                        <button id="advReviewBtn" onclick="navigateTo('entrenamiento')" class="hidden px-4 py-2 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-semibold text-sm rounded-lg transition flex items-center gap-1.5">
+                            <i data-lucide="book-open" class="w-4 h-4"></i> Repasar esta seña
+                        </button>
+                        <button id="advNextBtn" onclick="nextAdventureStep()" class="hidden px-5 py-2 bg-blue-700 hover:bg-blue-800 text-white font-bold text-sm rounded-lg transition flex items-center gap-1.5">
+                            Continuar <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </button>
                     </div>
-
-                    <!-- 3 Botones redondeados azul claro dispuestos horizontalmente -->
-                    <div id="advOptionsRow" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                        <!-- Se generan dinámicamente -->
-                    </div>
                 </div>
             </div>
 
-            <!-- PANTALLA FINAL DE CELEBRACIÓN (AL COMPLETAR LOS 5 CAPÍTULOS) -->
-            <div id="adventureFinaleCard" class="hidden relative z-10 max-w-2xl w-full mx-auto my-auto bg-white/95 backdrop-blur-md border-4 border-slate-800 rounded-3xl p-6 sm:p-8 comic-card text-center space-y-5">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-300 border-2 border-slate-800 font-kids font-bold text-xs sm:text-sm text-slate-900">
-                    🏆 ¡Misión Completada en Bogotá!
-                </div>
-                <div id="finaleLucasAvatar" class="w-36 h-36 mx-auto rounded-3xl border-4 border-slate-800 bg-sky-50 overflow-hidden shadow-md"></div>
-                <h3 id="finaleTitle" class="font-kids text-2xl sm:text-3xl font-bold text-sky-700">
-                    ¡Eres un Crack de la LSC!
-                </h3>
-                <p id="finaleDesc" class="text-sm sm:text-base font-bold text-slate-700 leading-relaxed">
-                    ¡Qué orgullo, parcero! Completaste los 5 escenarios de Bogotá ayudando a Lucas a comunicarse con respeto, alegría y claridad en Lengua de Señas Colombiana.
-                </p>
+            <!-- PANTALLA DE FINAL (3 DESENLACES SEGÚN DECISIONES) -->
+            <div id="adventureFinaleCard" class="hidden relative z-10 max-w-2xl w-full mx-auto my-auto bg-white/97 border border-slate-200 rounded-2xl p-6 sm:p-8 comic-card text-center space-y-5" role="region" aria-live="polite">
+                <div id="finaleBadge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border font-bold text-xs sm:text-sm"></div>
+                <div id="finaleLucasAvatar" class="w-32 h-32 mx-auto rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden shadow-sm" role="img" aria-label="Lucas al final de la aventura"></div>
+                <h3 id="finaleTitle" class="font-kids text-2xl sm:text-3xl font-extrabold text-slate-900"></h3>
+                <p id="finaleDesc" class="text-sm sm:text-base text-slate-600 leading-relaxed"></p>
+                <div id="finaleStats" class="grid grid-cols-3 gap-2 text-center"></div>
                 <div class="flex flex-wrap justify-center gap-3 pt-2">
-                    <button onclick="restartAdventure()" class="px-6 py-3 bg-amber-300 hover:bg-amber-400 text-slate-900 border-2 border-slate-800 font-kids font-bold text-sm sm:text-base rounded-full pill-shadow transition">
-                        🔄 Volver a recorrer Bogotá
+                    <button onclick="navigateTo('evaluacion')" class="px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white font-bold text-sm rounded-xl transition flex items-center gap-2">
+                        <i data-lucide="clipboard-check" class="w-4 h-4"></i> Ir a la evaluación final
                     </button>
-                    <button onclick="navigateTo('entrenamiento')" class="px-6 py-3 bg-sky-200 hover:bg-sky-300 text-slate-900 border-2 border-slate-800 font-kids font-bold text-sm sm:text-base rounded-full pill-shadow transition">
-                        🖐️ Practicar en Entrenamiento
+                    <button onclick="restartAdventure()" class="px-6 py-3 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-semibold text-sm rounded-xl transition flex items-center gap-2">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Recorrer de nuevo
                     </button>
                 </div>
             </div>
-
-            <!-- BOTÓN FLOTANTE INFERIOR DERECHO: "Cargar mi foto" -->
-            <label class="fixed bottom-4 right-4 z-30 bg-sky-600 hover:bg-sky-700 text-white border-2 border-slate-900 font-kids font-bold text-xs sm:text-sm px-4 py-2.5 rounded-2xl shadow-lg cursor-pointer transition flex items-center gap-2 pill-shadow" title="Subir una imagen local para este escenario">
-                <i data-lucide="camera" class="w-4 h-4"></i>
-                <span>Cargar mi foto</span>
-                <input type="file" accept="image/*" class="hidden" onchange="handleCustomSceneUpload(this)">
-            </label>
         </section>
 
         <!-- ==================================================================
              VISTA 4: ENTRENAMIENTO (3 MÓDULOS + MINI-JUEGO DE MEMORIA LSC)
              ================================================================== -->
-        <section id="view-entrenamiento" class="view-section hidden flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6 space-y-5">
-            <div class="bg-white border-4 border-slate-800 rounded-3xl p-5 sm:p-6 comic-card flex flex-col sm:flex-row items-center justify-between gap-4">
+        <section id="view-entrenamiento" class="view-section hidden flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6 space-y-5" aria-labelledby="entrenamientoTitle" role="region">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 comic-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <span class="px-3 py-0.5 bg-amber-300 border-2 border-slate-800 rounded-full font-kids font-bold text-xs text-slate-900">
-                        🎮 Gimnasio Visual LSC
+                    <span class="px-3 py-0.5 bg-blue-50 border border-blue-200 rounded-full font-semibold text-xs text-blue-800">
+                        Paso 3 · Aprende el vocabulario
                     </span>
-                    <h2 class="font-kids text-2xl sm:text-3xl font-bold text-sky-700 mt-1">
-                        Entrenamiento de Señas
+                    <h2 id="entrenamientoTitle" class="font-kids text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1.5">
+                        Entrenamiento de señas LSC
                     </h2>
-                    <p class="text-xs sm:text-sm font-bold text-slate-600">
-                        Explora los 3 módulos (Saludos, Pronombres y Cortesía) y supera el reto de emparejar cada gesto de Lucas con su movimiento.
+                    <p class="text-xs sm:text-sm text-slate-600 mt-0.5">
+                        Explora los 3 módulos (Saludos, Pronombres y Cortesía). Cada seña incluye un espacio para su video demostrativo, la descripción del movimiento y su contexto de uso.
                     </p>
                 </div>
 
                 <!-- Selector de Módulo -->
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="setTrainingModule('saludos')" id="mod-btn-saludos" class="mod-tab px-4 py-2 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-800 bg-amber-300 text-slate-900 pill-shadow">
-                        👋 Saludos
-                    </button>
-                    <button onclick="setTrainingModule('pronombres')" id="mod-btn-pronombres" class="mod-tab px-4 py-2 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-800 bg-sky-100 text-slate-800 pill-shadow">
-                        🫵 Pronombres
-                    </button>
-                    <button onclick="setTrainingModule('cortesia')" id="mod-btn-cortesia" class="mod-tab px-4 py-2 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-800 bg-sky-100 text-slate-800 pill-shadow">
-                        🤝 Cortesía
-                    </button>
+                <div class="flex flex-wrap gap-2" role="tablist" aria-label="Módulos de entrenamiento">
+                    <button onclick="setTrainingModule('saludos')" id="mod-btn-saludos" role="tab" aria-selected="true" class="mod-tab px-4 py-2 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-blue-700 text-white transition">Saludos</button>
+                    <button onclick="setTrainingModule('pronombres')" id="mod-btn-pronombres" role="tab" aria-selected="false" class="mod-tab px-4 py-2 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Pronombres</button>
+                    <button onclick="setTrainingModule('cortesia')" id="mod-btn-cortesia" role="tab" aria-selected="false" class="mod-tab px-4 py-2 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Cortesía</button>
                 </div>
             </div>
 
-            <!-- 4 Tarjetas de Estudio del Módulo Activo -->
-            <div id="trainingPreviewCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Aviso de validación LSC -->
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex items-start gap-2.5">
+                <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"></i>
+                <p class="text-xs sm:text-sm text-amber-900 leading-snug">
+                    <strong>Material en validación.</strong> Las ilustraciones y descripciones son una guía de apoyo. Los videos demostrativos deben ser grabados y revisados por una persona competente en LSC (preferiblemente nativa o intérprete certificada) antes de usarse como referencia oficial.
+                </p>
+            </div>
+
+            <!-- Tarjetas multimedia del módulo activo -->
+            <div id="trainingCards" class="grid grid-cols-1 lg:grid-cols-2 gap-4" aria-live="polite">
                 <!-- Se llena dinámicamente -->
             </div>
 
-            <!-- Mini-Juego Interactivo de Memoria LSC -->
-            <div class="bg-white border-4 border-slate-800 rounded-3xl p-5 sm:p-6 comic-card space-y-4">
-                <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-sky-100 pb-3">
-                    <div>
-                        <h3 class="font-kids text-lg sm:text-xl font-bold text-slate-900">
-                            🃏 Reto de Memoria: Conecta el Gesto con la Técnica
-                        </h3>
-                        <p class="text-xs font-bold text-slate-500">Voltea dos cartas para emparejar la seña de Lucas con su descripción.</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="px-3 py-1 bg-sky-100 border border-slate-700 rounded-full text-xs font-kids font-bold">
-                            Parejas: <span id="memPairsCount">0</span>/4
-                        </span>
-                        <button onclick="initMemoryGame()" class="px-3.5 py-1.5 bg-amber-300 hover:bg-amber-400 border-2 border-slate-800 rounded-full font-kids font-bold text-xs pill-shadow">
-                            Mezclar 🔄
-                        </button>
-                    </div>
+            <!-- Barra de progreso del entrenamiento -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 comic-card">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-sm font-bold text-slate-800">Progreso del entrenamiento</p>
+                    <span id="trainingProgressLabel" class="text-xs font-semibold text-slate-500">0 de 12 señas revisadas</span>
                 </div>
-
-                <div id="memoryBoard" class="grid grid-cols-2 sm:grid-cols-4 gap-3 perspective-1000">
-                    <!-- Cartas dinámicas -->
+                <div class="h-2.5 bg-slate-200 rounded-full overflow-hidden" role="progressbar" aria-label="Señas revisadas" aria-valuemin="0" aria-valuemax="12" aria-valuenow="0" id="trainingProgressRole">
+                    <div id="trainingProgressBar" class="h-full bg-teal-600 rounded-full transition-all duration-500" style="width:0%"></div>
                 </div>
-
-                <div id="memoryStatusBanner" class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-3 text-center text-xs sm:text-sm font-extrabold text-sky-800">
-                    💡 ¡Toca cualquier carta para empezar a practicar!
+                <p class="text-xs text-slate-500 mt-2">Marca cada seña como revisada después de observar su video y leer su descripción. Esto cuenta como <strong>práctica</strong> en tu progreso.</p>
+                <div class="flex flex-wrap justify-end gap-2 mt-3">
+                    <button onclick="navigateTo('mision')" class="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-semibold text-sm rounded-lg transition flex items-center gap-1.5"><i data-lucide="arrow-left" class="w-4 h-4"></i> Volver a Misión</button>
+                    <button onclick="navigateTo('aventura')" class="px-5 py-2 bg-blue-700 hover:bg-blue-800 text-white font-bold text-sm rounded-lg transition flex items-center gap-1.5">Pasar a la Aventura <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
                 </div>
             </div>
         </section>
 
         <!-- ==================================================================
-             VISTA 5: DICCIONARIO LSC (GALERÍA FILTRABLE DE LAS 12 SEÑAS)
+             VISTA 5: EVALUACIÓN FINAL (JUEGO DE MEMORIA = INSTRUMENTO DE EVALUACIÓN)
              ================================================================== -->
-        <section id="view-diccionario" class="view-section hidden flex-1 w-full max-w-6xl mx-auto p-4 sm:p-6 space-y-5">
-            <div class="bg-white border-4 border-slate-800 rounded-3xl p-5 sm:p-6 comic-card flex flex-col md:flex-row items-center justify-between gap-4">
-                <div>
-                    <span class="px-3 py-0.5 bg-emerald-300 border-2 border-slate-800 rounded-full font-kids font-bold text-xs text-slate-900">
-                        📖 Guía Visual LSC
-                    </span>
-                    <h2 class="font-kids text-2xl sm:text-3xl font-bold text-sky-700 mt-1">
-                        Diccionario de Señas de Lucas
-                    </h2>
-                    <p class="text-xs sm:text-sm font-bold text-slate-600">
-                        Consulta las 12 señas del recorrido con el paso a paso de la configuración manual, movimiento y expresión facial.
-                    </p>
+        <section id="view-evaluacion" class="view-section hidden flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6 space-y-5" aria-labelledby="evalTitle" role="region">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 comic-card">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <span class="px-3 py-0.5 bg-blue-50 border border-blue-200 rounded-full font-semibold text-xs text-blue-800">Paso 5 · Evaluación</span>
+                        <h2 id="evalTitle" class="font-kids text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1.5">Evaluación final: reconoce la seña y su significado</h2>
+                        <p class="text-xs sm:text-sm text-slate-600 mt-0.5">Empareja cada seña del recorrido con su significado. No se trata de suerte: mide si reconoces la relación entre el gesto y lo que comunica.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <label for="evalModuleSelect" class="sr-only">Vocabulario a evaluar</label>
+                        <select id="evalModuleSelect" onchange="startEvaluation(this.value)" class="px-3 py-2 rounded-lg border border-slate-300 bg-white text-sm font-semibold text-slate-700">
+                            <option value="todas">Todo el vocabulario (12)</option>
+                            <option value="saludos">Solo Saludos</option>
+                            <option value="pronombres">Solo Pronombres</option>
+                            <option value="cortesia">Solo Cortesía</option>
+                        </select>
+                        <button onclick="startEvaluation()" class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white font-bold text-sm rounded-lg transition flex items-center gap-1.5"><i data-lucide="shuffle" class="w-4 h-4"></i> Reiniciar</button>
+                    </div>
                 </div>
 
-                <!-- Filtros por categoría -->
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="filterDictionary('todas')" id="dict-btn-todas" class="dict-filter px-4 py-2 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-800 bg-amber-300 text-slate-900 pill-shadow">
-                        Todas (12)
-                    </button>
-                    <button onclick="filterDictionary('saludos')" id="dict-btn-saludos" class="dict-filter px-4 py-2 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-800 bg-sky-100 text-slate-800 pill-shadow">
-                        Saludos
-                    </button>
-                    <button onclick="filterDictionary('pronombres')" id="dict-btn-pronombres" class="dict-filter px-4 py-2 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-800 bg-sky-100 text-slate-800 pill-shadow">
-                        Pronombres
-                    </button>
-                    <button onclick="filterDictionary('cortesia')" id="dict-btn-cortesia" class="dict-filter px-4 py-2 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-800 bg-sky-100 text-slate-800 pill-shadow">
-                        Cortesía
-                    </button>
+                <!-- Indicadores de la evaluación -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-3 mt-4" aria-live="polite">
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-3 text-center">
+                        <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Parejas</p>
+                        <p class="text-xl font-extrabold text-slate-900"><span id="evalPairs">0</span><span class="text-sm text-slate-400">/<span id="evalTotalPairs">6</span></span></p>
+                    </div>
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-3 text-center">
+                        <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Intentos</p>
+                        <p class="text-xl font-extrabold text-slate-900" id="evalAttempts">0</p>
+                    </div>
+                    <div class="rounded-xl bg-slate-50 border border-slate-200 p-3 text-center">
+                        <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Aciertos</p>
+                        <p class="text-xl font-extrabold text-slate-900"><span id="evalAccuracy">0</span>%</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Grid de 12 tarjetas detalladas -->
-            <div id="dictionaryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Se puebla dinámicamente -->
+            <!-- Tablero de memoria -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 comic-card space-y-3">
+                <div id="evalStatusBanner" class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-center text-xs sm:text-sm font-semibold text-slate-700" role="status" aria-live="polite">
+                    Toca dos cartas para emparejar la seña con su significado.
+                </div>
+                <div id="evalBoard" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5 sm:gap-3 perspective-1000"></div>
+            </div>
+
+            <!-- Informe final de la evaluación -->
+            <div id="evalReport" class="hidden bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 comic-card space-y-4" role="region" aria-live="polite">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="clipboard-check" class="w-6 h-6 text-blue-700"></i>
+                    <h3 class="font-kids text-xl font-extrabold text-slate-900">Informe de la evaluación</h3>
+                </div>
+                <div id="evalReportStats" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+                <div>
+                    <p class="text-sm font-bold text-slate-800 mb-1.5">Palabras para reforzar</p>
+                    <div id="evalWeakWords" class="flex flex-wrap gap-2"></div>
+                </div>
+                <p id="evalReportMessage" class="text-sm text-slate-600 leading-relaxed rounded-xl bg-slate-50 border border-slate-200 p-3"></p>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="startEvaluation()" class="px-5 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-bold text-sm rounded-lg transition flex items-center gap-1.5"><i data-lucide="repeat" class="w-4 h-4"></i> Intentar de nuevo</button>
+                    <button onclick="navigateTo('entrenamiento')" class="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-semibold text-sm rounded-lg transition flex items-center gap-1.5"><i data-lucide="dumbbell" class="w-4 h-4"></i> Repasar entrenamiento</button>
+                    <button onclick="navigateTo('diccionario')" class="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 font-semibold text-sm rounded-lg transition flex items-center gap-1.5"><i data-lucide="book-open" class="w-4 h-4"></i> Consultar diccionario</button>
+                </div>
             </div>
         </section>
 
+        <!-- ==================================================================
+             VISTA 6: DICCIONARIO LSC (GALERÍA FILTRABLE DE LAS 12 SEÑAS)
+             ================================================================== -->
+        <section id="view-diccionario" class="view-section hidden flex-1 w-full max-w-6xl mx-auto p-4 sm:p-6 space-y-5" aria-labelledby="diccTitle" role="region">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 comic-card flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <span class="px-3 py-0.5 bg-teal-50 border border-teal-200 rounded-full font-semibold text-xs text-teal-800">Paso 6 · Consulta libre</span>
+                    <h2 id="diccTitle" class="font-kids text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1.5">Diccionario de señas</h2>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-0.5">Consulta las 12 señas del recorrido con su movimiento, contexto de uso y espacio para el video demostrativo validado.</p>
+                </div>
+
+                <div class="flex flex-wrap gap-2" role="group" aria-label="Filtrar diccionario por categoría">
+                    <button onclick="filterDictionary('todas')" id="dict-btn-todas" class="dict-filter px-4 py-2 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-blue-700 text-white transition">Todas (12)</button>
+                    <button onclick="filterDictionary('saludos')" id="dict-btn-saludos" class="dict-filter px-4 py-2 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Saludos</button>
+                    <button onclick="filterDictionary('pronombres')" id="dict-btn-pronombres" class="dict-filter px-4 py-2 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Pronombres</button>
+                    <button onclick="filterDictionary('cortesia')" id="dict-btn-cortesia" class="dict-filter px-4 py-2 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Cortesía</button>
+                </div>
+            </div>
+
+            <div id="dictionaryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" aria-live="polite"></div>
+        </section>
+
     </main>
+
+    <!-- Diálogo de confirmación de reinicio -->
+    <div id="resetDialog" class="hidden fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/50" role="dialog" aria-modal="true" aria-labelledby="resetDialogTitle">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-sm w-full p-5 space-y-4">
+            <div class="flex items-center gap-2">
+                <i data-lucide="alert-triangle" class="w-6 h-6 text-rose-600"></i>
+                <h3 id="resetDialogTitle" class="font-kids text-lg font-extrabold text-slate-900">¿Reiniciar tu progreso?</h3>
+            </div>
+            <p class="text-sm text-slate-600">Se borrarán capítulos completados, decisiones, el final obtenido, tus estrellas y los resultados de la evaluación. Esta acción no se puede deshacer.</p>
+            <div class="flex justify-end gap-2">
+                <button onclick="closeResetDialog()" class="px-4 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-semibold text-sm rounded-lg transition">Cancelar</button>
+                <button onclick="doResetProgress()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm rounded-lg transition">Sí, borrar todo</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ======================================================================
          CÓDIGO JAVASCRIPT: AVATAR DE LUCAS, ESCENARIOS 2D DE BOGOTÁ Y LÓGICA
@@ -727,13 +879,7 @@
            2. ESCENARIOS ILUSTRADOS 2D DE BOGOTÁ (5 CAPÍTULOS A PANTALLA COMPLETA)
               REPLICANDO FIELMENTE LAS IMÁGENES DE REFERENCIA
            ==================================================================== */
-        const CUSTOM_UPLOADED_SCENES = {};
-
         function createBogotaBackdropSVG(chapNum) {
-            if (CUSTOM_UPLOADED_SCENES[chapNum]) {
-                return `<img src="${CUSTOM_UPLOADED_SCENES[chapNum]}" alt="Escenario personalizado" class="w-full h-full object-cover" />`;
-            }
-
             const scenes = {
                 /* CAPÍTULO 1: LA PLAZA DE BOLÍVAR (CATEDRAL, MONSERRATE, CARRITO TRICOLOR Y JOVEN CON TINTO Y EMPANADA) */
                 1: `
@@ -1131,115 +1277,183 @@
             return scenes[chapNum] || scenes[1];
         }
 
-        function handleCustomSceneUpload(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    CUSTOM_UPLOADED_SCENES[appState.currentChapter] = e.target.result;
-                    document.getElementById('adventureFullScene').innerHTML = createBogotaBackdropSVG(appState.currentChapter);
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
         /* ====================================================================
-           3. DATOS PEDAGÓGICOS DE LOS 5 CAPÍTULOS Y LAS 12 SEÑAS LSC
+           3. DATOS PEDAGÓGICOS: 12 SEÑAS LSC CON METADATOS MULTIMEDIA
+           --------------------------------------------------------------------
+           NOTA DE RIGOR LSC: 'movement' y 'context' son descripciones de APOYO.
+           'videoSrc' queda vacío a propósito: NO se simula ninguna demostración.
+           Cuando exista un video real validado por una persona competente en LSC,
+           basta con asignar la ruta del archivo en 'videoSrc' para que el reproductor
+           lo use automáticamente en Entrenamiento, Aventura, Evaluación y Diccionario.
            ==================================================================== */
+        const LSC_MODULES = {
+            saludos: [
+                { id: 'hola', name: 'HOLA', meaning: 'Saludo inicial para abrir una conversación.', movement: 'Mano abierta cerca de la frente que se desplaza ligeramente hacia afuera, acompañada de una sonrisa receptiva.', watch: 'Fíjate en la mano abierta y en el contacto visual al iniciar.', context: 'Se usa al llegar o al encontrarse con alguien.', videoSrc: '' },
+                { id: 'buenos_dias', name: 'BUENOS DÍAS', meaning: 'Saludo cordial durante la mañana.', movement: 'Mano plana que parte de la barbilla y se abre hacia adelante.', watch: 'Observa el punto de partida (barbilla) y la apertura hacia el frente.', context: 'Se usa en la mañana, en contextos cotidianos y formales.', videoSrc: '' },
+                { id: 'buenas_tardes', name: 'BUENAS TARDES', meaning: 'Saludo cordial durante la tarde.', movement: 'Mano plana sobre el antebrazo opuesto, a la altura del codo, con un movimiento suave hacia abajo.', watch: 'Mira la relación entre ambos brazos y la dirección del movimiento.', context: 'Se usa en horas de la tarde.', videoSrc: '' },
+                { id: 'buenas_noches', name: 'BUENAS NOCHES', meaning: 'Saludo o despedida durante la noche.', movement: 'Mano plana que se desplaza frente al rostro de arriba hacia abajo.', watch: 'Atiende a la trayectoria descendente frente al rostro.', context: 'Se usa en la noche, al llegar o al despedirse.', videoSrc: '' }
+            ],
+            pronombres: [
+                { id: 'yo', name: 'YO', meaning: 'Referencia a uno mismo.', movement: 'Dedo índice que apunta al centro del propio pecho.', watch: 'Observa que el índice toca o apunta al propio pecho.', context: 'Para hablar de uno mismo o presentarse.', videoSrc: '' },
+                { id: 'tu', name: 'TÚ', meaning: 'Referencia a la persona con quien hablas.', movement: 'Dedo índice que apunta de forma directa hacia el interlocutor.', watch: 'Fíjate en la dirección: hacia la otra persona.', context: 'Para dirigirte directamente a alguien.', videoSrc: '' },
+                { id: 'el_ella', name: 'ÉL / ELLA', meaning: 'Referencia a una tercera persona.', movement: 'Dedo índice que apunta hacia un lado, señalando a quien no participa directamente.', watch: 'Observa que se señala hacia un lado, no al frente.', context: 'Para hablar de alguien más presente.', videoSrc: '' },
+                { id: 'nosotros', name: 'NOSOTROS', meaning: 'Referencia a un grupo que te incluye.', movement: 'Dedo índice que traza un movimiento semicircular abarcando al grupo.', watch: 'Mira el recorrido semicircular que envuelve a varias personas.', context: 'Para hablar de un grupo del que haces parte.', videoSrc: '' }
+            ],
+            cortesia: [
+                { id: 'por_favor', name: 'POR FAVOR', meaning: 'Fórmula para pedir algo con amabilidad.', movement: 'Palma abierta sobre el pecho con un movimiento circular suave.', watch: 'Observa el círculo suave de la palma sobre el pecho.', context: 'Al solicitar algo de manera cortés.', videoSrc: '' },
+                { id: 'gracias', name: 'GRACIAS', meaning: 'Expresión de agradecimiento.', movement: 'Yemas de los dedos que tocan la barbilla y se extienden hacia adelante.', watch: 'Fíjate en el inicio en la barbilla y la salida hacia el frente.', context: 'Después de recibir ayuda o un servicio.', videoSrc: '' },
+                { id: 'con_gusto', name: 'CON GUSTO', meaning: 'Respuesta amable a un agradecimiento.', movement: 'Mano abierta sobre el pecho con ligeros toques, acompañada de una sonrisa.', watch: 'Observa los toques suaves y la expresión amable.', context: 'Para responder cuando te dan las gracias.', videoSrc: '' },
+                { id: 'perdon', name: 'PERDÓN / DISCULPA', meaning: 'Expresión para disculparse.', movement: 'Dedos que rozan suavemente la barbilla con expresión facial de disculpa.', watch: 'Atiende a la expresión facial, que es parte de la seña.', context: 'Para disculparse o pedir permiso.', videoSrc: '' }
+            ]
+        };
+
+        // Índice plano id -> datos de la seña (con su categoría)
+        const LSC_SIGNS = (() => {
+            const map = {};
+            Object.keys(LSC_MODULES).forEach(cat => {
+                LSC_MODULES[cat].forEach(s => { map[s.id] = Object.assign({ category: cat }, s); });
+            });
+            return map;
+        })();
+        const CATEGORY_LABELS = { saludos: 'Saludos', pronombres: 'Pronombres', cortesia: 'Cortesía' };
+
+        /* --------------------------------------------------------------------
+           CAPÍTULOS DE LA AVENTURA: NARRATIVA + DECISIONES CON CONSECUENCIAS
+           Cada opción incluye: seña asociada (signId), si es adecuada (isCorrect),
+           retroalimentación educativa y la CONSECUENCIA narrativa.
+           Las decisiones acumuladas (aciertos a la primera) determinan el final.
+           -------------------------------------------------------------------- */
         const ADVENTURE_CHAPTERS = {
             1: {
                 place: "La Plaza de Bolívar",
                 signId: "hola",
-                dialogue: "¡Hola! Qué bueno verte por acá en la Plaza de Bolívar. ¿Me ayudas a pedir un tinto y una empanada usando la seña correcta?",
+                narrative: "Lucas llega a la Plaza de Bolívar. En un carrito tricolor, una vendedora Sorda atiende tintos y empanadas.",
+                problem: "Lucas quiere pedir un tinto, pero primero necesita saludar en LSC para iniciar bien la conversación.",
                 options: [
-                    { label: "Opción A: Hacer la seña de Gracias", isCorrect: false, feedback: "¡Casi, parcero! 'Gracias' se usa después de recibir el tinto. Primero toca saludar bien bacano." },
-                    { label: "Opción B: Hacer la seña de Hola", isCorrect: true, feedback: "¡Eso es! Con la mano abierta cerca de la frente y una buena sonrisa rompes el hielo en LSC. (+20 ★)" },
-                    { label: "Opción C: Hacer la seña de Por Favor", isCorrect: false, feedback: "¡Uy! 'Por favor' sirve muchísimo, pero sin saludar primero queda muy seco. ¡Intenta con el saludo!" }
+                    { signId: "gracias", isCorrect: false, feedback: "'Gracias' se usa después de recibir algo, no para iniciar.", consequence: "La vendedora lo mira con duda: aún no ha pasado nada que agradecer. Lucas se queda sin saber cómo empezar." },
+                    { signId: "hola", isCorrect: true, feedback: "Con la mano abierta cerca de la frente y una sonrisa, Lucas rompe el hielo correctamente.", consequence: "La vendedora sonríe y le devuelve el saludo. La conversación arranca con buen pie y Lucas se anima a seguir." },
+                    { signId: "por_favor", isCorrect: false, feedback: "'Por favor' sirve para pedir, pero sin saludar primero resulta brusco.", consequence: "La vendedora se siente apurada sin un saludo previo. Lucas nota que faltó la cortesía inicial." }
                 ]
             },
             2: {
                 place: "Parque Simón Bolívar",
                 signId: "yo",
-                dialogue: "¡Qué parche tan chévere aquí en el Parque Simón Bolívar! Queremos presentarnos con los chicos de la guitarra. ¿Cómo digo 'YO' en LSC?",
+                narrative: "En el Parque Simón Bolívar, Lucas se encuentra con un grupo de jóvenes Sordos tocando guitarra y quiere unirse.",
+                problem: "Para presentarse, Lucas necesita decir 'YO' y hablar de sí mismo en LSC.",
                 options: [
-                    { label: "Opción A: Apuntar hacia mí con 'Yo'", isCorrect: true, feedback: "¡Perfecto! El dedo índice apuntando al centro del pecho indica 'YO' de forma clara y directa. (+20 ★)" },
-                    { label: "Opción B: Señalar al cielo con 'Buenos Días'", isCorrect: false, feedback: "¡Jajaja! Así parece que estuvieras mirando si va a llover en Bogotá. Apunta hacia tu propio pecho." },
-                    { label: "Opción C: Señalar hacia otro lado con 'Él / Ella'", isCorrect: false, feedback: "Si apuntas hacia un lado estás presentando a alguien más, ¡no a ti mismo!" }
+                    { signId: "yo", isCorrect: true, feedback: "El índice apuntando al propio pecho indica 'YO' con claridad.", consequence: "El grupo entiende que Lucas se presenta y lo invitan a sentarse en el círculo." },
+                    { signId: "buenos_dias", isCorrect: false, feedback: "'Buenos días' es un saludo, no una forma de presentarse.", consequence: "El grupo responde al saludo, pero sigue sin saber quién es Lucas. Se genera una pausa incómoda." },
+                    { signId: "el_ella", isCorrect: false, feedback: "Señalar a un lado indica a otra persona, no a ti mismo.", consequence: "Los jóvenes miran hacia donde Lucas apunta, buscando a alguien más. Hay confusión." }
                 ]
             },
             3: {
                 place: "Panadería de Barrio",
                 signId: "por_favor",
-                dialogue: "¡Uff, qué olor tan delicioso a almojábana y pandebono recién horneado! ¿Cómo le pido al panadero un pandebono con mucha educación?",
+                narrative: "En la panadería del barrio huele a almojábanas y pandebonos recién horneados. El panadero es una persona Sorda.",
+                problem: "Lucas quiere pedir un pandebono con amabilidad usando la fórmula de cortesía en LSC.",
                 options: [
-                    { label: "Opción A: Hacer la seña de Perdón", isCorrect: false, feedback: "¡No hay por qué pedir perdón por tener hambre! Usa la fórmula de cortesía para pedir algo." },
-                    { label: "Opción B: Hacer la seña de Buenas Noches", isCorrect: false, feedback: "¡Todavía es de día! Si dices buenas noches el panadero va a pensar que ya tiene que cerrar." },
-                    { label: "Opción C: Hacer la seña de Por Favor", isCorrect: true, feedback: "¡Excelente! Pasar la palma en círculo suave sobre el pecho dice 'POR FAVOR' con toda la amabilidad. (+20 ★)" }
+                    { signId: "perdon", isCorrect: false, feedback: "'Perdón' es para disculparse, no para pedir un producto.", consequence: "El panadero cree que Lucas se disculpa por algo y pregunta qué pasó. El pedido se enreda." },
+                    { signId: "buenas_noches", isCorrect: false, feedback: "Es de día: 'buenas noches' no corresponde al momento.", consequence: "El panadero mira el reloj, extrañado. El saludo nocturno descoloca la conversación." },
+                    { signId: "por_favor", isCorrect: true, feedback: "La palma en círculo suave sobre el pecho expresa 'POR FAVOR' con amabilidad.", consequence: "El panadero asiente con gusto y prepara el pandebono. La compra fluye con cortesía." }
                 ]
             },
             4: {
                 place: "Estación de TransMilenio",
                 signId: "nosotros",
-                dialogue: "¡Ya llegó el articulado B75 Portal Norte! Queremos preguntarle al guía de la estación si este bus nos sirve a todo el grupo. ¿Qué seña usamos?",
+                narrative: "Llega el articulado B75 a la estación. Lucas va con su grupo y pregunta a un guía Sordo si el bus les sirve a todos.",
+                problem: "Lucas debe referirse al grupo completo diciendo 'NOSOTROS' en LSC.",
                 options: [
-                    { label: "Opción A: Hacer la seña de Tú", isCorrect: false, feedback: "'Tú' señala solo a una persona. Necesitamos incluir a todo nuestro combo." },
-                    { label: "Opción B: Hacer la seña de Nosotros", isCorrect: true, feedback: "¡Brutal! El movimiento semicircular con el índice envuelve a todo el grupo para decir 'NOSOTROS'. (+20 ★)" },
-                    { label: "Opción C: Hacer la seña de Con Gusto", isCorrect: false, feedback: "'Con gusto' se responde cuando te dan las gracias. ¡Prueba con el pronombre grupal!" }
+                    { signId: "tu", isCorrect: false, feedback: "'Tú' señala a una sola persona, no a todo el grupo.", consequence: "El guía responde pensando que solo Lucas viaja. El resto del grupo queda por fuera de la indicación." },
+                    { signId: "nosotros", isCorrect: true, feedback: "El movimiento semicircular del índice envuelve a todo el grupo: 'NOSOTROS'.", consequence: "El guía entiende que son varios y les confirma la ruta a todos. El grupo aborda tranquilo." },
+                    { signId: "con_gusto", isCorrect: false, feedback: "'Con gusto' responde a un agradecimiento; aquí no encaja.", consequence: "El guía no comprende la pregunta y se genera una pausa antes de que el bus arranque." }
                 ]
             },
             5: {
                 place: "Biblioteca Pública Virgilio Barco",
                 signId: "gracias",
-                dialogue: "¡Llegamos sanos y salvos frente al espejo de agua de la Biblioteca Virgilio Barco! ¿Cómo le agradecemos a todos por habernos ayudado en el viaje?",
+                narrative: "Frente al espejo de agua de la Biblioteca Virgilio Barco, Lucas termina su recorrido junto a las personas que lo ayudaron.",
+                problem: "Lucas quiere agradecer a todos por acompañarlo en el viaje usando LSC.",
                 options: [
-                    { label: "Opción A: Hacer la seña de Gracias", isCorrect: true, feedback: "¡Misión cumplida, crack! Llevar los dedos de la barbilla hacia adelante con sonrisa expresa un 'GRACIAS' sincero. (+20 ★)" },
-                    { label: "Opción B: Hacer la seña de Hola", isCorrect: false, feedback: "¡Hola ya lo dijimos al arrancar en la Plaza de Bolívar! Ahora toca despedirnos agradeciendo." },
-                    { label: "Opción C: Hacer la seña de Perdón", isCorrect: false, feedback: "¡Nada de pedir perdón, lo hiciste increíble durante todo el recorrido por Bogotá!" }
+                    { signId: "gracias", isCorrect: true, feedback: "Llevar los dedos de la barbilla hacia adelante, con sonrisa, expresa un 'GRACIAS' sincero.", consequence: "Todos reciben el agradecimiento con alegría. Lucas cierra su misión con una despedida cálida." },
+                    { signId: "hola", isCorrect: false, feedback: "'Hola' es un saludo; aquí toca despedirse agradeciendo.", consequence: "El grupo responde al saludo, pero la despedida queda inconclusa y algo confusa." },
+                    { signId: "perdon", isCorrect: false, feedback: "No hay motivo para disculparse: Lucas lo hizo muy bien.", consequence: "Las personas se preguntan por qué pide perdón. El cierre pierde su tono de gratitud." }
                 ]
             }
         };
 
-        const LSC_MODULES = {
-            saludos: [
-                { id: 'hola', name: 'HOLA', desc: 'Mano abierta cerca de la frente moviéndose ligeramente hacia afuera con sonrisa receptiva.' },
-                { id: 'buenos_dias', name: 'BUENOS DÍAS', desc: 'Mano plana tocando la barbilla y desplazándose hacia adelante abriéndose como el sol.' },
-                { id: 'buenas_tardes', name: 'BUENAS TARDES', desc: 'Mano plana sobre el brazo opuesto a la altura del codo haciendo un movimiento suave hacia abajo.' },
-                { id: 'buenas_noches', name: 'BUENAS NOCHES', desc: 'Mano plana desplazándose frente al rostro de arriba hacia abajo imitando el anochecer.' }
-            ],
-            pronombres: [
-                { id: 'yo', name: 'YO', desc: 'Dedo índice apuntando directamente al centro del propio pecho.' },
-                { id: 'tu', name: 'TÚ', desc: 'Dedo índice apuntando de forma directa a la persona con la que hablas.' },
-                { id: 'el_ella', name: 'ÉL / ELLA', desc: 'Dedo índice apuntando hacia un lado señalando a una tercera persona.' },
-                { id: 'nosotros', name: 'NOSOTROS', desc: 'Dedo índice haciendo un movimiento semicircular que envuelve a todo el grupo.' }
-            ],
-            cortesia: [
-                { id: 'por_favor', name: 'POR FAVOR', desc: 'Palma de la mano abierta sobre el pecho haciendo un movimiento circular suave.' },
-                { id: 'gracias', name: 'GRACIAS', desc: 'Yemas de los dedos tocando la barbilla y extendiéndose hacia adelante con amabilidad.' },
-                { id: 'con_gusto', name: 'CON GUSTO', desc: 'Mano abierta sobre el pecho dando ligeros toques acompañado de una sonrisa amable.' },
-                { id: 'perdon', name: 'PERDÓN / DISCULPA', desc: 'Dedos rozando suavemente la barbilla con expresión facial de disculpa.' }
-            ]
-        };
+        const STORAGE_KEY = 'senasEnMision_v2';
 
         /* ====================================================================
-           4. ESTADO GLOBAL Y NAVEGACIÓN ENTRE PESTAÑAS
+           4. ESTADO GLOBAL + PERSISTENCIA (localStorage)
+           Las estrellas se diferencian por fuente pedagógica:
+             participation (visitar/avanzar), practice (revisar señas),
+             decision (acertar decisiones narrativas), evaluation (memoria).
            ==================================================================== */
-        const appState = {
-            activeTab: 'aventura',
+        const defaultState = () => ({
+            activeTab: 'inicio',
+            visited: {},                 // secciones visitadas (NO equivale a completada)
             currentChapter: 1,
-            completedChapters: {},
-            stars: 100,
+            unlockedChapter: 1,          // hasta qué capítulo puede avanzar
+            completedChapters: {},       // capítulos superados (decisión adecuada)
+            chapterFirstTry: {},         // true si acertó a la primera (para el final)
+            retries: 0,
+            finaleKey: null,             // 'positivo' | 'alternativo' | 'aprendizaje'
             trainingModule: 'saludos',
-            memoryDeck: [],
-            flippedCards: [],
-            matchedCount: 0
+            reviewedSigns: {},           // señas marcadas como revisadas (práctica)
+            evaluation: null,            // { pairs, attempts, accuracy, weak:[], module }
+            stars: { participation: 0, practice: 0, decision: 0, evaluation: 0 },
+            reduceMotion: false
+        });
+
+        let appState = defaultState();
+
+        function saveState() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appState)); } catch (e) { /* almacenamiento no disponible */ }
+        }
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    appState = Object.assign(defaultState(), parsed);
+                    appState.stars = Object.assign(defaultState().stars, parsed.stars || {});
+                }
+            } catch (e) { appState = defaultState(); }
+        }
+        function totalStars() {
+            const s = appState.stars;
+            return (s.participation || 0) + (s.practice || 0) + (s.decision || 0) + (s.evaluation || 0);
+        }
+        function addStars(kind, amount) {
+            appState.stars[kind] = (appState.stars[kind] || 0) + amount;
+            saveState();
+            updateTopStats();
+        }
+
+        // Transient (no persiste): estado del juego de memoria en curso
+        const memState = { deck: [], flipped: [], matched: 0, attempts: 0, module: 'todas', totalPairs: 0, locked: false };
+
+        function announce(msg) {
+            const r = document.getElementById('liveRegion');
+            if (r) { r.textContent = ''; setTimeout(() => { r.textContent = msg; }, 30); }
+        }
+        function safeIcons() { if (window.lucide && lucide.createIcons) { try { lucide.createIcons(); } catch (e) {} } }
+
+        const SECTION_TITLES = {
+            inicio: 'Inicio', mision: 'Misión', entrenamiento: 'Entrenamiento',
+            aventura: 'Aventura', evaluacion: 'Evaluación', diccionario: 'Diccionario'
         };
 
         function navigateTo(tabName) {
+            if (!SECTION_TITLES[tabName]) tabName = 'inicio';
             appState.activeTab = tabName;
+            appState.visited[tabName] = true;
+            saveState();
 
-            // Ocultar todas las vistas y mostrar la elegida
+            // Mostrar la vista elegida
             document.querySelectorAll('.view-section').forEach(sec => {
                 sec.classList.add('hidden');
-                sec.classList.remove('flex');
+                sec.classList.remove('flex', 'is-active');
             });
             const target = document.getElementById(`view-${tabName}`);
             if (target) {
@@ -1247,42 +1461,147 @@
                 if (tabName === 'inicio' || tabName === 'mision' || tabName === 'aventura') {
                     target.classList.add('flex');
                 }
+                target.classList.add('is-active');
             }
 
-            // Resaltar botón activo en amarillo dorado (como en la imagen de referencia)
+            // Resaltar botón activo en la navegación
             document.querySelectorAll('.nav-pill').forEach(btn => {
-                btn.classList.remove('bg-amber-300', 'text-slate-900');
-                btn.classList.add('bg-sky-200', 'text-slate-800');
+                btn.classList.remove('bg-blue-700', 'text-white', 'border-blue-700');
+                btn.classList.add('bg-white', 'text-slate-700', 'border-slate-300');
+                btn.setAttribute('aria-current', 'false');
             });
             const activePill = document.getElementById(`nav-${tabName}`);
             if (activePill) {
-                activePill.classList.remove('bg-sky-200', 'text-slate-800');
-                activePill.classList.add('bg-amber-300', 'text-slate-900');
+                activePill.classList.remove('bg-white', 'text-slate-700', 'border-slate-300');
+                activePill.classList.add('bg-blue-700', 'text-white', 'border-blue-700');
+                activePill.setAttribute('aria-current', 'page');
             }
 
-            // Inicializar contenido específico según pestaña
+            // Contenido específico por sección
             if (tabName === 'inicio') {
                 document.getElementById('inicioBackdrop').innerHTML = createBogotaBackdropSVG(1);
                 document.getElementById('inicioLucasAvatar').innerHTML = createLucasAvatarSVG('hola');
+                refreshResumeCard();
             } else if (tabName === 'mision') {
                 document.getElementById('misionBackdrop').innerHTML = createBogotaBackdropSVG(2);
                 document.getElementById('misionLucasCenter').innerHTML = createLucasAvatarSVG('hola');
-            } else if (tabName === 'aventura') {
-                loadAdventureChapter(appState.currentChapter);
             } else if (tabName === 'entrenamiento') {
                 setTrainingModule(appState.trainingModule);
+            } else if (tabName === 'aventura') {
+                loadAdventureChapter(appState.currentChapter);
+            } else if (tabName === 'evaluacion') {
+                prepareEvaluationView();
             } else if (tabName === 'diccionario') {
                 filterDictionary('todas');
             }
 
-            lucide.createIcons();
+            updateStepper();
+            window.scrollTo({ top: 0, behavior: 'auto' });
+            safeIcons();
+            announce(`Sección ${SECTION_TITLES[tabName]}`);
+        }
+
+        // Progreso de la RUTA: etapas realmente avanzadas (no solo visitadas)
+        function routeProgress() {
+            let done = 0;
+            if (appState.visited.inicio) done++;                                   // 1 Inicio
+            if (appState.visited.mision) done++;                                   // 2 Misión
+            if (Object.keys(appState.reviewedSigns).length >= 1) done++;           // 3 Entrenamiento (practicó)
+            if (Object.keys(appState.completedChapters).length >= 5) done++;       // 4 Aventura (terminó los 5)
+            if (appState.evaluation) done++;                                       // 5 Evaluación realizada
+            if (appState.visited.diccionario) done++;                              // 6 Diccionario consultado
+            return Math.round((done / 6) * 100);
         }
 
         function updateTopStats() {
-            document.getElementById('starScoreDisplay').textContent = appState.stars;
-            const doneCount = Object.keys(appState.completedChapters).length;
-            const pct = Math.min(100, Math.max(20, (doneCount / 5) * 100));
-            document.getElementById('topProgressBar').style.width = `${pct}%`;
+            document.getElementById('starScoreDisplay').textContent = totalStars();
+            const pct = routeProgress();
+            const bar = document.getElementById('topProgressBar');
+            if (bar) bar.style.width = pct + '%';
+            const pctEl = document.getElementById('topProgressPct');
+            if (pctEl) pctEl.textContent = pct + '%';
+            const role = document.getElementById('topProgressRole');
+            if (role) role.setAttribute('aria-valuenow', pct);
+            updateStepper();
+        }
+
+        // El stepper marca "done" según progreso REAL de cada etapa; "current" según sección activa
+        function updateStepper() {
+            const doneMap = {
+                inicio: !!appState.visited.inicio,
+                mision: !!appState.visited.mision,
+                entrenamiento: Object.keys(appState.reviewedSigns).length >= 1,
+                aventura: Object.keys(appState.completedChapters).length >= 5,
+                evaluacion: !!appState.evaluation,
+                diccionario: !!appState.visited.diccionario
+            };
+            document.querySelectorAll('.step-item').forEach(li => {
+                const step = li.dataset.step;
+                li.setAttribute('data-done', doneMap[step] ? 'true' : 'false');
+                if (step === appState.activeTab) li.setAttribute('aria-current', 'step');
+                else li.removeAttribute('aria-current');
+            });
+        }
+
+        /* ---- Reducir animaciones (accesibilidad) ---- */
+        function applyReduceMotion() {
+            document.body.classList.toggle('reduce-motion', !!appState.reduceMotion);
+            const btn = document.getElementById('motionToggle');
+            if (btn) btn.setAttribute('aria-pressed', appState.reduceMotion ? 'true' : 'false');
+        }
+        function toggleReduceMotion() {
+            appState.reduceMotion = !appState.reduceMotion;
+            applyReduceMotion();
+            saveState();
+            announce(appState.reduceMotion ? 'Animaciones reducidas' : 'Animaciones activadas');
+        }
+
+        /* ---- Reinicio del progreso (con confirmación) ---- */
+        function confirmResetProgress() {
+            const d = document.getElementById('resetDialog');
+            d.classList.remove('hidden');
+            d.classList.add('flex');
+            safeIcons();
+        }
+        function closeResetDialog() {
+            const d = document.getElementById('resetDialog');
+            d.classList.add('hidden');
+            d.classList.remove('flex');
+        }
+        function doResetProgress() {
+            const keepMotion = appState.reduceMotion;
+            appState = defaultState();
+            appState.reduceMotion = keepMotion;
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+            saveState();
+            closeResetDialog();
+            updateTopStats();
+            applyReduceMotion();
+            navigateTo('inicio');
+            announce('Progreso reiniciado');
+        }
+
+        /* ---- Continuar desde donde quedó ---- */
+        function refreshResumeCard() {
+            const card = document.getElementById('resumeCard');
+            const txt = document.getElementById('resumeText');
+            if (!card) return;
+            const hasProgress = appState.evaluation || Object.keys(appState.completedChapters).length > 0 ||
+                                Object.keys(appState.reviewedSigns).length > 0 || appState.finaleKey;
+            if (hasProgress) {
+                let where = 'tu entrenamiento';
+                if (appState.finaleKey) where = 'el final de la aventura';
+                else if (Object.keys(appState.completedChapters).length > 0) where = `el Capítulo ${appState.unlockedChapter} de la aventura`;
+                txt.textContent = `Puedes continuar en ${where}. Tienes ${totalStars()} estrellas acumuladas.`;
+                card.classList.remove('hidden');
+            } else {
+                card.classList.add('hidden');
+            }
+        }
+        function resumeProgress() {
+            if (appState.evaluation) navigateTo('evaluacion');
+            else if (Object.keys(appState.completedChapters).length > 0 || appState.finaleKey) navigateTo('aventura');
+            else navigateTo('entrenamiento');
         }
 
         /* ====================================================================
@@ -1290,186 +1609,415 @@
            ==================================================================== */
         function selectMissionCard(step, btn) {
             const texts = {
-                1: "🗺️ <strong>Paso 1 - Recorre 5 lugares de Bogotá:</strong> Empezamos en la Plaza de Bolívar, pasamos por el Parque Simón Bolívar, la panadería de barrio, TransMilenio y cerramos en la Biblioteca Virgilio Barco.",
-                2: "🖐️ <strong>Paso 2 - Entrena tus señas:</strong> Fíjate siempre en la forma de mis dedos, la ubicación respecto a mi cuerpo y la flecha azul que indica hacia dónde va el movimiento.",
-                3: "⭐ <strong>Paso 3 - Toma decisiones en LSC:</strong> Cada escena tiene 3 opciones. ¡Si eliges la seña correcta a la primera, ganas +20 estrellas!"
+                1: "<strong>Paso 1 · Recorre 5 lugares de Bogotá:</strong> Plaza de Bolívar, Parque Simón Bolívar, panadería de barrio, TransMilenio y la Biblioteca Virgilio Barco.",
+                2: "<strong>Paso 2 · Entrena las señas:</strong> antes de la aventura, observa cada video demostrativo (cuando esté disponible), la descripción del movimiento y su contexto de uso.",
+                3: "<strong>Paso 3 · Decide y avanza:</strong> en cada capítulo eliges una de tres señas. Si eliges la adecuada a la primera, avanzas con ventaja; si no, recibes una explicación y puedes reintentar. Tus decisiones definen el final."
             };
             document.getElementById('misionSpeechBox').innerHTML = texts[step];
-            document.querySelectorAll('.mision-card').forEach(c => c.classList.remove('ring-4', 'ring-amber-400'));
-            btn.classList.add('ring-4', 'ring-amber-400');
+            document.querySelectorAll('.mision-card').forEach(c => c.classList.remove('ring-2', 'ring-blue-500', 'border-blue-400'));
+            btn.classList.add('ring-2', 'ring-blue-500');
         }
 
         /* ====================================================================
-           6. LÓGICA DE LA PANTALLA "AVENTURA" (5 CAPÍTULOS)
+           5b. REPRODUCTOR MULTIMEDIA PREPARADO (video real o marcador LSC)
+           Devuelve un bloque con controles reproducir/pausar/repetir.
+           Si NO hay 'videoSrc', muestra un marcador claro (no simula demo real).
            ==================================================================== */
-        function loadAdventureChapter(chapNum) {
-            appState.currentChapter = chapNum;
-            const data = ADVENTURE_CHAPTERS[chapNum];
+        let mediaUid = 0;
+        function createSignMedia(sign, opts) {
+            opts = opts || {};
+            const size = opts.size || 'h-40';
+            mediaUid++;
+            const vid = `media_${sign.id}_${mediaUid}`;
+            if (sign.videoSrc) {
+                return `
+                    <div class="rounded-xl overflow-hidden border border-slate-200 bg-black">
+                        <video id="${vid}" class="w-full ${size} object-contain bg-black" playsinline preload="metadata" aria-label="Video demostrativo de la seña ${sign.name}">
+                            <source src="${sign.videoSrc}">
+                        </video>
+                    </div>
+                    <div class="flex items-center gap-1.5 mt-2" role="group" aria-label="Controles de video de ${sign.name}">
+                        <button type="button" onclick="mediaPlay('${vid}')" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-xs font-semibold flex items-center gap-1"><i data-lucide="play" class="w-3.5 h-3.5"></i> Reproducir</button>
+                        <button type="button" onclick="mediaPause('${vid}')" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-xs font-semibold flex items-center gap-1"><i data-lucide="pause" class="w-3.5 h-3.5"></i> Pausar</button>
+                        <button type="button" onclick="mediaReplay('${vid}')" class="px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-xs font-semibold flex items-center gap-1"><i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Repetir</button>
+                    </div>`;
+            }
+            // Sin video real: marcador honesto + ilustración de apoyo de Lucas
+            return `
+                <div class="relative rounded-xl overflow-hidden border border-dashed border-slate-300 media-frame ${size}">
+                    <div class="absolute inset-0 opacity-60">${createLucasAvatarSVG(sign.id)}</div>
+                    <div class="absolute inset-x-0 bottom-0 bg-slate-900/80 text-white text-[11px] px-2 py-1.5 flex items-center gap-1.5">
+                        <i data-lucide="video-off" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                        <span>Espacio para video LSC validado (pendiente)</span>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-1.5 flex items-start gap-1"><i data-lucide="info" class="w-3 h-3 mt-0.5 flex-shrink-0"></i> La ilustración es solo apoyo visual; no sustituye una demostración real de LSC.</p>`;
+        }
+        function mediaPlay(id) { const v = document.getElementById(id); if (v) v.play(); }
+        function mediaPause(id) { const v = document.getElementById(id); if (v) v.pause(); }
+        function mediaReplay(id) { const v = document.getElementById(id); if (v) { v.currentTime = 0; v.play(); } }
 
+        /* ====================================================================
+           6. LÓGICA DE LA PANTALLA "AVENTURA" (NARRATIVA CON DECISIONES)
+           ==================================================================== */
+        let advChapterResolved = false;  // true cuando el capítulo ya se superó
+
+        function loadAdventureChapter(chapNum) {
+            chapNum = Number(chapNum);
+            // Secuencia: no se puede saltar a un capítulo no desbloqueado
+            if (chapNum > appState.unlockedChapter) {
+                announce(`El Capítulo ${chapNum} aún está bloqueado. Completa el capítulo anterior.`);
+                chapNum = appState.unlockedChapter;
+            }
+            appState.currentChapter = chapNum;
+            advChapterResolved = false;
+            saveState();
+
+            const data = ADVENTURE_CHAPTERS[chapNum];
             document.getElementById('adventureInteractiveStage').classList.remove('hidden');
             document.getElementById('adventureFinaleCard').classList.add('hidden');
 
-            // Actualizar puntos de capítulo en barra superior
+            // Puntos de capítulo: actual / completado / desbloqueado / bloqueado
             document.querySelectorAll('.chap-dot').forEach(dot => {
                 const num = Number(dot.dataset.chap);
-                dot.classList.remove('bg-amber-300', 'bg-emerald-400', 'bg-slate-100');
-                if (num === chapNum) dot.classList.add('bg-amber-300');
-                else if (appState.completedChapters[num]) dot.classList.add('bg-emerald-400');
-                else dot.classList.add('bg-slate-100');
+                dot.className = 'chap-dot w-8 h-8 rounded-full font-bold text-xs border transition';
+                dot.disabled = false;
+                if (num === chapNum) dot.classList.add('bg-blue-700', 'text-white', 'border-blue-700');
+                else if (appState.completedChapters[num]) dot.classList.add('bg-teal-600', 'text-white', 'border-teal-600');
+                else if (num <= appState.unlockedChapter) dot.classList.add('bg-white', 'text-slate-700', 'border-slate-300');
+                else { dot.classList.add('bg-slate-100', 'text-slate-400', 'border-slate-200', 'is-disabled'); dot.disabled = true; }
             });
 
-            // Escenario de fondo 2D y título
+            // Escenario y encabezado
             document.getElementById('adventureFullScene').innerHTML = createBogotaBackdropSVG(chapNum);
-            document.getElementById('advChapLabel').textContent = `Capítulo ${chapNum}:`;
+            document.getElementById('advChapLabel').textContent = `Capítulo ${chapNum} de 5`;
             document.getElementById('advChapPlace').textContent = data.place;
-
-            // Avatar central de Lucas
             document.getElementById('advLucasAvatarBox').innerHTML = createLucasAvatarSVG(data.signId);
 
-            // Diálogo y opciones
-            document.getElementById('advDialogueText').textContent = data.dialogue;
-            const fbBanner = document.getElementById('advFeedbackBanner');
-            fbBanner.classList.add('hidden');
+            // Narrativa + problema
+            document.getElementById('advDialogueText').textContent = data.narrative;
+            document.getElementById('advProblemText').textContent = data.problem;
 
-            const optionsRow = document.getElementById('advOptionsRow');
-            optionsRow.innerHTML = '';
+            document.getElementById('advFeedbackBanner').classList.add('hidden');
 
-            data.options.forEach(opt => {
+            // Opciones visuales: cada una con el recurso LSC de su seña
+            const row = document.getElementById('advOptionsRow');
+            row.innerHTML = '';
+            data.options.forEach((opt, i) => {
+                const sign = LSC_SIGNS[opt.signId];
                 const btn = document.createElement('button');
-                btn.className = 'py-2.5 px-3 rounded-2xl bg-sky-100 hover:bg-sky-200 border-2 border-slate-800 font-kids font-bold text-xs sm:text-sm text-slate-900 text-center leading-tight transition pill-shadow';
-                btn.textContent = opt.label;
-                btn.onclick = () => handleAdventureChoice(opt, btn);
-                optionsRow.appendChild(btn);
+                btn.type = 'button';
+                btn.className = 'adv-option text-left p-2.5 rounded-xl bg-white/97 border border-slate-200 hover:border-blue-400 hover:shadow-md transition flex flex-col';
+                btn.setAttribute('aria-label', `Opción ${i + 1}: seña ${sign.name}`);
+                btn.innerHTML = `
+                    <div class="w-full h-24 sm:h-28 rounded-lg overflow-hidden bg-slate-50 relative">
+                        <div class="w-full h-full">${createLucasAvatarSVG(sign.id)}</div>
+                        <span class="absolute top-1 left-1 w-5 h-5 rounded-full bg-blue-700 text-white text-[11px] font-bold flex items-center justify-center">${i + 1}</span>
+                    </div>
+                    <span class="mt-2 text-center font-bold text-sm text-slate-900">${sign.name}</span>`;
+                btn.onclick = () => handleAdventureChoice(chapNum, opt, btn);
+                row.appendChild(btn);
             });
+
+            safeIcons();
+            announce(`Capítulo ${chapNum}: ${data.place}. ${data.problem}`);
         }
 
-        function handleAdventureChoice(opt, btnEl) {
-            const fbBanner = document.getElementById('advFeedbackBanner');
+        function handleAdventureChoice(chapNum, opt, btnEl) {
+            if (advChapterResolved) return;
+            const sign = LSC_SIGNS[opt.signId];
+            const banner = document.getElementById('advFeedbackBanner');
+            const icon = document.getElementById('advFeedbackIcon');
             const fbText = document.getElementById('advFeedbackText');
+            const consText = document.getElementById('advConsequenceText');
+            const retryBtn = document.getElementById('advRetryBtn');
+            const reviewBtn = document.getElementById('advReviewBtn');
             const nextBtn = document.getElementById('advNextBtn');
 
-            fbBanner.classList.remove('hidden', 'bg-emerald-100', 'border-emerald-600', 'text-emerald-900', 'bg-rose-100', 'border-rose-500', 'text-rose-900');
+            banner.className = 'rounded-2xl p-4 border comic-card space-y-3';
+            retryBtn.classList.add('hidden');
+            reviewBtn.classList.add('hidden');
+            nextBtn.classList.add('hidden');
 
             if (opt.isCorrect) {
-                if (!appState.completedChapters[appState.currentChapter]) {
-                    appState.completedChapters[appState.currentChapter] = true;
-                    appState.stars += 20;
-                    updateTopStats();
+                advChapterResolved = true;
+                document.querySelectorAll('.adv-option').forEach(b => b.disabled = true);
+                btnEl.classList.add('border-teal-500', 'ring-2', 'ring-teal-500');
+
+                const firstTry = appState.chapterFirstTry[chapNum] === undefined && !appState._hadErrorThisChapter;
+                if (!appState.completedChapters[chapNum]) {
+                    appState.completedChapters[chapNum] = true;
+                    appState.chapterFirstTry[chapNum] = !!firstTry;
+                    // Estrellas por decisión: más si acierta a la primera
+                    addStars('decision', firstTry ? 20 : 10);
+                    // Desbloquea el siguiente capítulo
+                    appState.unlockedChapter = Math.min(5, Math.max(appState.unlockedChapter, chapNum + 1));
+                    // Pequeño bono de participación por avanzar
+                    addStars('participation', 5);
                 }
-                btnEl.classList.remove('bg-sky-100', 'hover:bg-sky-200');
-                btnEl.classList.add('bg-emerald-300');
+                appState._hadErrorThisChapter = false;
+                saveState();
+                updateTopStats();
 
-                fbBanner.classList.add('bg-emerald-100', 'border-emerald-600', 'text-emerald-900');
-                fbText.textContent = opt.feedback;
+                banner.classList.add('bg-teal-50', 'border-teal-200', 'text-teal-900');
+                icon.setAttribute('data-lucide', 'check-circle-2');
+                fbText.textContent = `Seña adecuada: ${sign.name}. ${opt.feedback}`;
+                consText.textContent = 'Consecuencia: ' + opt.consequence;
                 nextBtn.classList.remove('hidden');
-                nextBtn.textContent = appState.currentChapter < 5 ? 'Continuar al siguiente lugar 👉' : '¡Ver resultado final! 🏆';
+                nextBtn.querySelector('span') ? null : null;
+                nextBtn.innerHTML = chapNum < 5
+                    ? 'Continuar al siguiente lugar <i data-lucide="arrow-right" class="w-4 h-4"></i>'
+                    : 'Ver desenlace <i data-lucide="flag" class="w-4 h-4"></i>';
+                announce(`Correcto. ${opt.consequence}`);
             } else {
-                btnEl.classList.remove('bg-sky-100', 'hover:bg-sky-200');
-                btnEl.classList.add('bg-rose-200');
+                appState._hadErrorThisChapter = true;
+                appState.retries = (appState.retries || 0) + 1;
+                saveState();
+                btnEl.classList.add('border-rose-400', 'ring-2', 'ring-rose-300');
+                btnEl.disabled = true;
 
-                fbBanner.classList.add('bg-rose-100', 'border-rose-500', 'text-rose-900');
-                fbText.textContent = opt.feedback;
-                nextBtn.classList.add('hidden');
+                banner.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-900');
+                icon.setAttribute('data-lucide', 'alert-circle');
+                fbText.textContent = `Esta no era la seña ideal (${sign.name}). ${opt.feedback}`;
+                consText.textContent = 'Consecuencia: ' + opt.consequence + ' Puedes intentarlo de nuevo con otra seña.';
+                retryBtn.classList.remove('hidden');
+                reviewBtn.classList.remove('hidden');
+                announce(`Respuesta no ideal. ${opt.feedback}`);
             }
+
+            banner.classList.remove('hidden');
+            safeIcons();
+        }
+
+        function retryAdventureChoice() {
+            // Mantiene el registro de que hubo error (afecta el final), reactiva opciones no elegidas
+            document.getElementById('advFeedbackBanner').classList.add('hidden');
+            document.querySelectorAll('.adv-option').forEach(b => {
+                if (!b.classList.contains('border-rose-400')) {
+                    b.disabled = false;
+                } else {
+                    b.classList.add('opacity-50');
+                }
+            });
+            announce('Elige otra seña.');
         }
 
         function nextAdventureStep() {
             if (appState.currentChapter < 5) {
                 loadAdventureChapter(appState.currentChapter + 1);
             } else {
-                document.getElementById('adventureInteractiveStage').classList.add('hidden');
-                document.getElementById('adventureFinaleCard').classList.remove('hidden');
-                document.getElementById('finaleLucasAvatar').innerHTML = createLucasAvatarSVG('gracias');
+                showFinale();
             }
+        }
+
+        // El final depende de las decisiones: cuántos capítulos se acertaron a la primera
+        function computeFinale() {
+            const firstTryCount = Object.values(appState.chapterFirstTry).filter(Boolean).length;
+            if (firstTryCount >= 4) return 'positivo';
+            if (firstTryCount >= 2) return 'alternativo';
+            return 'aprendizaje';
+        }
+
+        const FINALES = {
+            positivo: {
+                title: '¡Final positivo: misión cumplida!',
+                desc: 'Lucas se comunicó con claridad en los cinco escenarios de Bogotá. Las personas Sordas lo entendieron sin esfuerzo y completó su recorrido con confianza.',
+                badge: 'bg-teal-50 border-teal-200 text-teal-800', badgeText: 'Final positivo',
+                sign: 'gracias', bonus: 30
+            },
+            alternativo: {
+                title: 'Final alternativo: lo lograste con esfuerzo',
+                desc: 'Lucas enfrentó algunas dificultades para elegir la seña adecuada, pero supo corregir y encontrar la manera de comunicarse. Terminó su misión aprendiendo de cada tropiezo.',
+                badge: 'bg-amber-50 border-amber-200 text-amber-800', badgeText: 'Final alternativo',
+                sign: 'con_gusto', bonus: 20
+            },
+            aprendizaje: {
+                title: 'Final de aprendizaje: una nueva oportunidad',
+                desc: 'A Lucas le costó reconocer varias señas. ¡No pasa nada! Reforzar el vocabulario es parte de aprender. Repasa el entrenamiento y vuelve a intentarlo cuando quieras.',
+                badge: 'bg-blue-50 border-blue-200 text-blue-800', badgeText: 'Final de aprendizaje',
+                sign: 'perdon', bonus: 10
+            }
+        };
+
+        function showFinale() {
+            const key = computeFinale();
+            appState.finaleKey = key;
+            // Bono de participación por completar la aventura (una sola vez)
+            if (!appState._finaleAwarded) { addStars('participation', FINALES[key].bonus); appState._finaleAwarded = true; }
+            saveState();
+            updateTopStats();
+
+            const f = FINALES[key];
+            document.getElementById('adventureInteractiveStage').classList.add('hidden');
+            const card = document.getElementById('adventureFinaleCard');
+            card.classList.remove('hidden');
+
+            const badge = document.getElementById('finaleBadge');
+            badge.className = 'inline-flex items-center gap-2 px-4 py-1.5 rounded-full border font-bold text-xs sm:text-sm ' + f.badge;
+            badge.innerHTML = `<i data-lucide="flag" class="w-4 h-4"></i> ${f.badgeText}`;
+            document.getElementById('finaleLucasAvatar').innerHTML = createLucasAvatarSVG(f.sign);
+            document.getElementById('finaleTitle').textContent = f.title;
+            document.getElementById('finaleDesc').textContent = f.desc;
+
+            const firstTryCount = Object.values(appState.chapterFirstTry).filter(Boolean).length;
+            document.getElementById('finaleStats').innerHTML = `
+                <div class="rounded-xl bg-slate-50 border border-slate-200 p-3"><p class="text-[11px] font-semibold text-slate-500">Capítulos</p><p class="text-lg font-extrabold text-slate-900">${Object.keys(appState.completedChapters).length}/5</p></div>
+                <div class="rounded-xl bg-slate-50 border border-slate-200 p-3"><p class="text-[11px] font-semibold text-slate-500">A la primera</p><p class="text-lg font-extrabold text-slate-900">${firstTryCount}/5</p></div>
+                <div class="rounded-xl bg-slate-50 border border-slate-200 p-3"><p class="text-[11px] font-semibold text-slate-500">Estrellas</p><p class="text-lg font-extrabold text-slate-900">${totalStars()}</p></div>`;
+            safeIcons();
+            announce(f.title + ' ' + f.desc);
         }
 
         function restartAdventure() {
             appState.completedChapters = {};
+            appState.chapterFirstTry = {};
+            appState.unlockedChapter = 1;
+            appState.finaleKey = null;
+            appState._finaleAwarded = false;
+            appState._hadErrorThisChapter = false;
+            saveState();
             updateTopStats();
             loadAdventureChapter(1);
+            announce('Aventura reiniciada desde el Capítulo 1.');
         }
 
         /* ====================================================================
-           7. LÓGICA DE LA PANTALLA "ENTRENAMIENTO" (MÓDULOS + MEMORIA LSC)
+           7. LÓGICA DE "ENTRENAMIENTO" (TARJETAS MULTIMEDIA POR SEÑA)
            ==================================================================== */
         function setTrainingModule(modKey) {
+            if (!LSC_MODULES[modKey]) modKey = 'saludos';
             appState.trainingModule = modKey;
+            saveState();
 
             document.querySelectorAll('.mod-tab').forEach(b => {
-                b.classList.remove('bg-amber-300', 'text-slate-900');
-                b.classList.add('bg-sky-100', 'text-slate-800');
+                b.classList.remove('bg-blue-700', 'text-white');
+                b.classList.add('bg-white', 'text-slate-700');
+                b.setAttribute('aria-selected', 'false');
             });
             const activeTab = document.getElementById(`mod-btn-${modKey}`);
             if (activeTab) {
-                activeTab.classList.remove('bg-sky-100', 'text-slate-800');
-                activeTab.classList.add('bg-amber-300', 'text-slate-900');
+                activeTab.classList.remove('bg-white', 'text-slate-700');
+                activeTab.classList.add('bg-blue-700', 'text-white');
+                activeTab.setAttribute('aria-selected', 'true');
             }
 
-            const items = LSC_MODULES[modKey];
-            const previewGrid = document.getElementById('trainingPreviewCards');
-            previewGrid.innerHTML = '';
-
-            items.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'bg-white border-4 border-slate-800 rounded-3xl p-3.5 comic-card flex flex-col items-center text-center space-y-2';
+            const grid = document.getElementById('trainingCards');
+            grid.innerHTML = '';
+            LSC_MODULES[modKey].forEach(item => {
+                const reviewed = !!appState.reviewedSigns[item.id];
+                const card = document.createElement('article');
+                card.className = 'bg-white border border-slate-200 rounded-2xl p-4 comic-card';
                 card.innerHTML = `
-                    <div class="w-32 h-32 rounded-2xl border-2 border-slate-700 overflow-hidden bg-sky-50">
-                        ${createLucasAvatarSVG(item.id)}
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-kids font-extrabold text-lg text-slate-900">${item.name}</h3>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${reviewed ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}" id="rev-badge-${item.id}">${reviewed ? 'Revisada' : 'Por revisar'}</span>
                     </div>
-                    <span class="px-3 py-0.5 bg-amber-300 border border-slate-800 rounded-full font-kids font-bold text-xs text-slate-900">
-                        ${item.name}
-                    </span>
-                    <p class="text-xs font-bold text-slate-600 leading-snug">${item.desc}</p>
-                `;
-                previewGrid.appendChild(card);
+                    <p class="text-xs text-slate-500 mb-2"><strong class="text-slate-700">Significado:</strong> ${item.meaning}</p>
+                    ${createSignMedia(item, { size: 'h-40 sm:h-44' })}
+                    <dl class="mt-3 space-y-1.5 text-xs">
+                        <div><dt class="font-bold text-slate-700 inline">Movimiento: </dt><dd class="text-slate-600 inline">${item.movement}</dd></div>
+                        <div><dt class="font-bold text-slate-700 inline">Qué observar: </dt><dd class="text-slate-600 inline">${item.watch}</dd></div>
+                        <div><dt class="font-bold text-slate-700 inline">Contexto de uso: </dt><dd class="text-slate-600 inline">${item.context}</dd></div>
+                    </dl>
+                    <button type="button" onclick="toggleReviewed('${item.id}')" class="mt-3 w-full px-3 py-2 rounded-lg border text-sm font-semibold transition ${reviewed ? 'bg-teal-50 border-teal-300 text-teal-700 hover:bg-teal-100' : 'bg-blue-700 border-blue-700 text-white hover:bg-blue-800'}" id="rev-btn-${item.id}">
+                        ${reviewed ? 'Marcar como pendiente' : 'Marcar seña como revisada'}
+                    </button>`;
+                grid.appendChild(card);
             });
 
-            initMemoryGame();
+            updateTrainingProgress();
+            safeIcons();
         }
 
-        function initMemoryGame() {
-            const items = LSC_MODULES[appState.trainingModule];
+        function toggleReviewed(signId) {
+            if (appState.reviewedSigns[signId]) {
+                delete appState.reviewedSigns[signId];
+            } else {
+                appState.reviewedSigns[signId] = true;
+                addStars('practice', 5); // práctica: estrellas por revisar una seña (una sola vez)
+            }
+            saveState();
+            setTrainingModule(appState.trainingModule);
+            updateTopStats();
+        }
+
+        function updateTrainingProgress() {
+            const total = Object.keys(LSC_SIGNS).length; // 12
+            const done = Object.keys(appState.reviewedSigns).length;
+            const pct = Math.round((done / total) * 100);
+            const bar = document.getElementById('trainingProgressBar');
+            if (bar) bar.style.width = pct + '%';
+            const lbl = document.getElementById('trainingProgressLabel');
+            if (lbl) lbl.textContent = `${done} de ${total} señas revisadas`;
+            const role = document.getElementById('trainingProgressRole');
+            if (role) role.setAttribute('aria-valuenow', done);
+        }
+
+        /* ====================================================================
+           8. EVALUACIÓN FINAL: JUEGO DE MEMORIA (SEÑA ↔ SIGNIFICADO)
+           ==================================================================== */
+        function prepareEvaluationView() {
+            // Si ya hay un tablero en curso, no lo reinicia al volver a la vista
+            if (memState.deck.length === 0) startEvaluation(document.getElementById('evalModuleSelect').value);
+        }
+
+        function evalSignsFor(moduleKey) {
+            if (moduleKey === 'todas') return Object.keys(LSC_SIGNS).map(id => LSC_SIGNS[id]);
+            return LSC_MODULES[moduleKey].map(s => Object.assign({ category: moduleKey }, s));
+        }
+
+        function startEvaluation(moduleKey) {
+            moduleKey = moduleKey || document.getElementById('evalModuleSelect').value || 'todas';
+            document.getElementById('evalModuleSelect').value = moduleKey;
+            const signs = evalSignsFor(moduleKey);
+
             const deck = [];
-            items.forEach(item => {
-                deck.push({ id: item.id, type: 'avatar', name: item.name, desc: item.desc });
-                deck.push({ id: item.id, type: 'text', name: item.name, desc: item.desc });
+            signs.forEach(s => {
+                deck.push({ id: s.id, type: 'sign', name: s.name, meaning: s.meaning });
+                deck.push({ id: s.id, type: 'meaning', name: s.name, meaning: s.meaning });
             });
-            deck.sort(() => Math.random() - 0.5);
+            // Mezcla Fisher-Yates
+            for (let i = deck.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [deck[i], deck[j]] = [deck[j], deck[i]]; }
 
-            appState.memoryDeck = deck;
-            appState.flippedCards = [];
-            appState.matchedCount = 0;
-            document.getElementById('memPairsCount').textContent = '0';
-            document.getElementById('memoryStatusBanner').textContent = '💡 ¡Toca dos cartas para emparejar la seña con su descripción!';
+            memState.deck = deck;
+            memState.flipped = [];
+            memState.matched = 0;
+            memState.attempts = 0;
+            memState.module = moduleKey;
+            memState.totalPairs = signs.length;
+            memState.locked = false;
+            memState.perSignErrors = {}; // id -> nº de intentos fallidos que lo involucran
 
-            const board = document.getElementById('memoryBoard');
+            document.getElementById('evalPairs').textContent = '0';
+            document.getElementById('evalTotalPairs').textContent = signs.length;
+            document.getElementById('evalAttempts').textContent = '0';
+            document.getElementById('evalAccuracy').textContent = '0';
+            document.getElementById('evalReport').classList.add('hidden');
+            document.getElementById('evalStatusBanner').textContent = 'Toca dos cartas para emparejar la seña con su significado.';
+
+            const board = document.getElementById('evalBoard');
             board.innerHTML = '';
-
             deck.forEach((card, idx) => {
                 const wrapper = document.createElement('div');
-                wrapper.className = 'h-36 sm:h-40 cursor-pointer perspective-1000';
-                wrapper.onclick = () => flipMemoryCard(idx);
+                wrapper.className = 'h-28 sm:h-36 perspective-1000';
 
-                const inner = document.createElement('div');
-                inner.id = `mem-card-${idx}`;
-                inner.className = 'w-full h-full duration-500 transform-style-3d relative rounded-2xl border-2 border-slate-800 bg-white shadow-md';
+                const inner = document.createElement('button');
+                inner.type = 'button';
+                inner.id = `eval-card-${idx}`;
+                inner.className = 'w-full h-full duration-500 transform-style-3d relative rounded-xl border border-slate-300 bg-white shadow-sm cursor-pointer';
+                inner.setAttribute('aria-label', `Carta ${idx + 1}, oculta`);
+                inner.onclick = () => flipEvalCard(idx);
 
                 const front = document.createElement('div');
-                front.className = 'absolute inset-0 backface-hidden bg-sky-200 rounded-2xl flex flex-col items-center justify-center p-2';
-                front.innerHTML = `
-                    <span class="w-10 h-10 rounded-full bg-amber-300 border-2 border-slate-800 flex items-center justify-center font-kids font-bold text-lg">?</span>
-                    <span class="font-kids font-bold text-[11px] text-slate-800 mt-1.5">Seña LSC</span>
-                `;
+                front.className = 'absolute inset-0 backface-hidden bg-blue-50 border border-blue-100 rounded-xl flex flex-col items-center justify-center p-2';
+                front.innerHTML = `<i data-lucide="help-circle" class="w-6 h-6 text-blue-500"></i><span class="font-semibold text-[10px] text-blue-700 mt-1">LSC</span>`;
 
                 const back = document.createElement('div');
-                back.className = 'absolute inset-0 backface-hidden rotate-y-180 bg-white rounded-2xl p-2 flex flex-col items-center justify-center text-center overflow-hidden';
-                if (card.type === 'avatar') {
-                    back.innerHTML = `<div class="w-full h-full rounded-xl overflow-hidden">${createLucasAvatarSVG(card.id)}</div>`;
+                back.className = 'absolute inset-0 backface-hidden rotate-y-180 bg-white rounded-xl p-1.5 flex flex-col items-center justify-center text-center overflow-hidden';
+                if (card.type === 'sign') {
+                    back.innerHTML = `<div class="w-full h-full rounded-lg overflow-hidden">${createLucasAvatarSVG(card.id)}</div>`;
                 } else {
-                    back.innerHTML = `
-                        <span class="px-2.5 py-0.5 bg-amber-300 border border-slate-800 rounded-full font-kids font-bold text-[10px] mb-1">${card.name}</span>
-                        <p class="text-[11px] font-bold text-slate-700 leading-tight">${card.desc}</p>
-                    `;
+                    back.innerHTML = `<p class="text-[11px] font-semibold text-slate-700 leading-tight px-1">${card.meaning}</p>`;
                 }
 
                 inner.appendChild(front);
@@ -1477,86 +2025,180 @@
                 wrapper.appendChild(inner);
                 board.appendChild(wrapper);
             });
+
+            safeIcons();
+            announce(`Evaluación iniciada con ${signs.length} parejas.`);
         }
 
-        function flipMemoryCard(idx) {
-            if (appState.flippedCards.length === 2) return;
-            const el = document.getElementById(`mem-card-${idx}`);
+        function updateEvalStats() {
+            document.getElementById('evalPairs').textContent = memState.matched;
+            document.getElementById('evalAttempts').textContent = memState.attempts;
+            const acc = memState.attempts ? Math.round((memState.matched / memState.attempts) * 100) : 0;
+            document.getElementById('evalAccuracy').textContent = acc;
+        }
+
+        function flipEvalCard(idx) {
+            if (memState.locked) return;
+            const el = document.getElementById(`eval-card-${idx}`);
             if (!el || el.classList.contains('rotate-y-180') || el.classList.contains('matched')) return;
 
             el.classList.add('rotate-y-180');
-            appState.flippedCards.push({ idx, card: appState.memoryDeck[idx] });
+            el.setAttribute('aria-label', `Carta ${idx + 1}, revelada`);
+            memState.flipped.push({ idx, card: memState.deck[idx] });
 
-            if (appState.flippedCards.length === 2) {
-                const [a, b] = appState.flippedCards;
-                if (a.card.id === b.card.id && a.card.type !== b.card.type) {
-                    document.getElementById(`mem-card-${a.idx}`).classList.add('matched', 'border-emerald-500');
-                    document.getElementById(`mem-card-${b.idx}`).classList.add('matched', 'border-emerald-500');
-                    appState.matchedCount++;
-                    appState.stars += 10;
-                    updateTopStats();
-                    document.getElementById('memPairsCount').textContent = appState.matchedCount;
-                    document.getElementById('memoryStatusBanner').textContent = `🎉 ¡Excelente! Emparejaste la seña "${a.card.name}" (+10 ★)`;
-                    appState.flippedCards = [];
+            if (memState.flipped.length === 2) {
+                memState.attempts++;
+                const [a, b] = memState.flipped;
+                const isPair = a.card.id === b.card.id && a.card.type !== b.card.type;
+
+                if (isPair) {
+                    document.getElementById(`eval-card-${a.idx}`).classList.add('matched', 'border-teal-500', 'ring-2', 'ring-teal-400');
+                    document.getElementById(`eval-card-${b.idx}`).classList.add('matched', 'border-teal-500', 'ring-2', 'ring-teal-400');
+                    memState.matched++;
+                    memState.flipped = [];
+                    const sign = LSC_SIGNS[a.card.id];
+                    document.getElementById('evalStatusBanner').innerHTML = `<span class="text-teal-700 font-bold">Pareja correcta:</span> "${sign.name}" significa ${sign.meaning}`;
+                    updateEvalStats();
+                    announce(`Pareja correcta: ${sign.name}`);
+                    if (memState.matched === memState.totalPairs) finishEvaluation();
                 } else {
+                    memState.perSignErrors[a.card.id] = (memState.perSignErrors[a.card.id] || 0) + 1;
+                    memState.perSignErrors[b.card.id] = (memState.perSignErrors[b.card.id] || 0) + 1;
+                    memState.locked = true;
+                    document.getElementById('evalStatusBanner').textContent = 'Esa pareja no coincide. Observa bien e inténtalo otra vez.';
+                    updateEvalStats();
                     setTimeout(() => {
-                        document.getElementById(`mem-card-${a.idx}`)?.classList.remove('rotate-y-180');
-                        document.getElementById(`mem-card-${b.idx}`)?.classList.remove('rotate-y-180');
-                        appState.flippedCards = [];
-                    }, 900);
+                        document.getElementById(`eval-card-${a.idx}`)?.classList.remove('rotate-y-180');
+                        document.getElementById(`eval-card-${b.idx}`)?.classList.remove('rotate-y-180');
+                        document.getElementById(`eval-card-${a.idx}`)?.setAttribute('aria-label', `Carta ${a.idx + 1}, oculta`);
+                        document.getElementById(`eval-card-${b.idx}`)?.setAttribute('aria-label', `Carta ${b.idx + 1}, oculta`);
+                        memState.flipped = [];
+                        memState.locked = false;
+                    }, 1000);
                 }
             }
         }
 
+        function finishEvaluation() {
+            const accuracy = memState.attempts ? Math.round((memState.matched / memState.attempts) * 100) : 0;
+            // Palabras a reforzar: las que participaron en más intentos fallidos
+            const weak = Object.keys(memState.perSignErrors)
+                .filter(id => memState.perSignErrors[id] >= 2)
+                .map(id => LSC_SIGNS[id].name);
+
+            // Estrellas de evaluación proporcionales al desempeño (solo mejora el registro)
+            const earned = Math.round((memState.matched * 5) * (accuracy / 100)) + memState.matched * 2;
+            appState.evaluation = {
+                pairs: memState.matched, total: memState.totalPairs,
+                attempts: memState.attempts, accuracy: accuracy,
+                weak: weak, module: memState.module, earned: earned
+            };
+            // Registra solo la mejor puntuación de evaluación obtenida
+            if (earned > (appState.stars.evaluation || 0)) appState.stars.evaluation = earned;
+            saveState();
+            updateTopStats();
+
+            document.getElementById('evalReportStats').innerHTML = `
+                <div class="rounded-xl bg-slate-50 border border-slate-200 p-3 text-center"><p class="text-[11px] font-semibold text-slate-500">Parejas correctas</p><p class="text-lg font-extrabold text-slate-900">${memState.matched}/${memState.totalPairs}</p></div>
+                <div class="rounded-xl bg-slate-50 border border-slate-200 p-3 text-center"><p class="text-[11px] font-semibold text-slate-500">Intentos</p><p class="text-lg font-extrabold text-slate-900">${memState.attempts}</p></div>
+                <div class="rounded-xl bg-slate-50 border border-slate-200 p-3 text-center"><p class="text-[11px] font-semibold text-slate-500">Aciertos</p><p class="text-lg font-extrabold text-slate-900">${accuracy}%</p></div>
+                <div class="rounded-xl bg-slate-50 border border-slate-200 p-3 text-center"><p class="text-[11px] font-semibold text-slate-500">Estrellas</p><p class="text-lg font-extrabold text-slate-900">+${earned}</p></div>`;
+
+            const weakBox = document.getElementById('evalWeakWords');
+            if (weak.length) {
+                weakBox.innerHTML = weak.map(w => `<span class="px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold">${w}</span>`).join('');
+            } else {
+                weakBox.innerHTML = `<span class="px-2.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-xs font-semibold">Ninguna: reconociste todas con fluidez</span>`;
+            }
+
+            let msg;
+            if (accuracy >= 80) msg = '¡Excelente! Reconoces con claridad la relación entre cada seña y su significado. Estás listo para usar este vocabulario en la vida cotidiana.';
+            else if (accuracy >= 50) msg = 'Buen trabajo. Reconoces varias señas; repasa las que aparecen para reforzar en el entrenamiento y vuelve a intentarlo.';
+            else msg = 'Vas comenzando. Te recomendamos repasar el entrenamiento y el diccionario, observando el movimiento de cada seña, y luego repetir la evaluación.';
+            document.getElementById('evalReportMessage').textContent = msg;
+
+            document.getElementById('evalReport').classList.remove('hidden');
+            document.getElementById('evalStatusBanner').textContent = '¡Evaluación completada! Revisa tu informe abajo.';
+            document.getElementById('evalReport').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            safeIcons();
+            announce(`Evaluación completada. ${memState.matched} de ${memState.totalPairs} parejas, ${accuracy}% de aciertos.`);
+        }
+
         /* ====================================================================
-           8. LÓGICA DE LA PANTALLA "DICCIONARIO" (12 SEÑAS FILTRABLES)
+           9. LÓGICA DE "DICCIONARIO" (12 SEÑAS FILTRABLES, CON MULTIMEDIA)
            ==================================================================== */
         function filterDictionary(category) {
             document.querySelectorAll('.dict-filter').forEach(btn => {
-                btn.classList.remove('bg-amber-300', 'text-slate-900');
-                btn.classList.add('bg-sky-100', 'text-slate-800');
+                btn.classList.remove('bg-blue-700', 'text-white');
+                btn.classList.add('bg-white', 'text-slate-700');
             });
             const activeBtn = document.getElementById(`dict-btn-${category}`);
             if (activeBtn) {
-                activeBtn.classList.remove('bg-sky-100', 'text-slate-800');
-                activeBtn.classList.add('bg-amber-300', 'text-slate-900');
+                activeBtn.classList.remove('bg-white', 'text-slate-700');
+                activeBtn.classList.add('bg-blue-700', 'text-white');
             }
 
             const grid = document.getElementById('dictionaryGrid');
             grid.innerHTML = '';
-
             const keys = category === 'todas' ? ['saludos', 'pronombres', 'cortesia'] : [category];
-            const catLabels = { saludos: 'Saludos', pronombres: 'Pronombres', cortesia: 'Cortesía' };
 
             keys.forEach(k => {
                 LSC_MODULES[k].forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'bg-white border-4 border-slate-800 rounded-3xl p-4 comic-card flex items-center gap-4';
+                    const card = document.createElement('article');
+                    card.className = 'bg-white border border-slate-200 rounded-2xl p-4 comic-card';
                     card.innerHTML = `
-                        <div class="w-28 h-28 rounded-2xl border-2 border-slate-700 overflow-hidden bg-sky-50 flex-shrink-0">
-                            ${createLucasAvatarSVG(item.id)}
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-kids font-extrabold text-lg text-slate-900">${item.name}</h3>
+                            <span class="px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-[10px] font-semibold text-slate-600">${CATEGORY_LABELS[k]}</span>
                         </div>
-                        <div class="space-y-1.5">
-                            <span class="inline-block px-2.5 py-0.5 bg-sky-100 border border-slate-700 rounded-full font-kids font-bold text-[10px] text-sky-800">
-                                ${catLabels[k]}
-                            </span>
-                            <h3 class="font-kids font-bold text-lg text-slate-900">${item.name}</h3>
-                            <p class="text-xs font-bold text-slate-600 leading-snug">${item.desc}</p>
-                        </div>
-                    `;
+                        ${createSignMedia(item, { size: 'h-36' })}
+                        <p class="text-xs text-slate-500 mt-2"><strong class="text-slate-700">Significado:</strong> ${item.meaning}</p>
+                        <p class="text-xs text-slate-600 mt-1"><strong class="text-slate-700">Movimiento:</strong> ${item.movement}</p>
+                        <p class="text-xs text-slate-600 mt-1"><strong class="text-slate-700">Contexto:</strong> ${item.context}</p>`;
                     grid.appendChild(card);
                 });
             });
+            safeIcons();
         }
 
         /* ====================================================================
-           9. INICIALIZACIÓN AL CARGAR LA PÁGINA
+           10. INICIALIZACIÓN + ROBUSTEZ DE RECURSOS EXTERNOS
            ==================================================================== */
-        window.onload = function() {
+        function checkExternalResources() {
+            // Tailwind: si no cargó, avisa (los estilos base del <style> mantienen la página usable)
+            if (!window.tailwind) {
+                console.warn('Tailwind CDN no disponible: se usan estilos base de respaldo.');
+            }
+            // Lucide: si no cargó, reemplaza los iconos por un guion para no dejar huecos
+            if (!window.lucide) {
+                console.warn('Lucide CDN no disponible: los iconos se omiten.');
+                document.querySelectorAll('[data-lucide]').forEach(el => { el.style.display = 'none'; });
+            }
+        }
+
+        function initApp() {
+            loadState();
+            applyReduceMotion();
+            checkExternalResources();
             updateTopStats();
-            // Inicia directamente en la vista de Aventura (Capítulo 1: La Plaza de Bolívar)
-            navigateTo('aventura');
-        };
+            // SIEMPRE inicia en Inicio (bienvenida), nunca directo en Aventura
+            navigateTo('inicio');
+            safeIcons();
+        }
+
+        // Soporte de teclado para el diálogo de reinicio (Escape para cerrar)
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                const d = document.getElementById('resetDialog');
+                if (d && !d.classList.contains('hidden')) closeResetDialog();
+            }
+        });
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
     </script>
 </body>
 </html>
