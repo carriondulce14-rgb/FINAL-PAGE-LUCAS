@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="es-CO" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Señas en Misión: El viaje de Lucas (LSC)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                        kids: ['Fredoka', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+
+        .comic-card {
+            box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.22), 0 4px 10px -2px rgba(15, 23, 42, 0.12);
+        }
+        .pill-shadow {
+            box-shadow: 0 3px 0 rgba(15, 23, 42, 0.14);
+        }
+        .pill-shadow:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 rgba(15, 23, 42, 0.14);
+        }
+
+        @keyframes pulseArrow {
+            0%, 100% { opacity: 0.85; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.07); }
+        }
+        .lsc-arrow {
+            animation: pulseArrow 1.8s infinite ease-in-out;
+            transform-origin: center;
+        }
+
+        @keyframes floatAvatar {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+        }
+        .avatar-float {
+            animation: floatAvatar 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col font-sans antialiased bg-sky-100 text-slate-800 select-none overflow-x-hidden">
+
+    <!-- ======================================================================
+         BARRA SUPERIOR DE NAVEGACIÓN (ESTILO TABLET EDUCATIVA ILUSTRADA)
+         ====================================================================== -->
+    <header class="w-full bg-gradient-to-b from-sky-200 via-sky-100 to-sky-50 border-b-2 border-sky-300/80 px-3 sm:px-5 py-2.5 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2.5">
+            
+            <!-- LOGO COLORIDO "Señas en Misión" -->
+            <button onclick="navigateTo('inicio')" class="flex items-center gap-2 text-left group focus:outline-none">
+                <div class="leading-none">
+                    <div class="font-kids font-bold text-xl sm:text-2xl tracking-tight flex items-center drop-shadow-sm">
+                        <span class="text-sky-600">Se</span><span class="text-emerald-500">ñ</span><span class="text-amber-500">as</span>
+                        <span class="text-rose-500 ml-1.5 text-lg sm:text-xl">en</span>
+                        <span class="ml-1 text-base sm:text-lg">🖐️</span>
+                    </div>
+                    <div class="font-kids font-bold text-lg sm:text-xl -mt-1 tracking-tight drop-shadow-sm">
+                        <span class="text-indigo-700">Mi</span><span class="text-rose-500">si</span><span class="text-amber-500">ón</span>
+                    </div>
+                </div>
+            </button>
+
+            <!-- BOTONES REDONDEADOS TIPO PÍLDORA -->
+            <nav class="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2" aria-label="Navegación principal">
+                <button onclick="navigateTo('inicio')" id="nav-inicio" class="nav-pill px-3.5 sm:px-4 py-1.5 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-700/80 bg-sky-200 text-slate-800 hover:bg-sky-300 transition pill-shadow">
+                    Inicio
+                </button>
+                <button onclick="navigateTo('mision')" id="nav-mision" class="nav-pill px-3.5 sm:px-4 py-1.5 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-700/80 bg-sky-200 text-slate-800 hover:bg-sky-300 transition pill-shadow">
+                    Misión
+                </button>
+                <button onclick="navigateTo('aventura')" id="nav-aventura" class="nav-pill px-3.5 sm:px-4 py-1.5 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-700/80 bg-sky-200 text-slate-800 hover:bg-sky-300 transition pill-shadow">
+                    Aventura
+                </button>
+                <button onclick="navigateTo('entrenamiento')" id="nav-entrenamiento" class="nav-pill px-3.5 sm:px-4 py-1.5 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-700/80 bg-sky-200 text-slate-800 hover:bg-sky-300 transition pill-shadow">
+                    Entrenamiento
+                </button>
+                <button onclick="navigateTo('diccionario')" id="nav-diccionario" class="nav-pill px-3.5 sm:px-4 py-1.5 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-700/80 bg-sky-200 text-slate-800 hover:bg-sky-300 transition pill-shadow">
+                    Diccionario
+                </button>
+            </nav>
+
+            <!-- BARRA DE PROGRESO VERDE/AZUL Y CONTADOR DE ESTRELLAS -->
+            <div class="flex items-center gap-2.5 ml-auto sm:ml-0">
+                <div class="w-24 sm:w-32 h-5 bg-indigo-950 rounded-full p-0.5 border-2 border-slate-700 shadow-inner overflow-hidden" title="Progreso de la misión">
+                    <div id="topProgressBar" class="h-full bg-gradient-to-r from-emerald-400 to-lime-400 rounded-full transition-all duration-500" style="width: 20%;"></div>
+                </div>
+                <div class="flex items-center gap-1.5 bg-amber-300 border-2 border-slate-700 rounded-full px-3 py-1 pill-shadow">
+                    <span id="starScoreDisplay" class="font-kids font-bold text-xs sm:text-sm text-slate-900">100</span>
+                    <span class="w-5 h-5 rounded-full bg-amber-500 border border-amber-700 flex items-center justify-center text-[11px] text-white shadow-sm">★</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ======================================================================
+         CONTENEDOR PRINCIPAL DE VISTAS
+         ====================================================================== -->
+    <main class="flex-1 w-full flex flex-col">
+
+        <!-- ==================================================================
+             VISTA 1: INICIO (BIENVENIDA TRANSMEDIA)
+             ================================================================== -->
+        <section id="view-inicio" class="view-section flex-1 w-full relative flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+            <!-- Fondo panorámico de la Plaza de Bolívar -->
+            <div id="inicioBackdrop" class="absolute inset-0 z-0 pointer-events-none opacity-95"></div>
+            <div class="absolute inset-0 bg-slate-900/20 backdrop-blur-[1px] z-0"></div>
+
+            <div class="relative z-10 max-w-3xl w-full bg-white/95 backdrop-blur-md border-4 border-slate-800 rounded-3xl p-6 sm:p-8 comic-card space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-sky-100 pb-4">
+                    <span class="px-3.5 py-1 bg-amber-300 border-2 border-slate-800 text-slate-900 rounded-full font-kids font-bold text-xs">
+                        🇨🇴 Experiencia Transmedia LSC • Bogotá
+                    </span>
+                    <span class="text-xs font-extrabold text-sky-700 bg-sky-100 px-3 py-1 rounded-full">
+                        5 Escenarios • 12 Señas Reales
+                    </span>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center gap-6">
+                    <!-- Avatar de Lucas -->
+                    <div class="w-40 h-40 sm:w-44 sm:h-44 rounded-3xl border-4 border-slate-800 bg-sky-50 overflow-hidden flex-shrink-0 shadow-md avatar-float" id="inicioLucasAvatar"></div>
+
+                    <div class="space-y-3 text-center sm:text-left">
+                        <h1 class="font-kids text-2xl sm:text-4xl font-bold text-sky-700 leading-tight">
+                            Señas en Misión: <span class="text-amber-500">El viaje de Lucas</span>
+                        </h1>
+                        <p class="text-sm sm:text-base font-bold text-slate-700 leading-relaxed">
+                            ¡Qué más, parcero! Acompaña a <strong>Lucas</strong> en un recorrido por los lugares más icónicos de Bogotá mientras aprendes a comunicarte en <strong>Lengua de Señas Colombiana (LSC)</strong> de forma natural, visual y divertida.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-3.5">
+                        <div class="font-kids font-bold text-sky-700 text-sm mb-1">👀 100% Visual</div>
+                        <p class="text-xs font-bold text-slate-600">Observa la configuración de manos, dedos, movimiento y expresión facial de Lucas.</p>
+                    </div>
+                    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-3.5">
+                        <div class="font-kids font-bold text-amber-700 text-sm mb-1">🏙️ Cultura Bogotana</div>
+                        <p class="text-xs font-bold text-slate-600">Desde tintos y empanadas en la Plaza de Bolívar hasta TransMilenio y la Virgilio Barco.</p>
+                    </div>
+                    <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-3.5">
+                        <div class="font-kids font-bold text-emerald-700 text-sm mb-1">🎯 Decisiones Reales</div>
+                        <p class="text-xs font-bold text-slate-600">Elige la seña adecuada en cada situación cotidiana y gana estrellas por tus aciertos.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 pt-1">
+                    <button onclick="navigateTo('mision')" class="flex-1 py-3.5 px-6 bg-amber-300 hover:bg-amber-400 text-slate-900 border-2 border-slate-800 font-kids font-bold text-base sm:text-lg rounded-2xl transition flex items-center justify-center gap-2 pill-shadow">
+                        <span>Ver Misión con Lucas</span> <span>👉</span>
+                    </button>
+                    <button onclick="navigateTo('aventura')" class="flex-1 py-3.5 px-6 bg-emerald-400 hover:bg-emerald-500 text-slate-900 border-2 border-slate-800 font-kids font-bold text-base sm:text-lg rounded-2xl transition flex items-center justify-center gap-2 pill-shadow">
+                        <span>¡Arrancar Aventura ya!</span> <span>🚀</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================================================================
+             VISTA 2: MISIÓN (PRESENTACIÓN INTERACTIVA DE LUCAS Y LOS 3 PASOS)
+             ================================================================== -->
+        <section id="view-mision" class="view-section hidden flex-1 w-full relative flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+            <div id="misionBackdrop" class="absolute inset-0 z-0 pointer-events-none opacity-95"></div>
+            <div class="absolute inset-0 bg-slate-900/20 backdrop-blur-[1px] z-0"></div>
+
+            <div class="relative z-10 max-w-4xl w-full bg-white/95 backdrop-blur-md border-4 border-slate-800 rounded-3xl p-6 sm:p-8 comic-card space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-sky-100 pb-3">
+                    <span class="px-3.5 py-1 bg-amber-300 border-2 border-slate-800 text-slate-900 rounded-full font-kids font-bold text-xs">
+                        🎯 Briefing de la Misión
+                    </span>
+                    <span class="text-xs font-extrabold text-sky-700">Toca cada tarjeta para que Lucas te explique 👇</span>
+                </div>
+
+                <!-- Lucas en el centro sonriente y saludando -->
+                <div class="flex flex-col items-center text-center space-y-3">
+                    <div class="relative">
+                        <div id="misionLucasCenter" class="w-44 h-44 sm:w-52 sm:h-52 rounded-3xl border-4 border-slate-800 bg-white overflow-hidden shadow-lg avatar-float"></div>
+                        <span class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-emerald-400 border-2 border-slate-800 text-slate-900 font-kids font-bold text-xs px-4 py-1 rounded-full shadow-sm whitespace-nowrap">
+                            👋 ¡Hola! Soy Lucas
+                        </span>
+                    </div>
+
+                    <h2 class="font-kids text-2xl sm:text-3xl font-bold text-sky-700 pt-2">
+                        ¿Cuál es nuestro plan hoy en Bogotá?
+                    </h2>
+
+                    <div id="misionSpeechBox" class="max-w-2xl bg-sky-50 border-2 border-slate-800 rounded-2xl p-4 text-sm sm:text-base font-bold text-slate-800 leading-relaxed shadow-sm">
+                        "¡Qué hubo! Hoy voy a recorrer 5 puntos clave de Bogotá y necesito tu ayuda para comunicarme con personas Sordas usando <strong>Lengua de Señas Colombiana (LSC)</strong>. ¡Haz clic en los 3 pasos de abajo!"
+                    </div>
+                </div>
+
+                <!-- 3 Tarjetas interactivas -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <button onclick="selectMissionCard(1, this)" class="mision-card text-left p-4 rounded-2xl bg-sky-100 border-2 border-slate-800 hover:bg-sky-200 transition pill-shadow">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="w-7 h-7 rounded-full bg-sky-500 border-2 border-slate-800 text-white font-kids font-bold text-sm flex items-center justify-center">1</span>
+                            <span class="text-xl">🗺️</span>
+                        </div>
+                        <h3 class="font-kids font-bold text-slate-900 text-base">Recorre 5 lugares de Bogotá</h3>
+                        <p class="text-xs font-bold text-slate-700 mt-1">Plaza de Bolívar, Parque Simón Bolívar, Panadería, TransMilenio y Biblioteca Virgilio Barco.</p>
+                    </button>
+
+                    <button onclick="selectMissionCard(2, this)" class="mision-card text-left p-4 rounded-2xl bg-amber-100 border-2 border-slate-800 hover:bg-amber-200 transition pill-shadow">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="w-7 h-7 rounded-full bg-amber-400 border-2 border-slate-800 text-slate-900 font-kids font-bold text-sm flex items-center justify-center">2</span>
+                            <span class="text-xl">🖐️</span>
+                        </div>
+                        <h3 class="font-kids font-bold text-slate-900 text-base">Entrena tus señas</h3>
+                        <p class="text-xs font-bold text-slate-700 mt-1">Practica Saludos, Pronombres y Cortesía con tarjetas interactivas y flechas de movimiento.</p>
+                    </button>
+
+                    <button onclick="selectMissionCard(3, this)" class="mision-card text-left p-4 rounded-2xl bg-emerald-100 border-2 border-slate-800 hover:bg-emerald-200 transition pill-shadow">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="w-7 h-7 rounded-full bg-emerald-400 border-2 border-slate-800 text-slate-900 font-kids font-bold text-sm flex items-center justify-center">3</span>
+                            <span class="text-xl">⭐</span>
+                        </div>
+                        <h3 class="font-kids font-bold text-slate-900 text-base">Toma decisiones en LSC</h3>
+                        <p class="text-xs font-bold text-slate-700 mt-1">Elige la seña correcta en cada diálogo cotidiano y suma estrellas para completar el viaje.</p>
+                    </button>
+                </div>
+
+                <div class="flex justify-center pt-1">
+                    <button onclick="navigateTo('aventura')" class="w-full sm:w-auto px-8 py-3.5 bg-emerald-400 hover:bg-emerald-500 text-slate-900 border-2 border-slate-800 font-kids font-bold text-lg rounded-2xl transition flex items-center justify-center gap-2 pill-shadow">
+                        <span>¡Comenzar Capítulo 1!</span> <span>🎬</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================================================================
+             VISTA 3: AVENTURA (DISEÑO EXACTO DE LA IMAGEN DE REFERENCIA)
+             ================================================================== -->
+        <section id="view-aventura" class="view-section hidden flex-1 w-full relative flex flex-col justify-between p-3 sm:p-6 overflow-hidden min-h-[calc(100vh-68px)]">
+            
+            <!-- FONDO 2D ILUSTRADO A PANTALLA COMPLETA DEL ESCENARIO BOGOTANO -->
+            <div id="adventureFullScene" class="absolute inset-0 z-0 w-full h-full">
+                <!-- Se renderiza dinámicamente el SVG 2D de Bogotá o la foto cargada por el usuario -->
+            </div>
+
+            <!-- FILA SUPERIOR: TARJETA BLANCA DE TÍTULO DEL CAPÍTULO (ESQUINA SUPERIOR IZQUIERDA) -->
+            <div class="relative z-10 max-w-6xl w-full mx-auto flex items-start justify-between">
+                <div class="bg-white/95 backdrop-blur-sm border-2 border-slate-800 rounded-2xl px-4 sm:px-5 py-2.5 comic-card">
+                    <span id="advChapLabel" class="block text-xs sm:text-sm font-bold text-slate-600 leading-tight">
+                        Capítulo 1:
+                    </span>
+                    <h2 id="advChapPlace" class="font-kids font-bold text-base sm:text-xl text-slate-900 leading-tight">
+                        La Plaza de Bolívar
+                    </h2>
+                </div>
+
+                <!-- Selector rápido de capítulos -->
+                <div class="hidden md:flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border-2 border-slate-800 rounded-full px-2.5 py-1 shadow-md">
+                    <button onclick="loadAdventureChapter(1)" class="chap-dot w-7 h-7 rounded-full font-kids font-bold text-xs border border-slate-700 transition" data-chap="1">1</button>
+                    <button onclick="loadAdventureChapter(2)" class="chap-dot w-7 h-7 rounded-full font-kids font-bold text-xs border border-slate-700 transition" data-chap="2">2</button>
+                    <button onclick="loadAdventureChapter(3)" class="chap-dot w-7 h-7 rounded-full font-kids font-bold text-xs border border-slate-700 transition" data-chap="3">3</button>
+                    <button onclick="loadAdventureChapter(4)" class="chap-dot w-7 h-7 rounded-full font-kids font-bold text-xs border border-slate-700 transition" data-chap="4">4</button>
+                    <button onclick="loadAdventureChapter(5)" class="chap-dot w-7 h-7 rounded-full font-kids font-bold text-xs border border-slate-700 transition" data-chap="5">5</button>
+                </div>
+            </div>
+
+            <!-- CENTRO Y PANEL INFERIOR FLOTANTE (EXACTO A LA REFERENCIA) -->
+            <div id="adventureInteractiveStage" class="relative z-10 max-w-4xl w-full mx-auto my-auto flex flex-col items-center pt-2 pb-10 sm:pb-4">
+                
+                <!-- TARJETA CENTRAL FLOTANTE CON EL AVATAR DE LUCAS -->
+                <div class="bg-white border-4 border-slate-800 rounded-3xl p-2 sm:p-2.5 comic-card mb-3 sm:mb-4 avatar-float">
+                    <div id="advLucasAvatarBox" class="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl overflow-hidden bg-sky-50 flex items-center justify-center">
+                        <!-- Avatar SVG de Lucas realizando la seña LSC -->
+                    </div>
+                </div>
+
+                <!-- PANEL INFERIOR FLOTANTE DE DIÁLOGO Y 3 OPCIONES HORIZONTALES -->
+                <div class="w-full max-w-2xl bg-white/95 backdrop-blur-md border-4 border-slate-800 rounded-3xl p-4 sm:p-5 comic-card space-y-3.5">
+                    
+                    <!-- Diálogo cercano y relajado en español colombiano -->
+                    <p id="advDialogueText" class="text-center font-sans font-extrabold text-sm sm:text-base text-slate-800 leading-snug px-1">
+                        ¡Hola! Qué bueno verte por acá en la Plaza de Bolívar. ¿Me ayudas a pedir un tinto y una empanada usando la seña correcta?
+                    </p>
+
+                    <!-- Retroalimentación divertida al responder -->
+                    <div id="advFeedbackBanner" class="hidden rounded-2xl p-3 border-2 text-center space-y-2 transition-all">
+                        <p id="advFeedbackText" class="text-xs sm:text-sm font-extrabold"></p>
+                        <button id="advNextBtn" onclick="nextAdventureStep()" class="px-5 py-2 bg-emerald-400 hover:bg-emerald-500 text-slate-900 border-2 border-slate-800 font-kids font-bold text-xs sm:text-sm rounded-full pill-shadow transition">
+                            Continuar al siguiente lugar 👉
+                        </button>
+                    </div>
+
+                    <!-- 3 Botones redondeados azul claro dispuestos horizontalmente -->
+                    <div id="advOptionsRow" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <!-- Se generan dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANTALLA FINAL DE CELEBRACIÓN (AL COMPLETAR LOS 5 CAPÍTULOS) -->
+            <div id="adventureFinaleCard" class="hidden relative z-10 max-w-2xl w-full mx-auto my-auto bg-white/95 backdrop-blur-md border-4 border-slate-800 rounded-3xl p-6 sm:p-8 comic-card text-center space-y-5">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-300 border-2 border-slate-800 font-kids font-bold text-xs sm:text-sm text-slate-900">
+                    🏆 ¡Misión Completada en Bogotá!
+                </div>
+                <div id="finaleLucasAvatar" class="w-36 h-36 mx-auto rounded-3xl border-4 border-slate-800 bg-sky-50 overflow-hidden shadow-md"></div>
+                <h3 id="finaleTitle" class="font-kids text-2xl sm:text-3xl font-bold text-sky-700">
+                    ¡Eres un Crack de la LSC!
+                </h3>
+                <p id="finaleDesc" class="text-sm sm:text-base font-bold text-slate-700 leading-relaxed">
+                    ¡Qué orgullo, parcero! Completaste los 5 escenarios de Bogotá ayudando a Lucas a comunicarse con respeto, alegría y claridad en Lengua de Señas Colombiana.
+                </p>
+                <div class="flex flex-wrap justify-center gap-3 pt-2">
+                    <button onclick="restartAdventure()" class="px-6 py-3 bg-amber-300 hover:bg-amber-400 text-slate-900 border-2 border-slate-800 font-kids font-bold text-sm sm:text-base rounded-full pill-shadow transition">
+                        🔄 Volver a recorrer Bogotá
+                    </button>
+                    <button onclick="navigateTo('entrenamiento')" class="px-6 py-3 bg-sky-200 hover:bg-sky-300 text-slate-900 border-2 border-slate-800 font-kids font-bold text-sm sm:text-base rounded-full pill-shadow transition">
+                        🖐️ Practicar en Entrenamiento
+                    </button>
+                </div>
+            </div>
+
+            <!-- BOTÓN FLOTANTE INFERIOR DERECHO: "Cargar mi foto" -->
+            <label class="fixed bottom-4 right-4 z-30 bg-sky-600 hover:bg-sky-700 text-white border-2 border-slate-900 font-kids font-bold text-xs sm:text-sm px-4 py-2.5 rounded-2xl shadow-lg cursor-pointer transition flex items-center gap-2 pill-shadow" title="Subir una imagen local para este escenario">
+                <i data-lucide="camera" class="w-4 h-4"></i>
+                <span>Cargar mi foto</span>
+                <input type="file" accept="image/*" class="hidden" onchange="handleCustomSceneUpload(this)">
+            </label>
+        </section>
+
+        <!-- ==================================================================
+             VISTA 4: ENTRENAMIENTO (3 MÓDULOS + MINI-JUEGO DE MEMORIA LSC)
+             ================================================================== -->
+        <section id="view-entrenamiento" class="view-section hidden flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6 space-y-5">
+            <div class="bg-white border-4 border-slate-800 rounded-3xl p-5 sm:p-6 comic-card flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <span class="px-3 py-0.5 bg-amber-300 border-2 border-slate-800 rounded-full font-kids font-bold text-xs text-slate-900">
+                        🎮 Gimnasio Visual LSC
+                    </span>
+                    <h2 class="font-kids text-2xl sm:text-3xl font-bold text-sky-700 mt-1">
+                        Entrenamiento de Señas
+                    </h2>
+                    <p class="text-xs sm:text-sm font-bold text-slate-600">
+                        Explora los 3 módulos (Saludos, Pronombres y Cortesía) y supera el reto de emparejar cada gesto de Lucas con su movimiento.
+                    </p>
+                </div>
+
+                <!-- Selector de Módulo -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="setTrainingModule('saludos')" id="mod-btn-saludos" class="mod-tab px-4 py-2 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-800 bg-amber-300 text-slate-900 pill-shadow">
+                        👋 Saludos
+                    </button>
+                    <button onclick="setTrainingModule('pronombres')" id="mod-btn-pronombres" class="mod-tab px-4 py-2 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-800 bg-sky-100 text-slate-800 pill-shadow">
+                        🫵 Pronombres
+                    </button>
+                    <button onclick="setTrainingModule('cortesia')" id="mod-btn-cortesia" class="mod-tab px-4 py-2 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-800 bg-sky-100 text-slate-800 pill-shadow">
+                        🤝 Cortesía
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4 Tarjetas de Estudio del Módulo Activo -->
+            <div id="trainingPreviewCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Se llena dinámicamente -->
+            </div>
+
+            <!-- Mini-Juego Interactivo de Memoria LSC -->
+            <div class="bg-white border-4 border-slate-800 rounded-3xl p-5 sm:p-6 comic-card space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-sky-100 pb-3">
+                    <div>
+                        <h3 class="font-kids text-lg sm:text-xl font-bold text-slate-900">
+                            🃏 Reto de Memoria: Conecta el Gesto con la Técnica
+                        </h3>
+                        <p class="text-xs font-bold text-slate-500">Voltea dos cartas para emparejar la seña de Lucas con su descripción.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="px-3 py-1 bg-sky-100 border border-slate-700 rounded-full text-xs font-kids font-bold">
+                            Parejas: <span id="memPairsCount">0</span>/4
+                        </span>
+                        <button onclick="initMemoryGame()" class="px-3.5 py-1.5 bg-amber-300 hover:bg-amber-400 border-2 border-slate-800 rounded-full font-kids font-bold text-xs pill-shadow">
+                            Mezclar 🔄
+                        </button>
+                    </div>
+                </div>
+
+                <div id="memoryBoard" class="grid grid-cols-2 sm:grid-cols-4 gap-3 perspective-1000">
+                    <!-- Cartas dinámicas -->
+                </div>
+
+                <div id="memoryStatusBanner" class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-3 text-center text-xs sm:text-sm font-extrabold text-sky-800">
+                    💡 ¡Toca cualquier carta para empezar a practicar!
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================================================================
+             VISTA 5: DICCIONARIO LSC (GALERÍA FILTRABLE DE LAS 12 SEÑAS)
+             ================================================================== -->
+        <section id="view-diccionario" class="view-section hidden flex-1 w-full max-w-6xl mx-auto p-4 sm:p-6 space-y-5">
+            <div class="bg-white border-4 border-slate-800 rounded-3xl p-5 sm:p-6 comic-card flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <span class="px-3 py-0.5 bg-emerald-300 border-2 border-slate-800 rounded-full font-kids font-bold text-xs text-slate-900">
+                        📖 Guía Visual LSC
+                    </span>
+                    <h2 class="font-kids text-2xl sm:text-3xl font-bold text-sky-700 mt-1">
+                        Diccionario de Señas de Lucas
+                    </h2>
+                    <p class="text-xs sm:text-sm font-bold text-slate-600">
+                        Consulta las 12 señas del recorrido con el paso a paso de la configuración manual, movimiento y expresión facial.
+                    </p>
+                </div>
+
+                <!-- Filtros por categoría -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterDictionary('todas')" id="dict-btn-todas" class="dict-filter px-4 py-2 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-800 bg-amber-300 text-slate-900 pill-shadow">
+                        Todas (12)
+                    </button>
+                    <button onclick="filterDictionary('saludos')" id="dict-btn-saludos" class="dict-filter px-4 py-2 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-800 bg-sky-100 text-slate-800 pill-shadow">
+                        Saludos
+                    </button>
+                    <button onclick="filterDictionary('pronombres')" id="dict-btn-pronombres" class="dict-filter px-4 py-2 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-800 bg-sky-100 text-slate-800 pill-shadow">
+                        Pronombres
+                    </button>
+                    <button onclick="filterDictionary('cortesia')" id="dict-btn-cortesia" class="dict-filter px-4 py-2 rounded-full font-kids font-bold text-xs sm:text-sm border-2 border-slate-800 bg-sky-100 text-slate-800 pill-shadow">
+                        Cortesía
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grid de 12 tarjetas detalladas -->
+            <div id="dictionaryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Se puebla dinámicamente -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ======================================================================
+         CÓDIGO JAVASCRIPT: AVATAR DE LUCAS, ESCENARIOS 2D DE BOGOTÁ Y LÓGICA
+         ====================================================================== -->
+    <script>
+        /* ====================================================================
+           1. GENERADOR DEL AVATAR DE LUCAS (IDÉNTICO A LA IMAGEN DE REFERENCIA:
+              CABELLO CASTAÑO ONDULADO, CHAQUETA DE JEAN AZUL, CAMISETA A RAYAS,
+              BRAZOS/MANOS/DEDOS DETALLADOS Y FLECHAS AZULES DE MOVIMIENTO)
+           ==================================================================== */
+        let avatarInstanceCounter = 0;
+
+        function createLucasAvatarSVG(signId) {
+            avatarInstanceCounter++;
+            const uid = `lucas_${signId}_${avatarInstanceCounter}`;
+
+            const baseCharacter = (expression = 'smile') => {
+                let mouthSVG = `
+                    <!-- Boca sonriente con dientes blancos -->
+                    <path d="M 86 92 Q 100 105 114 92 Q 100 95 86 92 Z" fill="#ffffff" stroke="#3b1d0e" stroke-width="1.8" stroke-linejoin="round"/>
+                    <path d="M 90 100 Q 100 104 110 100" stroke="#9a3412" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                `;
+                let browsSVG = `
+                    <path d="M 76 66 Q 85 61 93 65" stroke="#2c1608" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                    <path d="M 107 65 Q 115 61 124 66" stroke="#2c1608" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                `;
+
+                if (expression === 'apology') {
+                    mouthSVG = `
+                        <path d="M 89 98 Q 100 91 111 98" stroke="#3b1d0e" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                    `;
+                    browsSVG = `
+                        <path d="M 76 69 Q 85 61 93 66" stroke="#2c1608" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                        <path d="M 107 66 Q 115 61 124 69" stroke="#2c1608" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                    `;
+                }
+
+                return `
+                    <defs>
+                        <linearGradient id="skin_${uid}" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#f7c59f"/>
+                            <stop offset="100%" stop-color="#e5a67c"/>
+                        </linearGradient>
+                        <linearGradient id="denim_${uid}" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#5b9bd5"/>
+                            <stop offset="100%" stop-color="#2f6fa8"/>
+                        </linearGradient>
+                        <linearGradient id="bg_${uid}" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#f8fafc"/>
+                            <stop offset="100%" stop-color="#e2e8f0"/>
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Fondo limpio y luminoso de la tarjeta del avatar -->
+                    <rect width="200" height="200" rx="18" fill="url(#bg_${uid})"/>
+
+                    <!-- Parte trasera del cabello castaño ondulado -->
+                    <path d="M 65 86 C 60 56 74 34 100 34 C 126 34 140 56 135 86 Z" fill="#3b2010" stroke="#1f1008" stroke-width="2"/>
+
+                    <!-- Orejas -->
+                    <ellipse cx="71" cy="81" rx="5" ry="8" fill="#e5a67c" stroke="#3b1d0e" stroke-width="1.8"/>
+                    <ellipse cx="129" cy="81" rx="5" ry="8" fill="#e5a67c" stroke="#3b1d0e" stroke-width="1.8"/>
+
+                    <!-- Cuello anatómico -->
+                    <rect x="89" y="106" width="22" height="26" rx="6" fill="#e5a67c" stroke="#3b1d0e" stroke-width="1.8"/>
+                    <path d="M 89 112 Q 100 120 111 112" fill="#c68259" opacity="0.6"/>
+
+                    <!-- Torso: Chaqueta de Jean Azul sobre camiseta blanca de rayas horizontales -->
+                    <path d="M 30 200 C 32 142 62 128 100 128 C 138 128 168 142 170 200 Z" fill="url(#denim_${uid})" stroke="#1e293b" stroke-width="2.2"/>
+                    
+                    <!-- Camiseta blanca con rayas horizontales azul marino -->
+                    <path d="M 78 128 L 122 128 L 116 200 L 84 200 Z" fill="#ffffff" stroke="#1e293b" stroke-width="1.8"/>
+                    <line x1="80" y1="143" x2="120" y2="143" stroke="#1e3a5f" stroke-width="3.2"/>
+                    <line x1="81" y1="156" x2="119" y2="156" stroke="#1e3a5f" stroke-width="3.2"/>
+                    <line x1="82" y1="169" x2="118" y2="169" stroke="#1e3a5f" stroke-width="3.2"/>
+                    <line x1="83" y1="182" x2="117" y2="182" stroke="#1e3a5f" stroke-width="3.2"/>
+                    <line x1="84" y1="195" x2="116" y2="195" stroke="#1e3a5f" stroke-width="3.2"/>
+
+                    <!-- Cuello y solapas de la chaqueta de jean -->
+                    <polygon points="78,128 91,132 84,162 67,150" fill="#4a89c2" stroke="#1e293b" stroke-width="2" stroke-linejoin="round"/>
+                    <polygon points="122,128 109,132 116,162 133,150" fill="#4a89c2" stroke="#1e293b" stroke-width="2" stroke-linejoin="round"/>
+                    <line x1="74" y1="155" x2="74" y2="200" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="4 3"/>
+                    <line x1="126" y1="155" x2="126" y2="200" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+                    <!-- Brazo izquierdo en reposo (visible para proporción natural) -->
+                    <path d="M 154 148 Q 165 174 163 200" stroke="#1e293b" stroke-width="24" stroke-linecap="round" fill="none"/>
+                    <path d="M 154 148 Q 165 174 163 200" stroke="url(#denim_${uid})" stroke-width="19.5" stroke-linecap="round" fill="none"/>
+
+                    <!-- Rostro de Lucas -->
+                    <rect x="73" y="48" width="54" height="65" rx="26" fill="url(#skin_${uid})" stroke="#3b1d0e" stroke-width="2"/>
+                    <!-- Mejillas suaves -->
+                    <ellipse cx="82" cy="87" rx="5.5" ry="3" fill="#fb7185" opacity="0.28"/>
+                    <ellipse cx="118" cy="87" rx="5.5" ry="3" fill="#fb7185" opacity="0.28"/>
+
+                    <!-- Cabello castaño con copete ondulado estilo ilustrado -->
+                    <path d="M 71 68 C 68 46 82 32 103 33 C 122 34 134 48 129 68 C 125 56 116 51 106 52 C 98 53 91 49 84 53 C 77 56 73 61 71 68 Z" fill="#4a2814" stroke="#1f1008" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M 86 42 Q 102 36 117 44" stroke="#6b3e23" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+
+                    <!-- Cejas y Ojos expresivos -->
+                    ${browsSVG}
+                    <ellipse cx="85" cy="76" rx="5.8" ry="5" fill="#ffffff" stroke="#3b1d0e" stroke-width="1.4"/>
+                    <ellipse cx="115" cy="76" rx="5.8" ry="5" fill="#ffffff" stroke="#3b1d0e" stroke-width="1.4"/>
+                    <circle cx="85.5" cy="76" r="3.6" fill="#2c1608"/>
+                    <circle cx="114.5" cy="76" r="3.6" fill="#2c1608"/>
+                    <circle cx="86.8" cy="74.5" r="1.4" fill="#ffffff"/>
+                    <circle cx="115.8" cy="74.5" r="1.4" fill="#ffffff"/>
+
+                    <!-- Nariz y Boca -->
+                    <path d="M 100 75 L 97 84 Q 100 87 103 84" stroke="#7c4728" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    ${mouthSVG}
+                `;
+            };
+
+            // Brazo con manga de jean azul + antebrazo y mano
+            const drawArm = (armPath, sleevePath) => `
+                <g>
+                    <path d="${armPath}" stroke="#3b1d0e" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <path d="${armPath}" stroke="#f2ba91" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    ${sleevePath ? `
+                        <path d="${sleevePath}" stroke="#1e293b" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <path d="${sleevePath}" stroke="url(#denim_${uid})" stroke-width="19.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <path d="${sleevePath}" stroke="#93c5fd" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.5"/>
+                    ` : ''}
+                </g>
+            `;
+
+            // Manos y dedos claramente articulados
+            const hands = {
+                openPalmFront: (x, y, rot = 0, scale = 1.05) => `
+                    <g transform="translate(${x}, ${y}) rotate(${rot}) scale(${scale})">
+                        <rect x="-7" y="9" width="14" height="11" rx="5" fill="#f2ba91" stroke="#3b1d0e" stroke-width="1.8"/>
+                        <path d="M -12 0 C -13 -10 13 -10 12 0 L 11 12 C 11 17 -11 17 -11 12 Z" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.9"/>
+                        <!-- 4 dedos extendidos -->
+                        <rect x="-11.5" y="-24" width="4.8" height="18" rx="2.4" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.7"/>
+                        <rect x="-5.8" y="-27" width="4.8" height="21" rx="2.4" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.7"/>
+                        <rect x="0" y="-26" width="4.8" height="20" rx="2.4" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.7"/>
+                        <rect x="5.8" y="-22" width="4.8" height="16" rx="2.4" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.7"/>
+                        <!-- Pulgar -->
+                        <path d="M 11 2 L 20 -5 C 22 -7 24 -4 22 -1 L 12 10 Z" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.8"/>
+                        <!-- Líneas de palma -->
+                        <path d="M -6 2 Q 0 6 6 1" stroke="#9a5b36" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                    </g>
+                `,
+                flatHandSide: (x, y, rot = 0, scale = 1) => `
+                    <g transform="translate(${x}, ${y}) rotate(${rot}) scale(${scale})">
+                        <rect x="-19" y="-5.5" width="11" height="11" rx="4.5" fill="#f2ba91" stroke="#3b1d0e" stroke-width="1.7"/>
+                        <rect x="-13" y="-8" width="23" height="16" rx="6.5" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.8"/>
+                        <rect x="6" y="-7.5" width="18" height="3.7" rx="1.8" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.6"/>
+                        <rect x="7" y="-3.8" width="20" height="3.7" rx="1.8" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.6"/>
+                        <rect x="7" y="0" width="19" height="3.7" rx="1.8" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.6"/>
+                        <rect x="5" y="3.7" width="16" height="3.7" rx="1.8" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.6"/>
+                        <path d="M -4 -8 L 5 -16 C 7 -18 10 -15 8 -12 L 2 -6 Z" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.7"/>
+                    </g>
+                `,
+                pointingHand: (x, y, rot = 0, scale = 1) => `
+                    <g transform="translate(${x}, ${y}) rotate(${rot}) scale(${scale})">
+                        <rect x="-18" y="-5.5" width="11" height="11" rx="4.5" fill="#f2ba91" stroke="#3b1d0e" stroke-width="1.7"/>
+                        <rect x="-11" y="-10" width="20" height="20" rx="7.5" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.8"/>
+                        <rect x="6" y="-8" width="22" height="6" rx="3" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.8"/>
+                        <rect x="3" y="-1.2" width="10" height="4.5" rx="2.2" fill="#e5a67c" stroke="#3b1d0e" stroke-width="1.6"/>
+                        <rect x="2" y="3.3" width="9.5" height="4.5" rx="2.2" fill="#e5a67c" stroke="#3b1d0e" stroke-width="1.6"/>
+                        <rect x="1" y="7.8" width="8.5" height="4.2" rx="2.1" fill="#e5a67c" stroke="#3b1d0e" stroke-width="1.6"/>
+                        <rect x="-3" y="-12" width="12" height="5.5" rx="2.7" transform="rotate(15 -3 -12)" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.6"/>
+                    </g>
+                `,
+                pinchHand: (x, y, rot = 0, scale = 1) => `
+                    <g transform="translate(${x}, ${y}) rotate(${rot}) scale(${scale})">
+                        <rect x="-5.5" y="8" width="11" height="11" rx="4.5" fill="#f2ba91" stroke="#3b1d0e" stroke-width="1.7"/>
+                        <path d="M -8.5 10 C -12.5 0 -8.5 -15 0 -16 C 8.5 -15 12.5 0 8.5 10 Z" fill="#f7c59f" stroke="#3b1d0e" stroke-width="1.8"/>
+                        <path d="M -4 -15 C -2 -19 4 -19 6 -14" stroke="#3b1d0e" stroke-width="1.7" fill="none"/>
+                        <path d="M -2 -8 Q 3 -6 6 -9" stroke="#3b1d0e" stroke-width="1.5" fill="none"/>
+                        <path d="M -3 -2 Q 3 0 7 -3" stroke="#3b1d0e" stroke-width="1.5" fill="none"/>
+                    </g>
+                `
+            };
+
+            // Flecha azul vibrante con borde blanco y contorno oscuro (igual a la referencia)
+            const arrowBadge = (pathD, polyPoints) => `
+                <g class="lsc-arrow">
+                    <path d="${pathD}" stroke="#1e293b" stroke-width="7.5" fill="none" stroke-linecap="round"/>
+                    <path d="${pathD}" stroke="#38bdf8" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+                    <polygon points="${polyPoints}" fill="#38bdf8" stroke="#1e293b" stroke-width="1.8" stroke-linejoin="round"/>
+                </g>
+            `;
+
+            const gestures = {
+                hola: `
+                    ${baseCharacter('smile')}
+                    ${drawArm('M 42 198 L 32 134 L 54 84', 'M 42 198 L 35 152')}
+                    ${hands.openPalmFront(56, 70, -10, 1.05)}
+                    ${arrowBadge('M 74 52 Q 94 42 112 48', '118,51 105,54 110,41')}
+                `,
+                buenos_dias: `
+                    ${baseCharacter('smile')}
+                    ${drawArm('M 42 198 L 54 144 L 84 116', 'M 42 198 L 49 162')}
+                    ${hands.flatHandSide(92, 112, -12, 1)}
+                    ${arrowBadge('M 118 104 Q 142 90 162 82', '168,80 154,79 159,90')}
+                    ${arrowBadge('M 120 114 Q 145 114 164 114', '170,114 158,108 158,120')}
+                `,
+                buenas_tardes: `
+                    ${baseCharacter('smile')}
+                    ${drawArm('M 156 198 L 140 168 L 84 168', 'M 156 198 L 148 174')}
+                    ${hands.flatHandSide(76, 168, 180, 0.9)}
+                    ${drawArm('M 42 198 L 58 146 L 94 134', 'M 42 198 L 50 164')}
+                    ${hands.openPalmFront(100, 134, 15, 0.95)}
+                    ${arrowBadge('M 124 120 Q 136 140 124 160', '120,166 132,158 121,152')}
+                `,
+                buenas_noches: `
+                    ${baseCharacter('smile')}
+                    ${drawArm('M 42 198 L 50 134 L 80 94', 'M 42 198 L 46 160')}
+                    ${hands.flatHandSide(92, 88, 0, 1.05)}
+                    ${arrowBadge('M 128 66 L 128 124', '128,131 121,118 135,118')}
+                `,
+                yo: `
+                    ${baseCharacter('smile')}
+                    ${drawArm('M 42 198 L 52 156 L 82 156', 'M 42 198 L 47 170')}
+                    ${hands.pointingHand(90, 156, 0, 1.05)}
+                    ${arrowBadge('M 74 134 Q 95 134 114 146', '120,150 111,139 107,149')}
+                `,
+                tu: `
+                    ${baseCharacter('smile')}
+                    ${drawArm('M 42 198 L 64 162 L 92 154', 'M 42 198 L 53 172')}
+                    ${hands.pointingHand(102, 152, -25, 1.05)}
+                    ${arrowBadge('M 126 136 L 152 122', '158,119 145,119 151,129')}
+                `,
+                el_ella: `
+                    ${baseCharacter('smile')}
+                    ${drawArm('M 42 198 L 68 158 L 104 154', 'M 42 198 L 55 172')}
+                    ${hands.pointingHand(114, 154, 0, 1.05)}
+                    ${arrowBadge('M 122 134 L 160 134', '167,134 155,127 155,141')}
+                `,
+                nosotros: `
+                    ${baseCharacter('smile')}
+                    ${drawArm('M 42 198 L 60 156 L 90 150', 'M 42 198 L 51 172')}
+                    ${hands.pointingHand(100, 146, -80, 1.05)}
+                    ${arrowBadge('M 54 162 C 40 182 160 182 146 162', '141,156 153,160 145,168')}
+                `,
+                por_favor: `
+                    ${baseCharacter('smile')}
+                    ${drawArm('M 42 198 L 60 160 L 90 158', 'M 42 198 L 51 172')}
+                    ${hands.flatHandSide(98, 158, 0, 1.05)}
+                    ${arrowBadge('M 114 136 A 19 19 0 1 1 88 168', '83,162 84,174 94,167')}
+                `,
+                gracias: `
+                    ${baseCharacter('smile')}
+                    ${drawArm('M 42 198 L 62 146 L 88 120', 'M 42 198 L 52 166')}
+                    ${hands.flatHandSide(98, 116, -15, 1.05)}
+                    ${arrowBadge('M 122 122 Q 138 138 152 156', '157,162 154,149 145,156')}
+                `,
+                con_gusto: `
+                    ${baseCharacter('smile')}
+                    ${drawArm('M 42 198 L 60 160 L 90 156', 'M 42 198 L 51 172')}
+                    ${hands.flatHandSide(98, 156, -5, 1.05)}
+                    <g class="lsc-arrow">
+                        <path d="M 128 145 Q 138 155 128 165" stroke="#1e293b" stroke-width="6" fill="none" stroke-linecap="round"/>
+                        <path d="M 128 145 Q 138 155 128 165" stroke="#38bdf8" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                        <path d="M 136 140 Q 148 155 136 170" stroke="#1e293b" stroke-width="6" fill="none" stroke-linecap="round"/>
+                        <path d="M 136 140 Q 148 155 136 170" stroke="#38bdf8" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    </g>
+                `,
+                perdon: `
+                    ${baseCharacter('apology')}
+                    ${drawArm('M 42 198 L 64 148 L 92 122', 'M 42 198 L 53 166')}
+                    ${hands.pinchHand(98, 118, 0, 1.05)}
+                    <g class="lsc-arrow">
+                        <circle cx="98" cy="116" r="17" stroke="#1e293b" stroke-width="5.5" stroke-dasharray="5 3" fill="none"/>
+                        <circle cx="98" cy="116" r="17" stroke="#38bdf8" stroke-width="3.2" stroke-dasharray="5 3" fill="none"/>
+                    </g>
+                `
+            };
+
+            return `<svg viewBox="0 0 200 200" class="w-full h-full object-contain">${gestures[signId] || gestures.hola}</svg>`;
+        }
+
+        /* ====================================================================
+           2. ESCENARIOS ILUSTRADOS 2D DE BOGOTÁ (5 CAPÍTULOS A PANTALLA COMPLETA)
+              REPLICANDO FIELMENTE LAS IMÁGENES DE REFERENCIA
+           ==================================================================== */
+        const CUSTOM_UPLOADED_SCENES = {};
+
+        function createBogotaBackdropSVG(chapNum) {
+            if (CUSTOM_UPLOADED_SCENES[chapNum]) {
+                return `<img src="${CUSTOM_UPLOADED_SCENES[chapNum]}" alt="Escenario personalizado" class="w-full h-full object-cover" />`;
+            }
+
+            const scenes = {
+                /* CAPÍTULO 1: LA PLAZA DE BOLÍVAR (CATEDRAL, MONSERRATE, CARRITO TRICOLOR Y JOVEN CON TINTO Y EMPANADA) */
+                1: `
+                    <svg viewBox="0 0 1200 720" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+                        <defs>
+                            <linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#38bdf8"/>
+                                <stop offset="70%" stop-color="#bae6fd"/>
+                                <stop offset="100%" stop-color="#e0f2fe"/>
+                            </linearGradient>
+                        </defs>
+                        <!-- Cielo y nubes -->
+                        <rect width="1200" height="720" fill="url(#sky1)"/>
+                        <g fill="#ffffff" opacity="0.92">
+                            <ellipse cx="180" cy="95" rx="70" ry="26"/><ellipse cx="235" cy="90" rx="55" ry="30"/>
+                            <ellipse cx="980" cy="80" rx="75" ry="24"/><ellipse cx="1035" cy="76" rx="55" ry="28"/>
+                        </g>
+
+                        <!-- Cerros Orientales y Santuario de Monserrate al fondo derecho -->
+                        <path d="M 480 420 Q 750 250 930 140 Q 1080 210 1200 280 L 1200 450 L 480 450 Z" fill="#4d8b6f" stroke="#2d5a46" stroke-width="3"/>
+                        <path d="M 760 265 Q 930 140 1075 230 Q 980 280 860 320 Z" fill="#5fa382"/>
+                        <!-- Santuario blanco en la cima de Monserrate -->
+                        <g transform="translate(918, 118)">
+                            <rect x="0" y="10" width="26" height="14" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+                            <polygon points="8,10 13,0 18,10" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+                        </g>
+
+                        <!-- Edificios coloniales laterales y Catedral Primada de Bogotá -->
+                        <rect x="0" y="290" width="240" height="160" fill="#e9c893" stroke="#5c4028" stroke-width="2.5"/>
+                        <polygon points="0,290 120,255 240,290" fill="#c2593f" stroke="#5c4028" stroke-width="2.5"/>
+                        <rect x="740" y="305" width="460" height="145" fill="#ebd0a0" stroke="#5c4028" stroke-width="2.5"/>
+                        <polygon points="740,305 970,275 1200,305" fill="#c2593f" stroke="#5c4028" stroke-width="2.5"/>
+
+                        <!-- Catedral Primada (Torres gemelas y fachada neoclásica) -->
+                        <g stroke="#5c4028" stroke-width="2.5">
+                            <!-- Cuerpo central -->
+                            <rect x="330" y="245" width="320" height="205" fill="#f3d69b"/>
+                            <polygon points="415,245 490,195 565,245" fill="#e6be78"/>
+                            <rect x="468" y="355" width="44" height="95" rx="20" fill="#7c4a27"/>
+                            <!-- Torre Izquierda -->
+                            <rect x="340" y="135" width="68" height="315" fill="#f3d69b"/>
+                            <path d="M 340 135 Q 374 88 408 135 Z" fill="#d99b52"/>
+                            <line x1="374" y1="72" x2="374" y2="95" stroke="#5c4028" stroke-width="3"/>
+                            <rect x="362" y="162" width="24" height="36" rx="12" fill="#475569"/>
+                            <rect x="362" y="230" width="24" height="38" rx="12" fill="#475569"/>
+                            <!-- Torre Derecha -->
+                            <rect x="572" y="135" width="68" height="315" fill="#f3d69b"/>
+                            <path d="M 572 135 Q 606 88 640 135 Z" fill="#d99b52"/>
+                            <line x1="606" y1="72" x2="606" y2="95" stroke="#5c4028" stroke-width="3"/>
+                            <rect x="594" y="162" width="24" height="36" rx="12" fill="#475569"/>
+                            <rect x="594" y="230" width="24" height="38" rx="12" fill="#475569"/>
+                        </g>
+
+                        <!-- Suelo empedrado de la Plaza de Bolívar -->
+                        <rect x="0" y="450" width="1200" height="270" fill="#d6c5b3" stroke="#786858" stroke-width="2.5"/>
+                        <g stroke="#b8a592" stroke-width="1.5" opacity="0.65">
+                            <line x1="0" y1="495" x2="1200" y2="495"/>
+                            <line x1="0" y1="545" x2="1200" y2="545"/>
+                            <line x1="0" y1="600" x2="1200" y2="600"/>
+                            <line x1="0" y1="660" x2="1200" y2="660"/>
+                        </g>
+
+                        <!-- Palomas bogotanas picoteando en el suelo -->
+                        <g fill="#7c8798" stroke="#334155" stroke-width="2">
+                            <ellipse cx="430" cy="605" rx="16" ry="10"/><circle cx="442" cy="596" r="6"/><polygon points="448,596 454,598 448,600" fill="#f59e0b"/>
+                            <ellipse cx="485" cy="645" rx="17" ry="10"/><circle cx="473" cy="636" r="6"/><polygon points="467,636 461,638 467,640" fill="#f59e0b"/>
+                            <ellipse cx="535" cy="585" rx="15" ry="9"/><circle cx="546" cy="577" r="5.5"/>
+                            <ellipse cx="810" cy="655" rx="16" ry="10"/><circle cx="798" cy="646" r="6"/>
+                        </g>
+
+                        <!-- CARRITO AMBULANTE CON SOMBRILLA TRICOLOR (IZQUIERDA) -->
+                        <g transform="translate(55, 295)">
+                            <!-- Poste y Sombrilla Tricolor Amarillo, Azul y Rojo -->
+                            <rect x="148" y="85" width="10" height="165" fill="#64748b" stroke="#1e293b" stroke-width="2.5"/>
+                            <path d="M 15 105 C 35 15 275 15 295 105 Z" fill="#facc15" stroke="#1e293b" stroke-width="3"/>
+                            <path d="M 95 105 C 105 22 205 22 215 105 Z" fill="#1d4ed8" stroke="#1e293b" stroke-width="2.5"/>
+                            <path d="M 215 105 C 235 45 275 55 295 105 Z" fill="#dc2626" stroke="#1e293b" stroke-width="2.5"/>
+                            <path d="M 15 105 Q 50 122 85 105 Q 120 122 155 105 Q 190 122 225 105 Q 260 122 295 105" fill="#dc2626" stroke="#1e293b" stroke-width="2.5"/>
+
+                            <!-- Termos de tinto y vitrina de empanadas sobre el carrito -->
+                            <rect x="52" y="168" width="38" height="68" rx="8" fill="#334155" stroke="#1e293b" stroke-width="2.5"/>
+                            <rect x="52" y="190" width="38" height="22" fill="#e2e8f0"/>
+                            <rect x="98" y="176" width="32" height="60" rx="7" fill="#dc2626" stroke="#1e293b" stroke-width="2.5"/>
+                            <rect x="175" y="182" width="115" height="54" rx="8" fill="#fef3c7" fill-opacity="0.85" stroke="#1e293b" stroke-width="2.5"/>
+                            <ellipse cx="205" cy="218" rx="18" ry="11" fill="#f59e0b" stroke="#92400e" stroke-width="2"/>
+                            <ellipse cx="235" cy="215" rx="18" ry="11" fill="#fbbf24" stroke="#92400e" stroke-width="2"/>
+                            <ellipse cx="262" cy="219" rx="18" ry="11" fill="#f59e0b" stroke="#92400e" stroke-width="2"/>
+
+                            <!-- Cuerpo de madera del carrito y pizarra negra -->
+                            <rect x="35" y="236" width="265" height="128" rx="12" fill="#b45309" stroke="#1e293b" stroke-width="3"/>
+                            <rect x="58" y="252" width="218" height="96" rx="8" fill="#1e293b" stroke="#fef3c7" stroke-width="2"/>
+                            <text x="167" y="282" font-family="Fredoka, sans-serif" font-size="22" font-weight="700" fill="#ffffff" text-anchor="middle">Tintos, Aromáticas,</text>
+                            <text x="167" y="314" font-family="Fredoka, sans-serif" font-size="22" font-weight="700" fill="#fef08a" text-anchor="middle">Empanadas ♡</text>
+
+                            <!-- Ruedas del carrito -->
+                            <circle cx="85" cy="376" r="26" fill="#334155" stroke="#1e293b" stroke-width="3"/>
+                            <circle cx="85" cy="376" r="10" fill="#cbd5e1"/>
+                            <circle cx="255" cy="376" r="22" fill="#334155" stroke="#1e293b" stroke-width="3"/>
+                            <circle cx="255" cy="376" r="8" fill="#cbd5e1"/>
+                        </g>
+
+                        <!-- JOVEN BOGOTANA SONRIENTE CON CABELLO RIZADO, CANDONGAS, TINTO Y EMPANADA (DERECHA) -->
+                        <g transform="translate(865, 225)">
+                            <!-- Melena rizada voluminosa -->
+                            <g fill="#2b170c" stroke="#140a04" stroke-width="3">
+                                <circle cx="95" cy="95" r="36"/><circle cx="72" cy="135" r="34"/><circle cx="76" cy="178" r="30"/>
+                                <circle cx="195" cy="95" r="36"/><circle cx="218" cy="135" r="34"/><circle cx="214" cy="178" r="30"/>
+                                <circle cx="125" cy="65" r="38"/><circle cx="168" cy="68" r="36"/>
+                            </g>
+                            <!-- Cuello y Torso (Camiseta blanca + tirante de bolso + jean azul) -->
+                            <rect x="128" y="182" width="34" height="38" rx="10" fill="#b8764f" stroke="#2b170c" stroke-width="2.5"/>
+                            <path d="M 65 295 C 70 225 105 212 145 212 C 185 212 220 225 225 295 L 225 495 L 65 495 Z" fill="#ffffff" stroke="#1e293b" stroke-width="3"/>
+                            <!-- Chaleco/Blusa amarilla y tirante cruzado -->
+                            <path d="M 75 225 L 112 215 L 105 360 L 68 360 Z" fill="#facc15" stroke="#1e293b" stroke-width="2.5"/>
+                            <path d="M 215 225 L 178 215 L 185 360 L 222 360 Z" fill="#facc15" stroke="#1e293b" stroke-width="2.5"/>
+                            <path d="M 185 215 L 105 365" stroke="#78350f" stroke-width="14" stroke-linecap="round"/>
+                            <!-- Pantalón Jean -->
+                            <rect x="72" y="362" width="146" height="135" fill="#2563eb" stroke="#1e293b" stroke-width="3"/>
+
+                            <!-- Rostro expresivo y candongas doradas -->
+                            <rect x="96" y="78" width="98" height="114" rx="48" fill="#c6845c" stroke="#2b170c" stroke-width="3"/>
+                            <circle cx="92" cy="148" r="14" fill="none" stroke="#facc15" stroke-width="4.5"/>
+                            <circle cx="198" cy="148" r="14" fill="none" stroke="#facc15" stroke-width="4.5"/>
+                            <!-- Flequillo rizado -->
+                            <g fill="#2b170c">
+                                <circle cx="106" cy="84" r="18"/><circle cx="132" cy="74" r="20"/><circle cx="160" cy="75" r="20"/><circle cx="184" cy="86" r="18"/>
+                            </g>
+                            <!-- Ojos grandes y sonrisa -->
+                            <ellipse cx="122" cy="126" rx="10" ry="9" fill="#ffffff" stroke="#2b170c" stroke-width="2"/>
+                            <ellipse cx="168" cy="126" rx="10" ry="9" fill="#ffffff" stroke="#2b170c" stroke-width="2"/>
+                            <circle cx="123" cy="126" r="6" fill="#1f1008"/><circle cx="167" cy="126" r="6" fill="#1f1008"/>
+                            <circle cx="125" cy="123" r="2.2" fill="#ffffff"/><circle cx="169" cy="123" r="2.2" fill="#ffffff"/>
+                            <path d="M 124 156 Q 145 178 166 156 Z" fill="#ffffff" stroke="#2b170c" stroke-width="2.5"/>
+
+                            <!-- Brazo derecho sosteniendo taza de tinto -->
+                            <path d="M 75 245 Q 35 295 62 325" stroke="#c6845c" stroke-width="24" stroke-linecap="round" fill="none"/>
+                            <rect x="36" y="282" width="44" height="48" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="3"/>
+                            <ellipse cx="58" cy="284" rx="20" ry="6" fill="#451a03"/>
+
+                            <!-- Brazo izquierdo sosteniendo empanada dorada -->
+                            <path d="M 215 245 Q 245 295 212 325" stroke="#c6845c" stroke-width="24" stroke-linecap="round" fill="none"/>
+                            <path d="M 168 320 C 175 275 222 275 228 320 Z" transform="rotate(-25 198 305)" fill="#fbbf24" stroke="#92400e" stroke-width="3"/>
+                        </g>
+                    </svg>
+                `,
+
+                /* CAPÍTULO 2: PARQUE SIMÓN BOLÍVAR (LAGO, EDIFICIOS DE BOGOTÁ, BICICLETA Y 3 AMIGOS CON GUITARRA) */
+                2: `
+                    <svg viewBox="0 0 1200 720" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+                        <defs>
+                            <linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#38bdf8"/>
+                                <stop offset="100%" stop-color="#bae6fd"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="1200" height="720" fill="url(#sky2)"/>
+                        <!-- Cerros y edificios de Bogotá al fondo -->
+                        <path d="M 550 320 Q 880 145 1200 260 L 1200 360 L 550 360 Z" fill="#5fa382" stroke="#2d5a46" stroke-width="2.5"/>
+                        <g fill="#f59e0b" stroke="#475569" stroke-width="2">
+                            <rect x="430" y="215" width="65" height="125"/><rect x="520" y="245" width="55" height="95"/>
+                            <rect x="760" y="225" width="70" height="115"/><rect x="1020" y="205" width="75" height="135"/>
+                        </g>
+                        <!-- Lago del Parque Simón Bolívar -->
+                        <path d="M 180 340 Q 680 315 1200 345 L 1200 455 Q 650 430 180 410 Z" fill="#38bdf8" stroke="#0284c7" stroke-width="2.5"/>
+                        <!-- Pradera verde y sendero -->
+                        <rect x="0" y="385" width="1200" height="335" fill="#65a30d"/>
+                        <path d="M 0 430 Q 450 390 1200 450 L 1200 720 L 0 720 Z" fill="#84cc16"/>
+                        <path d="M 40 385 Q 240 350 460 340 L 520 345 Q 310 365 140 415 Z" fill="#e7d5c0"/>
+
+                        <!-- Árbol frondoso y Bicicleta azul a la izquierda -->
+                        <rect x="115" y="140" width="34" height="260" fill="#78350f" stroke="#451a03" stroke-width="3"/>
+                        <circle cx="132" cy="125" r="115" fill="#4d7c0f" stroke="#365314" stroke-width="3"/>
+                        <circle cx="70" cy="155" r="75" fill="#65a30d"/><circle cx="195" cy="150" r="80" fill="#65a30d"/>
+                        <!-- Bicicleta -->
+                        <g transform="translate(30, 315)" stroke="#1e293b" stroke-width="4" fill="none">
+                            <circle cx="38" cy="72" r="34"/><circle cx="148" cy="72" r="34"/>
+                            <path d="M 38 72 L 82 32 L 132 32 L 148 72 M 82 32 L 95 72 L 38 72" stroke="#0284c7" stroke-width="6"/>
+                        </g>
+
+                        <!-- Grupo de 3 amigos sentados en el césped tocando guitarra -->
+                        <!-- Amiga izquierda (rulos y camiseta crema) -->
+                        <g transform="translate(275, 385)">
+                            <circle cx="95" cy="65" r="52" fill="#2b170c"/>
+                            <rect x="52" y="110" width="86" height="85" rx="22" fill="#fef3c7" stroke="#1e293b" stroke-width="3"/>
+                            <rect x="48" y="185" width="115" height="65" rx="25" fill="#2563eb" stroke="#1e293b" stroke-width="3"/>
+                            <circle cx="102" cy="68" r="36" fill="#c6845c" stroke="#2b170c" stroke-width="2.5"/>
+                            <circle cx="114" cy="64" r="5" fill="#1f1008"/>
+                        </g>
+                        <!-- Amigo centro (buso negro y guitarra acústica) -->
+                        <g transform="translate(510, 375)">
+                            <circle cx="95" cy="58" r="42" fill="#3b2010"/>
+                            <rect x="42" y="98" width="106" height="105" rx="26" fill="#1e293b" stroke="#0f172a" stroke-width="3"/>
+                            <circle cx="95" cy="64" r="35" fill="#e5a67c" stroke="#3b1d0e" stroke-width="2.5"/>
+                            <circle cx="85" cy="60" r="4.5" fill="#1f1008"/><circle cx="106" cy="60" r="4.5" fill="#1f1008"/>
+                            <!-- Guitarra acústica -->
+                            <g transform="translate(35, 138) rotate(-10)">
+                                <ellipse cx="55" cy="35" rx="46" ry="32" fill="#d97706" stroke="#451a03" stroke-width="3"/>
+                                <circle cx="62" cy="35" r="13" fill="#451a03"/>
+                                <rect x="95" y="28" width="85" height="13" fill="#78350f" stroke="#451a03" stroke-width="2.5"/>
+                            </g>
+                        </g>
+                        <!-- Amiga derecha (cabello liso y camiseta rosada) -->
+                        <g transform="translate(770, 395)">
+                            <path d="M 55 55 C 50 15 135 15 135 65 L 145 150 L 45 150 Z" fill="#3b2010"/>
+                            <rect x="52" y="102" width="82" height="82" rx="22" fill="#fb7185" stroke="#1e293b" stroke-width="3"/>
+                            <rect x="38" y="178" width="108" height="62" rx="25" fill="#93c5fd" stroke="#1e293b" stroke-width="3"/>
+                            <circle cx="90" cy="64" r="34" fill="#e5a67c" stroke="#3b1d0e" stroke-width="2.5"/>
+                            <circle cx="80" cy="60" r="4.5" fill="#1f1008"/>
+                        </g>
+                    </svg>
+                `,
+
+                /* CAPÍTULO 3: PANADERÍA DE BARRIO (TOLDO ROJO/BLANCO, VITRINA DE PANES, PIZARRA ALMOJÁBANAS Y JOVEN) */
+                3: `
+                    <svg viewBox="0 0 1200 720" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+                        <!-- Pared de ladrillo naranja cálido -->
+                        <rect width="1200" height="585" fill="#c2593f"/>
+                        <rect x="0" y="585" width="1200" height="135" fill="#d6c5b3" stroke="#786858" stroke-width="3"/>
+
+                        <!-- Letrero Madera "Panadería" con espigas de trigo -->
+                        <rect x="275" y="38" width="650" height="96" rx="14" fill="#fef3c7" stroke="#5c4028" stroke-width="4"/>
+                        <text x="600" y="102" font-family="Fredoka, sans-serif" font-size="54" font-weight="700" fill="#5c4028" text-anchor="middle">🌾 Panadería 🌾</text>
+
+                        <!-- Toldo rayado rojo y blanco -->
+                        <g stroke="#5c4028" stroke-width="2.5">
+                            <rect x="255" y="138" width="690" height="52" fill="#ffffff"/>
+                            <rect x="255" y="138" width="58" height="52" fill="#dc2626"/>
+                            <rect x="371" y="138" width="58" height="52" fill="#dc2626"/>
+                            <rect x="487" y="138" width="58" height="52" fill="#dc2626"/>
+                            <rect x="603" y="138" width="58" height="52" fill="#dc2626"/>
+                            <rect x="719" y="138" width="58" height="52" fill="#dc2626"/>
+                            <rect x="835" y="138" width="58" height="52" fill="#dc2626"/>
+                        </g>
+
+                        <!-- Vitrina iluminada llena de panes, almojábanas y pandebonos -->
+                        <rect x="285" y="195" width="630" height="385" fill="#fef08a" stroke="#5c4028" stroke-width="4"/>
+                        <rect x="305" y="215" width="380" height="345" fill="#fde68a" stroke="#78350f" stroke-width="3"/>
+                        <!-- Repisas con panes dorados -->
+                        <line x1="305" y1="320" x2="685" y2="320" stroke="#78350f" stroke-width="6"/>
+                        <line x1="305" y1="435" x2="685" y2="435" stroke="#78350f" stroke-width="6"/>
+                        <g fill="#f59e0b" stroke="#92400e" stroke-width="2.5">
+                            <ellipse cx="360" cy="302" rx="28" ry="18"/><ellipse cx="425" cy="302" rx="28" ry="18"/><ellipse cx="490" cy="302" rx="28" ry="18"/>
+                            <ellipse cx="365" cy="417" rx="30" ry="18"/><ellipse cx="435" cy="417" rx="30" ry="18"/><ellipse cx="505" cy="417" rx="30" ry="18"/><ellipse cx="575" cy="417" rx="30" ry="18"/>
+                            <ellipse cx="370" cy="532" rx="32" ry="18"/><ellipse cx="445" cy="532" rx="32" ry="18"/><ellipse cx="520" cy="532" rx="32" ry="18"/>
+                        </g>
+
+                        <!-- Puerta de madera de la panadería -->
+                        <rect x="705" y="215" width="190" height="365" fill="#92400e" stroke="#451a03" stroke-width="3"/>
+                        <rect x="725" y="235" width="150" height="165" fill="#fef3c7" stroke="#451a03" stroke-width="2.5"/>
+
+                        <!-- Bicicleta azul parqueada a la izquierda -->
+                        <g transform="translate(15, 420)" stroke="#1e293b" stroke-width="4" fill="none">
+                            <circle cx="52" cy="95" r="46"/><circle cx="195" cy="95" r="46"/>
+                            <path d="M 52 95 L 110 42 L 175 42 L 195 95 M 110 42 L 128 95 L 52 95" stroke="#2563eb" stroke-width="7"/>
+                        </g>
+
+                        <!-- Pizarra "Almojábanas, Pandebonos, Pan fresco ♡" a la derecha -->
+                        <g transform="translate(925, 385)">
+                            <rect x="0" y="0" width="215" height="225" rx="10" fill="#1e293b" stroke="#92400e" stroke-width="6"/>
+                            <text x="107" y="58" font-family="Fredoka, sans-serif" font-size="25" font-weight="700" fill="#ffffff" text-anchor="middle">Almojábanas</text>
+                            <text x="107" y="108" font-family="Fredoka, sans-serif" font-size="25" font-weight="700" fill="#fef08a" text-anchor="middle">Pandebonos</text>
+                            <text x="107" y="158" font-family="Fredoka, sans-serif" font-size="24" font-weight="700" fill="#ffffff" text-anchor="middle">Pan fresco ♡</text>
+                        </g>
+
+                        <!-- Joven bogotana sosteniendo bolsa de papel con pan caliente -->
+                        <g transform="translate(260, 275)">
+                            <circle cx="135" cy="95" r="68" fill="#2b170c"/>
+                            <path d="M 65 280 C 70 195 105 182 145 182 C 185 182 215 195 220 280 L 220 445 L 65 445 Z" fill="#fef3c7" stroke="#1e293b" stroke-width="3"/>
+                            <circle cx="148" cy="105" r="48" fill="#c6845c" stroke="#2b170c" stroke-width="3"/>
+                            <circle cx="164" cy="100" r="6" fill="#1f1008"/>
+                            <!-- Bolsa con pan recién horneado -->
+                            <rect x="195" y="215" width="76" height="98" rx="8" fill="#d97706" stroke="#78350f" stroke-width="3"/>
+                            <ellipse cx="233" cy="205" rx="30" ry="22" fill="#fbbf24" stroke="#92400e" stroke-width="3"/>
+                        </g>
+                    </svg>
+                `,
+
+                /* CAPÍTULO 4: ESTACIÓN DE TRANSMILENIO (TÓTEM ROJO, BUS ARTICULADO B75 PORTAL NORTE Y JOVEN) */
+                4: `
+                    <svg viewBox="0 0 1200 720" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+                        <rect width="1200" height="720" fill="#7dd3fc"/>
+                        <!-- Edificios y árboles de Bogotá -->
+                        <g fill="#d97706" stroke="#475569" stroke-width="2.5">
+                            <rect x="40" y="220" width="120" height="230"/><rect x="180" y="275" width="95" height="175"/>
+                            <rect x="750" y="260" width="110" height="190"/>
+                        </g>
+                        <circle cx="1080" cy="240" r="120" fill="#4d7c0f" stroke="#365314" stroke-width="3"/>
+
+                        <!-- Carril exclusivo TransMilenio -->
+                        <rect x="0" y="450" width="1200" height="270" fill="#64748b"/>
+                        <line x1="0" y1="530" x2="1200" y2="530" stroke="#facc15" stroke-width="5" stroke-dasharray="28 18"/>
+
+                        <!-- Tótem oficial TransMilenio -->
+                        <g transform="translate(525, 165)">
+                            <rect x="48" y="110" width="16" height="195" fill="#475569" stroke="#1e293b" stroke-width="2.5"/>
+                            <rect x="0" y="0" width="112" height="115" rx="12" fill="#dc2626" stroke="#1e293b" stroke-width="3"/>
+                            <path d="M 28 24 L 84 24 L 84 36 L 62 36 L 62 72 L 48 72 L 48 36 L 28 36 Z" fill="#facc15"/>
+                            <text x="56" y="98" font-family="Fredoka, sans-serif" font-size="16" font-weight="700" fill="#ffffff" text-anchor="middle">TransMilenio</text>
+                        </g>
+
+                        <!-- Estación / Vagón de abordaje -->
+                        <rect x="760" y="340" width="440" height="185" fill="#cbd5e1" stroke="#334155" stroke-width="3"/>
+                        <polygon points="730,340 1200,285 1200,340" fill="#475569" stroke="#1e293b" stroke-width="3"/>
+                        <rect x="745" y="520" width="455" height="16" fill="#facc15" stroke="#1e293b" stroke-width="2"/>
+
+                        <!-- BUS ARTICULADO ROJO TRANSMILENIO "B75 Portal Norte" -->
+                        <g transform="translate(535, 315)">
+                            <!-- Segundo cuerpo articulado -->
+                            <rect x="275" y="25" width="185" height="155" rx="12" fill="#dc2626" stroke="#1e293b" stroke-width="3"/>
+                            <rect x="255" y="30" width="24" height="145" fill="#1e293b"/>
+                            <!-- Cuerpo delantero -->
+                            <rect x="0" y="10" width="260" height="175" rx="18" fill="#ef4444" stroke="#1e293b" stroke-width="3.5"/>
+                            <!-- Rutero electrónico amarillo -->
+                            <rect x="28" y="22" width="175" height="24" rx="6" fill="#0f172a"/>
+                            <text x="115" y="39" font-family="Nunito, sans-serif" font-size="14" font-weight="900" fill="#facc15" text-anchor="middle">B75 Portal Norte</text>
+                            <!-- Parabrisas panorámico -->
+                            <rect x="18" y="54" width="195" height="68" rx="10" fill="#bae6fd" stroke="#1e293b" stroke-width="3"/>
+                            <line x1="115" y1="54" x2="115" y2="122" stroke="#1e293b" stroke-width="3"/>
+                            <!-- Faros y placa -->
+                            <circle cx="34" cy="148" r="10" fill="#fef08a" stroke="#1e293b" stroke-width="2"/>
+                            <circle cx="198" cy="148" r="10" fill="#fef08a" stroke="#1e293b" stroke-width="2"/>
+                            <rect x="92" y="144" width="48" height="16" rx="3" fill="#facc15" stroke="#1e293b" stroke-width="2"/>
+                            <!-- Ruedas -->
+                            <circle cx="65" cy="188" r="24" fill="#1e293b"/><circle cx="65" cy="188" r="10" fill="#94a3b8"/>
+                            <circle cx="220" cy="188" r="24" fill="#1e293b"/><circle cx="220" cy="188" r="10" fill="#94a3b8"/>
+                        </g>
+
+                        <!-- Joven con mochila esperando en primer plano (Izquierda) -->
+                        <g transform="translate(85, 315)">
+                            <circle cx="135" cy="95" r="68" fill="#2b170c"/>
+                            <path d="M 55 280 C 60 195 100 182 140 182 C 180 182 215 195 220 280 L 220 405 L 55 405 Z" fill="#ffffff" stroke="#1e293b" stroke-width="3"/>
+                            <!-- Mochila oscura -->
+                            <rect x="38" y="215" width="115" height="175" rx="35" fill="#334155" stroke="#1e293b" stroke-width="3"/>
+                            <circle cx="145" cy="105" r="48" fill="#c6845c" stroke="#2b170c" stroke-width="3"/>
+                            <circle cx="162" cy="100" r="6" fill="#1f1008"/>
+                        </g>
+                    </svg>
+                `,
+
+                /* CAPÍTULO 5: BIBLIOTECA PÚBLICA VIRGILIO BARCO (EDIFICIO CIRCULAR DE LADRILLO, ESPEJO DE AGUA Y LETRERO) */
+                5: `
+                    <svg viewBox="0 0 1200 720" preserveAspectRatio="xMidYMid slice" class="w-full h-full">
+                        <rect width="1200" height="720" fill="#7dd3fc"/>
+                        <!-- Árboles del parque metropolitano -->
+                        <circle cx="160" cy="285" r="120" fill="#4d7c0f" stroke="#365314" stroke-width="3"/>
+                        <circle cx="1050" cy="275" r="130" fill="#4d7c0f" stroke="#365314" stroke-width="3"/>
+
+                        <!-- Edificio Circular de Ladrillo Naranja: Biblioteca Pública Virgilio Barco -->
+                        <g transform="translate(325, 135)" stroke="#5c4028" stroke-width="3">
+                            <rect x="110" y="0" width="330" height="65" rx="10" fill="#c2593f"/>
+                            <rect x="40" y="55" width="470" height="195" rx="16" fill="#d96b43"/>
+                            <!-- Grandes ventanales curvos -->
+                            <rect x="75" y="85" width="95" height="90" rx="6" fill="#93c5fd"/>
+                            <rect x="200" y="85" width="150" height="90" rx="6" fill="#93c5fd"/>
+                            <rect x="380" y="85" width="95" height="90" rx="6" fill="#93c5fd"/>
+                        </g>
+
+                        <!-- Espejo de agua característico -->
+                        <rect x="0" y="405" width="1200" height="165" fill="#38bdf8" stroke="#0284c7" stroke-width="3"/>
+                        <g stroke="#bae6fd" stroke-width="2.5" opacity="0.7">
+                            <line x1="120" y1="445" x2="480" y2="445"/>
+                            <line x1="260" y1="485" x2="720" y2="485"/>
+                            <line x1="180" y1="525" x2="620" y2="525"/>
+                        </g>
+
+                        <!-- Pradera verde en primer plano -->
+                        <path d="M 0 510 Q 520 535 1200 620 L 1200 720 L 0 720 Z" fill="#65a30d" stroke="#365314" stroke-width="3"/>
+
+                        <!-- Letrero de piedra "Biblioteca Pública Virgilio Barco" a la derecha -->
+                        <g transform="translate(745, 365)">
+                            <polygon points="0,35 455,0 455,215 0,185" fill="#d6c7b2" stroke="#5c4028" stroke-width="3.5"/>
+                            <!-- Ícono de libro abierto -->
+                            <path d="M 35 72 Q 62 65 82 78 Q 102 65 128 72 L 128 122 Q 102 115 82 128 Q 62 115 35 122 Z" fill="none" stroke="#1e293b" stroke-width="4"/>
+                            <line x1="82" y1="78" x2="82" y2="128" stroke="#1e293b" stroke-width="3.5"/>
+                            <text x="285" y="92" font-family="Fredoka, sans-serif" font-size="27" font-weight="700" fill="#1e293b" text-anchor="middle">Biblioteca Pública</text>
+                            <text x="285" y="130" font-family="Fredoka, sans-serif" font-size="28" font-weight="700" fill="#1e293b" text-anchor="middle">Virgilio Barco</text>
+                        </g>
+
+                        <!-- Joven sentada en el césped leyendo un libro morado -->
+                        <g transform="translate(135, 355)">
+                            <circle cx="95" cy="65" r="52" fill="#2b170c"/>
+                            <!-- Morral morado -->
+                            <rect x="12" y="165" width="65" height="92" rx="18" fill="#7e22ce" stroke="#1e293b" stroke-width="3"/>
+                            <rect x="55" y="108" width="84" height="88" rx="22" fill="#fef3c7" stroke="#1e293b" stroke-width="3"/>
+                            <rect x="52" y="185" width="155" height="65" rx="26" fill="#2563eb" stroke="#1e293b" stroke-width="3"/>
+                            <circle cx="102" cy="68" r="36" fill="#c6845c" stroke="#2b170c" stroke-width="2.5"/>
+                            <circle cx="114" cy="64" r="5" fill="#1f1008"/>
+                            <!-- Libro abierto morado -->
+                            <polygon points="135,135 195,120 195,172 135,182" fill="#9333ea" stroke="#1e293b" stroke-width="3"/>
+                        </g>
+                    </svg>
+                `
+            };
+
+            return scenes[chapNum] || scenes[1];
+        }
+
+        function handleCustomSceneUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    CUSTOM_UPLOADED_SCENES[appState.currentChapter] = e.target.result;
+                    document.getElementById('adventureFullScene').innerHTML = createBogotaBackdropSVG(appState.currentChapter);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        /* ====================================================================
+           3. DATOS PEDAGÓGICOS DE LOS 5 CAPÍTULOS Y LAS 12 SEÑAS LSC
+           ==================================================================== */
+        const ADVENTURE_CHAPTERS = {
+            1: {
+                place: "La Plaza de Bolívar",
+                signId: "hola",
+                dialogue: "¡Hola! Qué bueno verte por acá en la Plaza de Bolívar. ¿Me ayudas a pedir un tinto y una empanada usando la seña correcta?",
+                options: [
+                    { label: "Opción A: Hacer la seña de Gracias", isCorrect: false, feedback: "¡Casi, parcero! 'Gracias' se usa después de recibir el tinto. Primero toca saludar bien bacano." },
+                    { label: "Opción B: Hacer la seña de Hola", isCorrect: true, feedback: "¡Eso es! Con la mano abierta cerca de la frente y una buena sonrisa rompes el hielo en LSC. (+20 ★)" },
+                    { label: "Opción C: Hacer la seña de Por Favor", isCorrect: false, feedback: "¡Uy! 'Por favor' sirve muchísimo, pero sin saludar primero queda muy seco. ¡Intenta con el saludo!" }
+                ]
+            },
+            2: {
+                place: "Parque Simón Bolívar",
+                signId: "yo",
+                dialogue: "¡Qué parche tan chévere aquí en el Parque Simón Bolívar! Queremos presentarnos con los chicos de la guitarra. ¿Cómo digo 'YO' en LSC?",
+                options: [
+                    { label: "Opción A: Apuntar hacia mí con 'Yo'", isCorrect: true, feedback: "¡Perfecto! El dedo índice apuntando al centro del pecho indica 'YO' de forma clara y directa. (+20 ★)" },
+                    { label: "Opción B: Señalar al cielo con 'Buenos Días'", isCorrect: false, feedback: "¡Jajaja! Así parece que estuvieras mirando si va a llover en Bogotá. Apunta hacia tu propio pecho." },
+                    { label: "Opción C: Señalar hacia otro lado con 'Él / Ella'", isCorrect: false, feedback: "Si apuntas hacia un lado estás presentando a alguien más, ¡no a ti mismo!" }
+                ]
+            },
+            3: {
+                place: "Panadería de Barrio",
+                signId: "por_favor",
+                dialogue: "¡Uff, qué olor tan delicioso a almojábana y pandebono recién horneado! ¿Cómo le pido al panadero un pandebono con mucha educación?",
+                options: [
+                    { label: "Opción A: Hacer la seña de Perdón", isCorrect: false, feedback: "¡No hay por qué pedir perdón por tener hambre! Usa la fórmula de cortesía para pedir algo." },
+                    { label: "Opción B: Hacer la seña de Buenas Noches", isCorrect: false, feedback: "¡Todavía es de día! Si dices buenas noches el panadero va a pensar que ya tiene que cerrar." },
+                    { label: "Opción C: Hacer la seña de Por Favor", isCorrect: true, feedback: "¡Excelente! Pasar la palma en círculo suave sobre el pecho dice 'POR FAVOR' con toda la amabilidad. (+20 ★)" }
+                ]
+            },
+            4: {
+                place: "Estación de TransMilenio",
+                signId: "nosotros",
+                dialogue: "¡Ya llegó el articulado B75 Portal Norte! Queremos preguntarle al guía de la estación si este bus nos sirve a todo el grupo. ¿Qué seña usamos?",
+                options: [
+                    { label: "Opción A: Hacer la seña de Tú", isCorrect: false, feedback: "'Tú' señala solo a una persona. Necesitamos incluir a todo nuestro combo." },
+                    { label: "Opción B: Hacer la seña de Nosotros", isCorrect: true, feedback: "¡Brutal! El movimiento semicircular con el índice envuelve a todo el grupo para decir 'NOSOTROS'. (+20 ★)" },
+                    { label: "Opción C: Hacer la seña de Con Gusto", isCorrect: false, feedback: "'Con gusto' se responde cuando te dan las gracias. ¡Prueba con el pronombre grupal!" }
+                ]
+            },
+            5: {
+                place: "Biblioteca Pública Virgilio Barco",
+                signId: "gracias",
+                dialogue: "¡Llegamos sanos y salvos frente al espejo de agua de la Biblioteca Virgilio Barco! ¿Cómo le agradecemos a todos por habernos ayudado en el viaje?",
+                options: [
+                    { label: "Opción A: Hacer la seña de Gracias", isCorrect: true, feedback: "¡Misión cumplida, crack! Llevar los dedos de la barbilla hacia adelante con sonrisa expresa un 'GRACIAS' sincero. (+20 ★)" },
+                    { label: "Opción B: Hacer la seña de Hola", isCorrect: false, feedback: "¡Hola ya lo dijimos al arrancar en la Plaza de Bolívar! Ahora toca despedirnos agradeciendo." },
+                    { label: "Opción C: Hacer la seña de Perdón", isCorrect: false, feedback: "¡Nada de pedir perdón, lo hiciste increíble durante todo el recorrido por Bogotá!" }
+                ]
+            }
+        };
+
+        const LSC_MODULES = {
+            saludos: [
+                { id: 'hola', name: 'HOLA', desc: 'Mano abierta cerca de la frente moviéndose ligeramente hacia afuera con sonrisa receptiva.' },
+                { id: 'buenos_dias', name: 'BUENOS DÍAS', desc: 'Mano plana tocando la barbilla y desplazándose hacia adelante abriéndose como el sol.' },
+                { id: 'buenas_tardes', name: 'BUENAS TARDES', desc: 'Mano plana sobre el brazo opuesto a la altura del codo haciendo un movimiento suave hacia abajo.' },
+                { id: 'buenas_noches', name: 'BUENAS NOCHES', desc: 'Mano plana desplazándose frente al rostro de arriba hacia abajo imitando el anochecer.' }
+            ],
+            pronombres: [
+                { id: 'yo', name: 'YO', desc: 'Dedo índice apuntando directamente al centro del propio pecho.' },
+                { id: 'tu', name: 'TÚ', desc: 'Dedo índice apuntando de forma directa a la persona con la que hablas.' },
+                { id: 'el_ella', name: 'ÉL / ELLA', desc: 'Dedo índice apuntando hacia un lado señalando a una tercera persona.' },
+                { id: 'nosotros', name: 'NOSOTROS', desc: 'Dedo índice haciendo un movimiento semicircular que envuelve a todo el grupo.' }
+            ],
+            cortesia: [
+                { id: 'por_favor', name: 'POR FAVOR', desc: 'Palma de la mano abierta sobre el pecho haciendo un movimiento circular suave.' },
+                { id: 'gracias', name: 'GRACIAS', desc: 'Yemas de los dedos tocando la barbilla y extendiéndose hacia adelante con amabilidad.' },
+                { id: 'con_gusto', name: 'CON GUSTO', desc: 'Mano abierta sobre el pecho dando ligeros toques acompañado de una sonrisa amable.' },
+                { id: 'perdon', name: 'PERDÓN / DISCULPA', desc: 'Dedos rozando suavemente la barbilla con expresión facial de disculpa.' }
+            ]
+        };
+
+        /* ====================================================================
+           4. ESTADO GLOBAL Y NAVEGACIÓN ENTRE PESTAÑAS
+           ==================================================================== */
+        const appState = {
+            activeTab: 'aventura',
+            currentChapter: 1,
+            completedChapters: {},
+            stars: 100,
+            trainingModule: 'saludos',
+            memoryDeck: [],
+            flippedCards: [],
+            matchedCount: 0
+        };
+
+        function navigateTo(tabName) {
+            appState.activeTab = tabName;
+
+            // Ocultar todas las vistas y mostrar la elegida
+            document.querySelectorAll('.view-section').forEach(sec => {
+                sec.classList.add('hidden');
+                sec.classList.remove('flex');
+            });
+            const target = document.getElementById(`view-${tabName}`);
+            if (target) {
+                target.classList.remove('hidden');
+                if (tabName === 'inicio' || tabName === 'mision' || tabName === 'aventura') {
+                    target.classList.add('flex');
+                }
+            }
+
+            // Resaltar botón activo en amarillo dorado (como en la imagen de referencia)
+            document.querySelectorAll('.nav-pill').forEach(btn => {
+                btn.classList.remove('bg-amber-300', 'text-slate-900');
+                btn.classList.add('bg-sky-200', 'text-slate-800');
+            });
+            const activePill = document.getElementById(`nav-${tabName}`);
+            if (activePill) {
+                activePill.classList.remove('bg-sky-200', 'text-slate-800');
+                activePill.classList.add('bg-amber-300', 'text-slate-900');
+            }
+
+            // Inicializar contenido específico según pestaña
+            if (tabName === 'inicio') {
+                document.getElementById('inicioBackdrop').innerHTML = createBogotaBackdropSVG(1);
+                document.getElementById('inicioLucasAvatar').innerHTML = createLucasAvatarSVG('hola');
+            } else if (tabName === 'mision') {
+                document.getElementById('misionBackdrop').innerHTML = createBogotaBackdropSVG(2);
+                document.getElementById('misionLucasCenter').innerHTML = createLucasAvatarSVG('hola');
+            } else if (tabName === 'aventura') {
+                loadAdventureChapter(appState.currentChapter);
+            } else if (tabName === 'entrenamiento') {
+                setTrainingModule(appState.trainingModule);
+            } else if (tabName === 'diccionario') {
+                filterDictionary('todas');
+            }
+
+            lucide.createIcons();
+        }
+
+        function updateTopStats() {
+            document.getElementById('starScoreDisplay').textContent = appState.stars;
+            const doneCount = Object.keys(appState.completedChapters).length;
+            const pct = Math.min(100, Math.max(20, (doneCount / 5) * 100));
+            document.getElementById('topProgressBar').style.width = `${pct}%`;
+        }
+
+        /* ====================================================================
+           5. LÓGICA DE LA PANTALLA "MISIÓN"
+           ==================================================================== */
+        function selectMissionCard(step, btn) {
+            const texts = {
+                1: "🗺️ <strong>Paso 1 - Recorre 5 lugares de Bogotá:</strong> Empezamos en la Plaza de Bolívar, pasamos por el Parque Simón Bolívar, la panadería de barrio, TransMilenio y cerramos en la Biblioteca Virgilio Barco.",
+                2: "🖐️ <strong>Paso 2 - Entrena tus señas:</strong> Fíjate siempre en la forma de mis dedos, la ubicación respecto a mi cuerpo y la flecha azul que indica hacia dónde va el movimiento.",
+                3: "⭐ <strong>Paso 3 - Toma decisiones en LSC:</strong> Cada escena tiene 3 opciones. ¡Si eliges la seña correcta a la primera, ganas +20 estrellas!"
+            };
+            document.getElementById('misionSpeechBox').innerHTML = texts[step];
+            document.querySelectorAll('.mision-card').forEach(c => c.classList.remove('ring-4', 'ring-amber-400'));
+            btn.classList.add('ring-4', 'ring-amber-400');
+        }
+
+        /* ====================================================================
+           6. LÓGICA DE LA PANTALLA "AVENTURA" (5 CAPÍTULOS)
+           ==================================================================== */
+        function loadAdventureChapter(chapNum) {
+            appState.currentChapter = chapNum;
+            const data = ADVENTURE_CHAPTERS[chapNum];
+
+            document.getElementById('adventureInteractiveStage').classList.remove('hidden');
+            document.getElementById('adventureFinaleCard').classList.add('hidden');
+
+            // Actualizar puntos de capítulo en barra superior
+            document.querySelectorAll('.chap-dot').forEach(dot => {
+                const num = Number(dot.dataset.chap);
+                dot.classList.remove('bg-amber-300', 'bg-emerald-400', 'bg-slate-100');
+                if (num === chapNum) dot.classList.add('bg-amber-300');
+                else if (appState.completedChapters[num]) dot.classList.add('bg-emerald-400');
+                else dot.classList.add('bg-slate-100');
+            });
+
+            // Escenario de fondo 2D y título
+            document.getElementById('adventureFullScene').innerHTML = createBogotaBackdropSVG(chapNum);
+            document.getElementById('advChapLabel').textContent = `Capítulo ${chapNum}:`;
+            document.getElementById('advChapPlace').textContent = data.place;
+
+            // Avatar central de Lucas
+            document.getElementById('advLucasAvatarBox').innerHTML = createLucasAvatarSVG(data.signId);
+
+            // Diálogo y opciones
+            document.getElementById('advDialogueText').textContent = data.dialogue;
+            const fbBanner = document.getElementById('advFeedbackBanner');
+            fbBanner.classList.add('hidden');
+
+            const optionsRow = document.getElementById('advOptionsRow');
+            optionsRow.innerHTML = '';
+
+            data.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'py-2.5 px-3 rounded-2xl bg-sky-100 hover:bg-sky-200 border-2 border-slate-800 font-kids font-bold text-xs sm:text-sm text-slate-900 text-center leading-tight transition pill-shadow';
+                btn.textContent = opt.label;
+                btn.onclick = () => handleAdventureChoice(opt, btn);
+                optionsRow.appendChild(btn);
+            });
+        }
+
+        function handleAdventureChoice(opt, btnEl) {
+            const fbBanner = document.getElementById('advFeedbackBanner');
+            const fbText = document.getElementById('advFeedbackText');
+            const nextBtn = document.getElementById('advNextBtn');
+
+            fbBanner.classList.remove('hidden', 'bg-emerald-100', 'border-emerald-600', 'text-emerald-900', 'bg-rose-100', 'border-rose-500', 'text-rose-900');
+
+            if (opt.isCorrect) {
+                if (!appState.completedChapters[appState.currentChapter]) {
+                    appState.completedChapters[appState.currentChapter] = true;
+                    appState.stars += 20;
+                    updateTopStats();
+                }
+                btnEl.classList.remove('bg-sky-100', 'hover:bg-sky-200');
+                btnEl.classList.add('bg-emerald-300');
+
+                fbBanner.classList.add('bg-emerald-100', 'border-emerald-600', 'text-emerald-900');
+                fbText.textContent = opt.feedback;
+                nextBtn.classList.remove('hidden');
+                nextBtn.textContent = appState.currentChapter < 5 ? 'Continuar al siguiente lugar 👉' : '¡Ver resultado final! 🏆';
+            } else {
+                btnEl.classList.remove('bg-sky-100', 'hover:bg-sky-200');
+                btnEl.classList.add('bg-rose-200');
+
+                fbBanner.classList.add('bg-rose-100', 'border-rose-500', 'text-rose-900');
+                fbText.textContent = opt.feedback;
+                nextBtn.classList.add('hidden');
+            }
+        }
+
+        function nextAdventureStep() {
+            if (appState.currentChapter < 5) {
+                loadAdventureChapter(appState.currentChapter + 1);
+            } else {
+                document.getElementById('adventureInteractiveStage').classList.add('hidden');
+                document.getElementById('adventureFinaleCard').classList.remove('hidden');
+                document.getElementById('finaleLucasAvatar').innerHTML = createLucasAvatarSVG('gracias');
+            }
+        }
+
+        function restartAdventure() {
+            appState.completedChapters = {};
+            updateTopStats();
+            loadAdventureChapter(1);
+        }
+
+        /* ====================================================================
+           7. LÓGICA DE LA PANTALLA "ENTRENAMIENTO" (MÓDULOS + MEMORIA LSC)
+           ==================================================================== */
+        function setTrainingModule(modKey) {
+            appState.trainingModule = modKey;
+
+            document.querySelectorAll('.mod-tab').forEach(b => {
+                b.classList.remove('bg-amber-300', 'text-slate-900');
+                b.classList.add('bg-sky-100', 'text-slate-800');
+            });
+            const activeTab = document.getElementById(`mod-btn-${modKey}`);
+            if (activeTab) {
+                activeTab.classList.remove('bg-sky-100', 'text-slate-800');
+                activeTab.classList.add('bg-amber-300', 'text-slate-900');
+            }
+
+            const items = LSC_MODULES[modKey];
+            const previewGrid = document.getElementById('trainingPreviewCards');
+            previewGrid.innerHTML = '';
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-white border-4 border-slate-800 rounded-3xl p-3.5 comic-card flex flex-col items-center text-center space-y-2';
+                card.innerHTML = `
+                    <div class="w-32 h-32 rounded-2xl border-2 border-slate-700 overflow-hidden bg-sky-50">
+                        ${createLucasAvatarSVG(item.id)}
+                    </div>
+                    <span class="px-3 py-0.5 bg-amber-300 border border-slate-800 rounded-full font-kids font-bold text-xs text-slate-900">
+                        ${item.name}
+                    </span>
+                    <p class="text-xs font-bold text-slate-600 leading-snug">${item.desc}</p>
+                `;
+                previewGrid.appendChild(card);
+            });
+
+            initMemoryGame();
+        }
+
+        function initMemoryGame() {
+            const items = LSC_MODULES[appState.trainingModule];
+            const deck = [];
+            items.forEach(item => {
+                deck.push({ id: item.id, type: 'avatar', name: item.name, desc: item.desc });
+                deck.push({ id: item.id, type: 'text', name: item.name, desc: item.desc });
+            });
+            deck.sort(() => Math.random() - 0.5);
+
+            appState.memoryDeck = deck;
+            appState.flippedCards = [];
+            appState.matchedCount = 0;
+            document.getElementById('memPairsCount').textContent = '0';
+            document.getElementById('memoryStatusBanner').textContent = '💡 ¡Toca dos cartas para emparejar la seña con su descripción!';
+
+            const board = document.getElementById('memoryBoard');
+            board.innerHTML = '';
+
+            deck.forEach((card, idx) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'h-36 sm:h-40 cursor-pointer perspective-1000';
+                wrapper.onclick = () => flipMemoryCard(idx);
+
+                const inner = document.createElement('div');
+                inner.id = `mem-card-${idx}`;
+                inner.className = 'w-full h-full duration-500 transform-style-3d relative rounded-2xl border-2 border-slate-800 bg-white shadow-md';
+
+                const front = document.createElement('div');
+                front.className = 'absolute inset-0 backface-hidden bg-sky-200 rounded-2xl flex flex-col items-center justify-center p-2';
+                front.innerHTML = `
+                    <span class="w-10 h-10 rounded-full bg-amber-300 border-2 border-slate-800 flex items-center justify-center font-kids font-bold text-lg">?</span>
+                    <span class="font-kids font-bold text-[11px] text-slate-800 mt-1.5">Seña LSC</span>
+                `;
+
+                const back = document.createElement('div');
+                back.className = 'absolute inset-0 backface-hidden rotate-y-180 bg-white rounded-2xl p-2 flex flex-col items-center justify-center text-center overflow-hidden';
+                if (card.type === 'avatar') {
+                    back.innerHTML = `<div class="w-full h-full rounded-xl overflow-hidden">${createLucasAvatarSVG(card.id)}</div>`;
+                } else {
+                    back.innerHTML = `
+                        <span class="px-2.5 py-0.5 bg-amber-300 border border-slate-800 rounded-full font-kids font-bold text-[10px] mb-1">${card.name}</span>
+                        <p class="text-[11px] font-bold text-slate-700 leading-tight">${card.desc}</p>
+                    `;
+                }
+
+                inner.appendChild(front);
+                inner.appendChild(back);
+                wrapper.appendChild(inner);
+                board.appendChild(wrapper);
+            });
+        }
+
+        function flipMemoryCard(idx) {
+            if (appState.flippedCards.length === 2) return;
+            const el = document.getElementById(`mem-card-${idx}`);
+            if (!el || el.classList.contains('rotate-y-180') || el.classList.contains('matched')) return;
+
+            el.classList.add('rotate-y-180');
+            appState.flippedCards.push({ idx, card: appState.memoryDeck[idx] });
+
+            if (appState.flippedCards.length === 2) {
+                const [a, b] = appState.flippedCards;
+                if (a.card.id === b.card.id && a.card.type !== b.card.type) {
+                    document.getElementById(`mem-card-${a.idx}`).classList.add('matched', 'border-emerald-500');
+                    document.getElementById(`mem-card-${b.idx}`).classList.add('matched', 'border-emerald-500');
+                    appState.matchedCount++;
+                    appState.stars += 10;
+                    updateTopStats();
+                    document.getElementById('memPairsCount').textContent = appState.matchedCount;
+                    document.getElementById('memoryStatusBanner').textContent = `🎉 ¡Excelente! Emparejaste la seña "${a.card.name}" (+10 ★)`;
+                    appState.flippedCards = [];
+                } else {
+                    setTimeout(() => {
+                        document.getElementById(`mem-card-${a.idx}`)?.classList.remove('rotate-y-180');
+                        document.getElementById(`mem-card-${b.idx}`)?.classList.remove('rotate-y-180');
+                        appState.flippedCards = [];
+                    }, 900);
+                }
+            }
+        }
+
+        /* ====================================================================
+           8. LÓGICA DE LA PANTALLA "DICCIONARIO" (12 SEÑAS FILTRABLES)
+           ==================================================================== */
+        function filterDictionary(category) {
+            document.querySelectorAll('.dict-filter').forEach(btn => {
+                btn.classList.remove('bg-amber-300', 'text-slate-900');
+                btn.classList.add('bg-sky-100', 'text-slate-800');
+            });
+            const activeBtn = document.getElementById(`dict-btn-${category}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-sky-100', 'text-slate-800');
+                activeBtn.classList.add('bg-amber-300', 'text-slate-900');
+            }
+
+            const grid = document.getElementById('dictionaryGrid');
+            grid.innerHTML = '';
+
+            const keys = category === 'todas' ? ['saludos', 'pronombres', 'cortesia'] : [category];
+            const catLabels = { saludos: 'Saludos', pronombres: 'Pronombres', cortesia: 'Cortesía' };
+
+            keys.forEach(k => {
+                LSC_MODULES[k].forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white border-4 border-slate-800 rounded-3xl p-4 comic-card flex items-center gap-4';
+                    card.innerHTML = `
+                        <div class="w-28 h-28 rounded-2xl border-2 border-slate-700 overflow-hidden bg-sky-50 flex-shrink-0">
+                            ${createLucasAvatarSVG(item.id)}
+                        </div>
+                        <div class="space-y-1.5">
+                            <span class="inline-block px-2.5 py-0.5 bg-sky-100 border border-slate-700 rounded-full font-kids font-bold text-[10px] text-sky-800">
+                                ${catLabels[k]}
+                            </span>
+                            <h3 class="font-kids font-bold text-lg text-slate-900">${item.name}</h3>
+                            <p class="text-xs font-bold text-slate-600 leading-snug">${item.desc}</p>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            });
+        }
+
+        /* ====================================================================
+           9. INICIALIZACIÓN AL CARGAR LA PÁGINA
+           ==================================================================== */
+        window.onload = function() {
+            updateTopStats();
+            // Inicia directamente en la vista de Aventura (Capítulo 1: La Plaza de Bolívar)
+            navigateTo('aventura');
+        };
+    </script>
+</body>
+</html>
