@@ -25,6 +25,85 @@
                         fontFamily: {
                             sans: ['Nunito', 'system-ui', 'sans-serif'],
                             kids: ['"Baloo 2"', 'Nunito', 'system-ui', 'sans-serif'],
+                        },
+                        /* =====================================================
+                           PALETA CÁLIDA Y DINÁMICA (café/tierra + primarios).
+                           Se redefinen las familias que ya usa la página para
+                           que TODA la interfaz adopte la nueva paleta sin tocar
+                           cada clase. Se conserva la escala claro→oscuro para
+                           mantener buen contraste y accesibilidad.
+                           ===================================================== */
+                        colors: {
+                            /* slate -> CAFÉ / TIERRA (fondos, texto, bordes) */
+                            slate: {
+                                50:  '#faf6f1',
+                                100: '#f3ebe1',
+                                200: '#e6d7c4',
+                                300: '#d2b89b',
+                                400: '#b08e68',
+                                500: '#8c6a45',
+                                600: '#6f5235',
+                                700: '#573f29',
+                                800: '#3f2d1d',
+                                900: '#2b1e13',
+                                950: '#1a120b',
+                            },
+                            /* blue -> AZUL PRIMARIO VIVO (marca principal) */
+                            blue: {
+                                50:  '#eaf1ff',
+                                100: '#d4e2ff',
+                                200: '#a9c5ff',
+                                300: '#7aa2ff',
+                                400: '#4f7dfb',
+                                500: '#2f5fef',
+                                600: '#1d47db',
+                                700: '#1536b4',
+                                800: '#132d8e',
+                                900: '#132a72',
+                                950: '#0d1a47',
+                            },
+                            /* teal -> TERRACOTA / NARANJA CÁLIDO (secundario) */
+                            teal: {
+                                50:  '#fef2ec',
+                                100: '#fde0d1',
+                                200: '#f9bfa3',
+                                300: '#f3966c',
+                                400: '#ec6c3c',
+                                500: '#dd4e1f',
+                                600: '#c23c14',
+                                700: '#9d2f13',
+                                800: '#7e2816',
+                                900: '#672314',
+                                950: '#380f08',
+                            },
+                            /* amber -> AMARILLO / ÁMBAR PRIMARIO VIBRANTE (acento) */
+                            amber: {
+                                50:  '#fff8e6',
+                                100: '#ffedba',
+                                200: '#ffdd82',
+                                300: '#ffc947',
+                                400: '#ffb41f',
+                                500: '#f59e0b',
+                                600: '#d97706',
+                                700: '#b45309',
+                                800: '#92400e',
+                                900: '#78350f',
+                                950: '#451f05',
+                            },
+                            /* rose -> ROJO PRIMARIO (alertas / peligro) */
+                            rose: {
+                                50:  '#fff0ee',
+                                100: '#ffdcd8',
+                                200: '#ffbab3',
+                                300: '#ff8c80',
+                                400: '#fa5b4c',
+                                500: '#ea3323',
+                                600: '#c8241a',
+                                700: '#a71c17',
+                                800: '#891b19',
+                                900: '#721b1a',
+                                950: '#3e0a09',
+                            },
                         }
                     }
                 }
@@ -35,15 +114,24 @@
     <style>
         /* ---- Tipografía base de respaldo (por si falla el CDN de fuentes) ---- */
         :root {
-            --ink: #1f2937;          /* texto principal, buen contraste */
-            --ink-soft: #475569;     /* texto secundario */
-            --brand: #2563eb;        /* azul profundo, menos saturado que el sky anterior */
-            --brand-2: #0d9488;      /* teal en vez de verde lima */
-            --accent: #d97706;       /* ámbar más terroso */
-            --surface: #ffffff;
-            --line: #cbd5e1;
+            --ink: #2b1e13;          /* café oscuro: texto principal, alto contraste */
+            --ink-soft: #6f5235;     /* café medio: texto secundario */
+            --brand: #1d47db;        /* azul primario vivo (marca) */
+            --brand-2: #dd4e1f;      /* terracota cálido (secundario) */
+            --accent: #f59e0b;       /* ámbar/amarillo vibrante (acento) */
+            --surface: #fffdfa;      /* blanco cálido */
+            --line: #e6d7c4;         /* línea en tono tierra claro */
         }
-        body { font-family: 'Nunito', system-ui, -apple-system, sans-serif; }
+        body {
+            font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+            /* Fondo cálido con un degradado sutil para dar más vida */
+            background-color: #f3ebe1;
+            background-image:
+                radial-gradient(1100px 520px at 12% -8%, rgba(245, 158, 11, 0.14), transparent 60%),
+                radial-gradient(1000px 540px at 100% 0%, rgba(29, 71, 219, 0.10), transparent 55%),
+                radial-gradient(900px 600px at 50% 120%, rgba(221, 78, 31, 0.10), transparent 60%);
+            background-attachment: fixed;
+        }
         .font-kids { font-family: '"Baloo 2"', 'Nunito', system-ui, sans-serif; }
 
         /* ---- Tarjetas 3D del juego de memoria ---- */
@@ -54,15 +142,15 @@
 
         /* ---- Sombra de tarjeta más sutil y profesional ---- */
         .comic-card {
-            box-shadow: 0 10px 24px -10px rgba(15, 23, 42, 0.28), 0 2px 6px -2px rgba(15, 23, 42, 0.10);
+            box-shadow: 0 12px 26px -10px rgba(63, 45, 29, 0.34), 0 2px 6px -2px rgba(63, 45, 29, 0.14);
         }
-        .pill-shadow { box-shadow: 0 2px 0 rgba(15, 23, 42, 0.12); }
-        .pill-shadow:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(15, 23, 42, 0.12); }
+        .pill-shadow { box-shadow: 0 2px 0 rgba(63, 45, 29, 0.18); }
+        .pill-shadow:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(63, 45, 29, 0.18); }
 
         /* ---- Foco accesible y visible en TODOS los elementos interactivos ---- */
         a:focus-visible, button:focus-visible, [tabindex]:focus-visible,
         input:focus-visible, label:focus-visible, [role="button"]:focus-visible {
-            outline: 3px solid #1d4ed8;
+            outline: 3px solid #1d47db;
             outline-offset: 2px;
             border-radius: 10px;
         }
@@ -107,8 +195,8 @@
         }
 
         /* ---- Stepper de la ruta de aprendizaje ---- */
-        .step-item[aria-current="step"] .step-dot { background:#1d4ed8; color:#fff; border-color:#1d4ed8; }
-        .step-item[data-done="true"] .step-dot { background:#0d9488; color:#fff; border-color:#0d9488; }
+        .step-item[aria-current="step"] .step-dot { background:#1d47db; color:#fff; border-color:#1d47db; }
+        .step-item[data-done="true"] .step-dot { background:#dd4e1f; color:#fff; border-color:#dd4e1f; }
 
         /* ---- Oculto accesible (texto solo para lectores de pantalla) ---- */
         .sr-only {
@@ -119,7 +207,7 @@
         /* ---- Video / espacio multimedia preparado ---- */
         .media-frame {
             background:
-                repeating-linear-gradient(45deg, #e2e8f0 0 10px, #eef2f7 10px 20px);
+                repeating-linear-gradient(45deg, #e6d7c4 0 10px, #f3ebe1 10px 20px);
         }
     </style>
 </head>
