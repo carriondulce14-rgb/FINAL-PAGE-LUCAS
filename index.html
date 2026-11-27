@@ -1804,13 +1804,15 @@
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'adv-option text-left p-2.5 rounded-xl bg-white/97 border border-slate-200 hover:border-blue-400 hover:shadow-md transition flex flex-col';
-                btn.setAttribute('aria-label', `Opción ${i + 1}: seña ${sign.name}`);
+                // No se revela el nombre de la seña (ni visual ni para lectores de pantalla):
+                // el reto consiste en reconocer la seña por su ilustración.
+                btn.setAttribute('aria-label', `Opción ${i + 1}: observa la seña y elige si es la adecuada`);
                 btn.innerHTML = `
                     <div class="w-full h-24 sm:h-28 rounded-lg overflow-hidden bg-slate-50 relative">
                         <div class="w-full h-full">${createLucasAvatarSVG(sign.id)}</div>
                         <span class="absolute top-1 left-1 w-5 h-5 rounded-full bg-blue-700 text-white text-[11px] font-bold flex items-center justify-center">${i + 1}</span>
                     </div>
-                    <span class="mt-2 text-center font-bold text-sm text-slate-900">${sign.name}</span>`;
+                    <span class="mt-2 text-center font-bold text-sm text-slate-500">Opción ${i + 1}</span>`;
                 btn.onclick = () => handleAdventureChoice(chapNum, opt, btn);
                 row.appendChild(btn);
             });
