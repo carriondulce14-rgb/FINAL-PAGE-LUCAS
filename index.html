@@ -34,64 +34,67 @@
                            mantener buen contraste y accesibilidad.
                            ===================================================== */
                         colors: {
-                            /* slate -> CAFÉ / TIERRA (fondos, texto, bordes) */
+                            /* slate -> CAFÉ / TIERRA SUAVE (fondos, texto, bordes)
+                               Tramos claros más neutros y aireados; oscuros cálidos
+                               para texto con buen contraste. */
                             slate: {
-                                50:  '#faf6f1',
-                                100: '#f3ebe1',
-                                200: '#e6d7c4',
-                                300: '#d2b89b',
-                                400: '#b08e68',
-                                500: '#8c6a45',
-                                600: '#6f5235',
-                                700: '#573f29',
-                                800: '#3f2d1d',
-                                900: '#2b1e13',
-                                950: '#1a120b',
+                                50:  '#fcf8f3',
+                                100: '#f6efe6',
+                                200: '#ebdfd0',
+                                300: '#d8c3a8',
+                                400: '#b89a74',
+                                500: '#977452',
+                                600: '#785a3e',
+                                700: '#5e4631',
+                                800: '#443223',
+                                900: '#2f2217',
+                                950: '#1c140d',
                             },
-                            /* blue -> CAFÉ DORADO / CARAMELO (marca principal)
-                               La marca deja de ser azul y entra en la gama cálida:
-                               un marrón caramelo rico para botones y acentos fuertes. */
+                            /* blue -> CAFÉ CARAMELO ARMÓNICO (marca principal)
+                               Café cálido y parejo para botones y marca, sin
+                               saturar: combina suavemente con los amarillos. */
                             blue: {
-                                50:  '#fbf4e9',
-                                100: '#f5e6cc',
-                                200: '#eacf9c',
-                                300: '#dbb169',
-                                400: '#c8913f',
-                                500: '#b17628',
-                                600: '#965f1f',
-                                700: '#79491d',
-                                800: '#633c1e',
-                                900: '#53331d',
-                                950: '#2f1c0e',
+                                50:  '#fbf5ec',
+                                100: '#f3e7d3',
+                                200: '#e5cfa9',
+                                300: '#d3b27b',
+                                400: '#bd9353',
+                                500: '#a67b3b',
+                                600: '#8d6530',
+                                700: '#72502a',
+                                800: '#5d4126',
+                                900: '#4e3722',
+                                950: '#2c1e12',
                             },
-                            /* teal -> ÁMBAR MOSTAZA / MIEL (secundario)
-                               Amarillo-dorado cálido que combina con los cafés. */
+                            /* teal -> ÁMBAR MIEL SUAVE (secundario)
+                               Dorado cálido y equilibrado que acompaña a los cafés. */
                             teal: {
-                                50:  '#fef7e1',
-                                100: '#fdecb8',
-                                200: '#fbd978',
-                                300: '#f7c13c',
-                                400: '#efa915',
-                                500: '#d98e0a',
-                                600: '#bb6f08',
-                                700: '#95500c',
-                                800: '#7b4011',
-                                900: '#683512',
-                                950: '#3d1d06',
+                                50:  '#fdf7e8',
+                                100: '#faecc6',
+                                200: '#f4d98c',
+                                300: '#ecc258',
+                                400: '#e0ac33',
+                                500: '#cb9220',
+                                600: '#ad741a',
+                                700: '#8a561a',
+                                800: '#72451b',
+                                900: '#613a1a',
+                                950: '#371e0c',
                             },
-                            /* amber -> AMARILLO DORADO LUMINOSO (acento protagonista) */
+                            /* amber -> AMARILLO DORADO LUMINOSO (acento)
+                               El toque alegre de la paleta, cálido pero no chillón. */
                             amber: {
-                                50:  '#fffae8',
-                                100: '#fff1bf',
-                                200: '#ffe485',
-                                300: '#ffd24a',
-                                400: '#fcbf1e',
-                                500: '#f0a607',
-                                600: '#d48306',
-                                700: '#b05f09',
-                                800: '#8f4a0f',
-                                900: '#763d10',
-                                950: '#441e04',
+                                50:  '#fffbec',
+                                100: '#fff3cc',
+                                200: '#ffe795',
+                                300: '#fdd65c',
+                                400: '#f8c333',
+                                500: '#eeab16',
+                                600: '#d2870c',
+                                700: '#ab620f',
+                                800: '#8b4d13',
+                                900: '#733f13',
+                                950: '#421f05',
                             },
                             /* rose -> ROJO PRIMARIO (alertas / peligro) */
                             rose: {
@@ -119,20 +122,21 @@
         :root {
             --ink: #2b1e13;          /* café oscuro: texto principal, alto contraste */
             --ink-soft: #6f5235;     /* café medio: texto secundario */
-            --brand: #965f1f;        /* café caramelo (marca) */
-            --brand-2: #d98e0a;      /* ámbar miel (secundario) */
-            --accent: #f0a607;       /* amarillo dorado luminoso (acento) */
-            --surface: #fffdf7;      /* blanco cálido */
-            --line: #e6d7c4;         /* línea en tono tierra claro */
+            --brand: #8d6530;        /* café caramelo armónico (marca) */
+            --brand-2: #cb9220;      /* ámbar miel (secundario) */
+            --accent: #eeab16;       /* amarillo dorado (acento) */
+            --surface: #fffdf8;      /* blanco cálido */
+            --line: #ebdfd0;         /* línea en tono tierra claro y suave */
         }
         body {
             font-family: 'Nunito', system-ui, -apple-system, sans-serif;
-            /* Fondo cálido en gama café + amarillo con degradados sutiles */
-            background-color: #f5ecde;
+            /* Fondo claro y aireado (gama café + amarillo), con degradados muy
+               sutiles para una sensación limpia y armónica estilo educativo. */
+            background-color: #fbf6ee;
             background-image:
-                radial-gradient(1100px 520px at 12% -8%, rgba(240, 166, 7, 0.18), transparent 60%),
-                radial-gradient(1000px 540px at 100% 0%, rgba(150, 95, 31, 0.14), transparent 55%),
-                radial-gradient(900px 600px at 50% 120%, rgba(217, 142, 10, 0.12), transparent 60%);
+                radial-gradient(1200px 560px at 10% -10%, rgba(240, 166, 7, 0.08), transparent 62%),
+                radial-gradient(1000px 540px at 100% 0%, rgba(150, 95, 31, 0.06), transparent 58%),
+                radial-gradient(900px 620px at 50% 125%, rgba(217, 142, 10, 0.05), transparent 62%);
             background-attachment: fixed;
         }
         .font-kids { font-family: '"Baloo 2"', 'Nunito', system-ui, sans-serif; }
@@ -145,7 +149,7 @@
 
         /* ---- Sombra de tarjeta más sutil y profesional ---- */
         .comic-card {
-            box-shadow: 0 12px 26px -10px rgba(63, 45, 29, 0.34), 0 2px 6px -2px rgba(63, 45, 29, 0.14);
+            box-shadow: 0 10px 30px -14px rgba(68, 50, 35, 0.22), 0 2px 8px -4px rgba(68, 50, 35, 0.10);
         }
         .pill-shadow { box-shadow: 0 2px 0 rgba(63, 45, 29, 0.18); }
         .pill-shadow:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(63, 45, 29, 0.18); }
@@ -153,7 +157,7 @@
         /* ---- Foco accesible y visible en TODOS los elementos interactivos ---- */
         a:focus-visible, button:focus-visible, [tabindex]:focus-visible,
         input:focus-visible, label:focus-visible, [role="button"]:focus-visible {
-            outline: 3px solid #965f1f;
+            outline: 3px solid #8d6530;
             outline-offset: 2px;
             border-radius: 10px;
         }
@@ -198,8 +202,8 @@
         }
 
         /* ---- Stepper de la ruta de aprendizaje ---- */
-        .step-item[aria-current="step"] .step-dot { background:#965f1f; color:#fff; border-color:#965f1f; }
-        .step-item[data-done="true"] .step-dot { background:#d98e0a; color:#fff; border-color:#d98e0a; }
+        .step-item[aria-current="step"] .step-dot { background:#8d6530; color:#fff; border-color:#8d6530; }
+        .step-item[data-done="true"] .step-dot { background:#cb9220; color:#fff; border-color:#cb9220; }
 
         /* ---- Oculto accesible (texto solo para lectores de pantalla) ---- */
         .sr-only {
