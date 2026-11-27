@@ -1038,140 +1038,197 @@
         function createHandLetterSVG(letra) {
             handLetterCounter++;
             const uid = `hand_${handLetterCounter}`;
-            const SKIN = '#f3b98f', SKIN_D = '#e39f74', LINE = '#7a4a2b';
+            const SKIN = `url(#sk_${uid})`, LINE = '#8a5a34', NAIL = '#f6d7bf';
 
-            // --- Primitivas de dedo (en coordenadas locales de la palma) ---
-            // Dedo extendido vertical hacia arriba desde la fila de nudillos.
-            const fingerUp = (x, len, w = 15) =>
-                `<rect x="${x - w / 2}" y="${94 - len}" width="${w}" height="${len + 12}" rx="${w / 2}" fill="${SKIN}" stroke="${LINE}" stroke-width="3"/>`;
-            // Dedo doblado (solo asoma el nudillo redondeado).
-            const fingerCurled = (x, w = 16) =>
-                `<rect x="${x - w / 2}" y="86" width="${w}" height="20" rx="8" fill="${SKIN_D}" stroke="${LINE}" stroke-width="3"/>`;
-            // Dedo medio-doblado (gancho), para C, O, etc.
-            const fingerHook = (x, w = 15) =>
-                `<path d="M ${x - w / 2} 92 q 0 -22 ${w / 2} -24 q ${w / 2} 2 ${w / 2} 24" fill="none" stroke="${SKIN}" stroke-width="${w}" stroke-linecap="round"/>
-                 <path d="M ${x - w / 2} 92 q 0 -22 ${w / 2} -24 q ${w / 2} 2 ${w / 2} 24" fill="none" stroke="${LINE}" stroke-width="2" stroke-linecap="round"/>`;
-            // Dedo extendido horizontal hacia la derecha (para G, H, apuntar de lado).
-            const fingerRight = (y, len, w = 15) =>
-                `<rect x="100" y="${y - w / 2}" width="${len}" height="${w}" rx="${w / 2}" fill="${SKIN}" stroke="${LINE}" stroke-width="3"/>`;
+            /* --------------------------------------------------------------
+               MANO ANATÓMICA. La palma mira al frente, los dedos suben.
+               Cada dedo se dibuja con su nudillo base + falanges, en uno de
+               estos estados: 'ext' (extendido), 'fold' (doblado al frente),
+               'curl' (cerrado en puño), 'hook' (medio curvado tipo C/garra).
+               Coordenadas: base de los dedos ~y=96, palma debajo.
+               -------------------------------------------------------------- */
+            // Centros X de los 4 dedos (índice, medio, anular, meñique)
+            const FX = { index: 78, middle: 98, ring: 117, pinky: 134 };
+            const FW = { index: 17, middle: 18, ring: 17, pinky: 14 };   // ancho
+            const FL = { index: 60, middle: 68, ring: 60, pinky: 48 };   // largo extendido
 
-            // Posiciones X de los 4 dedos (meñique..índice) sobre la palma.
-            const FX = { pinky: 60, ring: 78, middle: 96, index: 114 };
-            // Longitudes naturales de cada dedo cuando están extendidos.
-            const LEN = { pinky: 44, ring: 58, middle: 64, index: 56 };
+            // Dedo extendido hacia arriba (con dos falanges insinuadas y uña)
+            const fExt = (name, lean = 0) => {
+                const x = FX[name], w = FW[name], L = FL[name];
+                const topY = 96 - L;
+                const dx = lean; // inclinación lateral de la punta
+                return `
+                    <path d="M ${x - w/2} 98
+                             L ${x - w/2 + dx*0.4} ${topY + 10}
+                             Q ${x - w/2 + dx} ${topY - 2} ${x + dx} ${topY - 4}
+                             Q ${x + w/2 + dx} ${topY - 2} ${x + w/2 + dx*0.4} ${topY + 10}
+                             L ${x + w/2} 98 Z"
+                          fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>
+                    <ellipse cx="${x + dx}" cy="${topY + 4}" rx="${w*0.28}" ry="5" fill="${NAIL}" opacity="0.9"/>
+                    <path d="M ${x - w/2 + 1} ${topY + 26} Q ${x} ${topY + 30} ${x + w/2 - 1} ${topY + 26}"
+                          fill="none" stroke="${LINE}" stroke-width="1.4" opacity="0.5"/>`;
+            };
+            // Dedo doblado al frente (se ve el dorso de las falanges, hacia la palma)
+            const fFold = (name) => {
+                const x = FX[name], w = FW[name];
+                return `
+                    <path d="M ${x - w/2} 98 L ${x - w/2} 80
+                             Q ${x - w/2} 68 ${x} 68 Q ${x + w/2} 68 ${x + w/2} 80 L ${x + w/2} 98 Z"
+                          fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>
+                    <path d="M ${x - w/2 + 1} 82 Q ${x} 86 ${x + w/2 - 1} 82" fill="none" stroke="${LINE}" stroke-width="1.5" opacity="0.55"/>
+                    <path d="M ${x - w/2 + 1} 90 Q ${x} 94 ${x + w/2 - 1} 90" fill="none" stroke="${LINE}" stroke-width="1.5" opacity="0.4"/>`;
+            };
+            // Dedo cerrado en puño (solo asoma el nudillo redondeado)
+            const fCurl = (name) => {
+                const x = FX[name], w = FW[name] + 1;
+                return `<path d="M ${x - w/2} 100 L ${x - w/2} 90 Q ${x - w/2} 82 ${x} 82 Q ${x + w/2} 82 ${x + w/2} 90 L ${x + w/2} 100 Z"
+                          fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>
+                        <path d="M ${x - w/2 + 1} 91 Q ${x} 95 ${x + w/2 - 1} 91" fill="none" stroke="${LINE}" stroke-width="1.4" opacity="0.5"/>`;
+            };
+            // Dedo medio curvado (gancho) para C, O, X
+            const fHook = (name) => {
+                const x = FX[name], w = FW[name];
+                return `<path d="M ${x - w/2} 98 L ${x - w/2} 84 Q ${x - w/2} 66 ${x} 66 Q ${x + w/2} 66 ${x + w/2} 78
+                             Q ${x + w/2} 86 ${x + 2} 86" fill="none" stroke="${LINE}" stroke-width="${w+3}" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M ${x - w/2} 98 L ${x - w/2} 84 Q ${x - w/2} 66 ${x} 66 Q ${x + w/2} 66 ${x + w/2} 78
+                             Q ${x + w/2} 86 ${x + 2} 86" fill="none" stroke="#f3b98f" stroke-width="${w-1}" stroke-linecap="round" stroke-linejoin="round"/>`;
+            };
 
-            // Palma (dorso de la mano) + muñeca, común a casi todas las letras.
+            const finger = (name, st, lean) => {
+                if (st === 'ext') return fExt(name, lean || 0);
+                if (st === 'fold') return fFold(name);
+                if (st === 'hook') return fHook(name);
+                return fCurl(name);
+            };
+
+            // Palma + muñeca con sombreado
             const palm = `
-                <rect x="48" y="86" width="84" height="62" rx="24" fill="${SKIN}" stroke="${LINE}" stroke-width="3"/>
-                <rect x="60" y="140" width="60" height="40" rx="16" fill="${SKIN_D}" stroke="${LINE}" stroke-width="3"/>`;
+                <path d="M 62 150 Q 58 96 74 94 L 140 94 Q 150 96 150 118
+                         Q 150 150 120 160 L 86 160 Q 66 158 62 150 Z"
+                      fill="${SKIN}" stroke="${LINE}" stroke-width="3.2" stroke-linejoin="round"/>
+                <path d="M 76 150 Q 74 120 80 104" fill="none" stroke="${LINE}" stroke-width="1.5" opacity="0.35"/>
+                <path d="M 132 150 Q 136 128 132 108" fill="none" stroke="${LINE}" stroke-width="1.5" opacity="0.3"/>
+                <path d="M 70 150 Q 100 170 130 156 L 126 180 Q 100 190 78 180 Z"
+                      fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`;
 
-            // Pulgar en distintas poses.
+            // Pulgar en distintas poses (sale del lado izquierdo de la palma)
             const thumb = {
-                side:   `<path d="M 50 112 q -22 -4 -30 10 q -4 10 8 14 q 16 4 26 -8 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3"/>`,
-                across: `<path d="M 54 104 q 36 -6 60 2 q 8 4 2 12 q -34 6 -62 -2 Z" fill="${SKIN_D}" stroke="${LINE}" stroke-width="3"/>`,
-                up:     `<path d="M 50 104 q -14 -20 -6 -40 q 6 -8 14 -2 q 6 18 6 40 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3"/>`,
-                tuck:   `<path d="M 52 110 q -14 -2 -16 8 q 0 8 10 9 q 12 0 16 -8 Z" fill="${SKIN_D}" stroke="${LINE}" stroke-width="3"/>`
+                side:   `<path d="M 64 120 Q 40 118 32 132 Q 28 146 42 150 Q 58 152 66 138 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`,
+                up:     `<path d="M 62 118 Q 44 108 40 84 Q 42 72 54 74 Q 66 82 68 112 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>
+                         <ellipse cx="48" cy="80" rx="4.5" ry="6" fill="${NAIL}" opacity="0.9"/>`,
+                across: `<path d="M 66 108 Q 104 100 120 108 Q 126 116 118 122 Q 92 126 66 120 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`,
+                tuck:   `<path d="M 66 116 Q 50 114 46 124 Q 46 134 58 134 Q 70 132 72 122 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`,
+                front:  `<path d="M 66 112 Q 50 110 46 100 Q 48 90 60 92 Q 72 98 72 114 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`
             };
 
-            // Helper: compone una mano con dedos según un patrón.
-            // pattern: { pinky,ring,middle,index: 'up'|'curl'|'hook' , thumb: clave }
+            // Compone una mano. order dibuja pulgar según pose (detrás o delante).
             const build = (p, extra = '') => {
-                const f = (name) => {
-                    const st = p[name];
-                    if (st === 'up') return fingerUp(FX[name], LEN[name]);
-                    if (st === 'hook') return fingerHook(FX[name]);
-                    return fingerCurled(FX[name]); // 'curl' por defecto
-                };
-                return `${f('pinky')}${f('ring')}${f('middle')}${f('index')}${palm}${thumb[p.thumb] || thumb.tuck}${extra}`;
+                const fingersSVG =
+                    finger('pinky', p.pinky, p.pinkyLean) +
+                    finger('ring', p.ring, p.ringLean) +
+                    finger('middle', p.middle, p.middleLean) +
+                    finger('index', p.index, p.indexLean);
+                const th = thumb[p.thumb] || thumb.tuck;
+                // El pulgar 'across'/'tuck'/'front' va DELANTE de la palma; 'side'/'up' detrás de dedos.
+                const thumbFront = (p.thumb === 'across' || p.thumb === 'tuck' || p.thumb === 'front');
+                return `${palm}${fingersSVG}${thumbFront ? th : ''}${!thumbFront ? th : ''}${extra}`;
             };
 
-            // --- Configuración por letra (aproximación al dactilológico LSC) ---
-            const A = ['up', 'curl'];
+            // Flecha de movimiento (para J, Ñ, Z, S)
+            const arrow = (d) => `<path class="lsc-arrow" d="${d}" fill="none" stroke="#b45309" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+            // --- Configuración por letra según la imagen de referencia LSC ---
             const letters = {
-                // Puño con pulgar al lado
-                a: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'side' }),
-                // Cuatro dedos juntos arriba, pulgar cruzado
-                b: build({ pinky: 'up', ring: 'up', middle: 'up', index: 'up', thumb: 'across' }),
-                // Mano en forma de C (todos en gancho)
-                c: build({ pinky: 'hook', ring: 'hook', middle: 'hook', index: 'hook', thumb: 'up' }),
-                // Índice en gancho (D/G aproximado)
-                d: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'up', thumb: 'tuck' }),
-                // Dedos doblados tocando el pulgar (E)
-                e: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'across' }),
-                // Índice y pulgar unidos, otros arriba (F)
-                f: build({ pinky: 'up', ring: 'up', middle: 'up', index: 'hook', thumb: 'tuck' }),
-                // Índice apuntando a un lado (G)
-                g: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'side' },
-                    fingerRight(100, 46)),
-                // Índice y medio apuntando de lado (H)
-                h: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'tuck' },
-                    `${fingerRight(94, 46)}${fingerRight(112, 46)}`),
-                // Meñique arriba (I)
-                i: build({ pinky: 'up', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'tuck' }),
-                // Meñique arriba con trazo de movimiento (J)
-                j: build({ pinky: 'up', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'tuck' },
-                    `<path class="lsc-arrow" d="M 60 150 q -10 18 -26 10" fill="none" stroke="${LINE}" stroke-width="3" stroke-linecap="round"/>`),
-                // Índice y medio arriba en V con pulgar arriba (K)
-                k: build({ pinky: 'curl', ring: 'curl', middle: 'up', index: 'up', thumb: 'up' }),
-                // Índice arriba + pulgar en ángulo recto (L)
-                l: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'up', thumb: 'up' }),
-                // Tres dedos doblados sobre el pulgar (M)
-                m: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'tuck' },
-                    `<line x1="78" y1="92" x2="78" y2="104" stroke="${LINE}" stroke-width="2"/><line x1="96" y1="92" x2="96" y2="104" stroke="${LINE}" stroke-width="2"/><line x1="114" y1="92" x2="114" y2="104" stroke="${LINE}" stroke-width="2"/>`),
-                // Dos dedos doblados sobre el pulgar (N)
-                n: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'tuck' },
-                    `<line x1="96" y1="92" x2="96" y2="104" stroke="${LINE}" stroke-width="2"/><line x1="114" y1="92" x2="114" y2="104" stroke="${LINE}" stroke-width="2"/>`),
-                // Como la N con trazo de movimiento (Ñ)
-                'ñ': build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'tuck' },
-                    `<line x1="96" y1="92" x2="96" y2="104" stroke="${LINE}" stroke-width="2"/><line x1="114" y1="92" x2="114" y2="104" stroke="${LINE}" stroke-width="2"/><path class="lsc-arrow" d="M 62 74 q 28 -14 56 0" fill="none" stroke="${LINE}" stroke-width="3" stroke-linecap="round"/>`),
-                // Dedos formando un círculo (O)
-                o: build({ pinky: 'hook', ring: 'hook', middle: 'hook', index: 'hook', thumb: 'across' }),
-                // Índice y medio apuntando hacia abajo/frente (P)
-                p: build({ pinky: 'curl', ring: 'curl', middle: 'up', index: 'up', thumb: 'up' },
-                    `<path class="lsc-arrow" d="M 108 36 l 0 -14 m -5 7 l 5 -7 l 5 7" fill="none" stroke="${LINE}" stroke-width="2.4" stroke-linecap="round"/>`),
-                // Pulgar e índice hacia abajo (Q)
-                q: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'up', thumb: 'up' },
-                    `<path class="lsc-arrow" d="M 114 150 l 0 16 m -5 -7 l 5 7 l 5 -7" fill="none" stroke="${LINE}" stroke-width="2.4" stroke-linecap="round"/>`),
-                // Índice y medio cruzados (R)
-                r: build({ pinky: 'curl', ring: 'curl', middle: 'up', index: 'up', thumb: 'tuck' },
-                    `<path d="M 100 70 L 110 46" stroke="${LINE}" stroke-width="2.4"/>`),
-                // Puño con trazo circular (S)
-                s: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'across' },
-                    `<circle class="lsc-arrow" cx="92" cy="60" r="12" fill="none" stroke="${LINE}" stroke-width="2.6" stroke-dasharray="4 3"/>`),
-                // Pulgar entre índice y medio (T)
-                t: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'up' }),
-                // Índice y medio juntos arriba (U)
-                u: build({ pinky: 'curl', ring: 'curl', middle: 'up', index: 'up', thumb: 'tuck' }),
-                // Índice y medio en V (V)
-                v: build({ pinky: 'curl', ring: 'curl', middle: 'up', index: 'up', thumb: 'tuck' },
-                    `<path d="M 96 40 L 114 40" stroke="${LINE}" stroke-width="0"/>`),
-                // Tres dedos arriba (W)
-                w: build({ pinky: 'curl', ring: 'up', middle: 'up', index: 'up', thumb: 'tuck' }),
-                // Índice en gancho (X)
-                x: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'hook', thumb: 'tuck' }),
-                // Meñique y pulgar extendidos (Y)
-                y: build({ pinky: 'up', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'up' }),
-                // Índice dibuja una Z en el aire (Z)
-                z: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'up', thumb: 'tuck' },
-                    `<path class="lsc-arrow" d="M 150 44 h 20 l -20 22 h 20" fill="none" stroke="${LINE}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`)
+                // A: puño, pulgar al costado
+                a: build({ index: 'curl', middle: 'curl', ring: 'curl', pinky: 'curl', thumb: 'side' },
+                    arrow('M 52 60 L 24 60 M 34 51 L 24 60 L 34 69')),
+                // B: cuatro dedos juntos extendidos, pulgar cruzado sobre la palma
+                b: build({ index: 'ext', middle: 'ext', ring: 'ext', pinky: 'ext', thumb: 'across' }),
+                // C: mano curvada en forma de C
+                c: build({ index: 'hook', middle: 'hook', ring: 'hook', pinky: 'hook', thumb: 'up' }),
+                // D: índice arriba, resto curvado tocando el pulgar
+                d: build({ index: 'ext', middle: 'hook', ring: 'hook', pinky: 'hook', thumb: 'front' }),
+                // E: dedos curvados hacia abajo, pulgar cruzado (garra cerrada)
+                e: build({ index: 'fold', middle: 'fold', ring: 'fold', pinky: 'fold', thumb: 'across' }),
+                // F: índice y pulgar en círculo, otros tres extendidos
+                f: build({ index: 'hook', middle: 'ext', ring: 'ext', pinky: 'ext', thumb: 'front' }),
+                // G: índice apuntando de lado, pulgar paralelo
+                g: build({ index: 'curl', middle: 'curl', ring: 'curl', pinky: 'curl', thumb: 'side' },
+                    `<path d="M 78 100 L 78 70 Q 78 62 72 62 L 24 62 Q 18 62 18 70 L 18 86 Q 18 94 26 94 L 78 94"
+                        fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`),
+                // H: índice y medio juntos apuntando de lado
+                h: build({ index: 'curl', middle: 'curl', ring: 'curl', pinky: 'curl', thumb: 'tuck' },
+                    `<path d="M 80 94 L 22 94 Q 14 94 14 86 L 14 72 Q 14 64 22 64 L 80 64 Z"
+                        fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>
+                     <line x1="20" y1="79" x2="78" y2="79" stroke="${LINE}" stroke-width="1.6" opacity="0.5"/>
+                     ${arrow('M 40 48 L 20 54 M 30 46 L 20 54 L 26 64')}`),
+                // I: meñique arriba, resto en puño
+                i: build({ index: 'curl', middle: 'curl', ring: 'curl', pinky: 'ext', thumb: 'across' }),
+                // J: meñique arriba con trazo curvo (J en el aire)
+                j: build({ index: 'curl', middle: 'curl', ring: 'curl', pinky: 'ext', thumb: 'across' },
+                    arrow('M 134 60 L 134 120 Q 134 140 112 138')),
+                // K: índice y medio en V, pulgar entre ellos
+                k: build({ index: 'ext', middle: 'ext', ring: 'curl', pinky: 'curl', thumb: 'up', indexLean: -4, middleLean: 8 }),
+                // L: índice arriba + pulgar horizontal (forma de L)
+                l: build({ index: 'ext', middle: 'curl', ring: 'curl', pinky: 'curl', thumb: 'side' }),
+                // M: pulgar bajo tres dedos doblados
+                m: build({ index: 'fold', middle: 'fold', ring: 'fold', pinky: 'curl', thumb: 'tuck' }),
+                // N: pulgar bajo dos dedos doblados
+                n: build({ index: 'fold', middle: 'fold', ring: 'curl', pinky: 'curl', thumb: 'tuck' }),
+                // Ñ: como N con flecha de movimiento (ondulada)
+                'ñ': build({ index: 'fold', middle: 'fold', ring: 'curl', pinky: 'curl', thumb: 'tuck' },
+                    arrow('M 70 52 Q 88 40 104 52 Q 120 64 138 52')),
+                // O: todos los dedos formando un círculo con el pulgar
+                o: build({ index: 'hook', middle: 'hook', ring: 'hook', pinky: 'hook', thumb: 'across' }),
+                // P: como K pero apuntando hacia abajo/frente
+                p: build({ index: 'ext', middle: 'ext', ring: 'curl', pinky: 'curl', thumb: 'up', indexLean: -3, middleLean: 7 },
+                    arrow('M 98 150 L 98 176 M 90 168 L 98 176 L 106 168')),
+                // Q: como G pero apuntando hacia abajo
+                q: build({ index: 'curl', middle: 'curl', ring: 'curl', pinky: 'curl', thumb: 'side' },
+                    `<path d="M 78 96 L 78 150 Q 78 160 72 160" fill="none" stroke="${LINE}" stroke-width="20" stroke-linecap="round"/>
+                     <path d="M 78 96 L 78 150 Q 78 160 72 160" fill="none" stroke="#f3b98f" stroke-width="15" stroke-linecap="round"/>
+                     ${arrow('M 98 150 L 98 176 M 90 168 L 98 176 L 106 168')}`),
+                // R: índice y medio cruzados
+                r: build({ index: 'ext', middle: 'ext', ring: 'curl', pinky: 'curl', thumb: 'tuck', indexLean: 6, middleLean: -6 },
+                    `<path d="M 86 50 L 92 42" stroke="${LINE}" stroke-width="2" opacity="0.6"/>`),
+                // S: puño con pulgar al frente, trazo circular de movimiento
+                s: build({ index: 'curl', middle: 'curl', ring: 'curl', pinky: 'curl', thumb: 'across' },
+                    arrow('M 150 44 Q 164 50 158 64 M 158 64 L 150 60 M 158 64 L 162 56')),
+                // T: pulgar entre índice y medio (puño)
+                t: build({ index: 'curl', middle: 'curl', ring: 'curl', pinky: 'curl', thumb: 'front' }),
+                // U: índice y medio juntos arriba
+                u: build({ index: 'ext', middle: 'ext', ring: 'curl', pinky: 'curl', thumb: 'across', middleLean: -2 }),
+                // V: índice y medio en V separada
+                v: build({ index: 'ext', middle: 'ext', ring: 'curl', pinky: 'curl', thumb: 'across', indexLean: -8, middleLean: 10 }),
+                // W: índice, medio y anular arriba (tres dedos)
+                w: build({ index: 'ext', middle: 'ext', ring: 'ext', pinky: 'curl', thumb: 'across', indexLean: -8, ringLean: 8 }),
+                // X: índice en gancho
+                x: build({ index: 'hook', middle: 'curl', ring: 'curl', pinky: 'curl', thumb: 'tuck' }),
+                // Y: meñique y pulgar extendidos, resto cerrado
+                y: build({ index: 'curl', middle: 'curl', ring: 'curl', pinky: 'ext', thumb: 'side' }),
+                // Z: índice extendido dibujando una Z en el aire
+                z: build({ index: 'ext', middle: 'curl', ring: 'curl', pinky: 'curl', thumb: 'tuck' },
+                    arrow('M 150 44 H 170 L 150 66 H 170'))
             };
 
             const key = (letra || '').toLowerCase();
             const content = letters[key];
-            // Fondo cálido de la tarjeta de la letra.
-            const bg = `<rect width="200" height="200" rx="18" fill="#fff7ea"/>`;
             if (!content) {
-                return `<svg viewBox="0 0 200 200" class="w-full h-full object-contain">${bg}</svg>`;
+                return `<svg viewBox="0 0 200 200" class="w-full h-full object-contain"><rect width="200" height="200" rx="18" fill="#fff7ea"/></svg>`;
             }
             return `<svg viewBox="0 0 200 200" class="w-full h-full object-contain" aria-hidden="true">
                 <defs>
-                    <linearGradient id="${uid}" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient id="bg_${uid}" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stop-color="#ffffff"/>
                         <stop offset="100%" stop-color="#fdeccd"/>
                     </linearGradient>
+                    <linearGradient id="sk_${uid}" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#f7c9a3"/>
+                        <stop offset="100%" stop-color="#eaa775"/>
+                    </linearGradient>
                 </defs>
-                <rect width="200" height="200" rx="18" fill="url(#${uid})"/>
-                ${content}
+                <rect width="200" height="200" rx="18" fill="url(#bg_${uid})"/>
+                <g transform="translate(2,6)">${content}</g>
             </svg>`;
         }
 
