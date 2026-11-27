@@ -247,6 +247,7 @@
                 <button onclick="navigateTo('aventura')" id="nav-aventura" class="nav-pill px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Aventura</button>
                 <button onclick="navigateTo('evaluacion')" id="nav-evaluacion" class="nav-pill px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Evaluación</button>
                 <button onclick="navigateTo('diccionario')" id="nav-diccionario" class="nav-pill px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Diccionario</button>
+                <button onclick="navigateTo('mi-nombre')" id="nav-mi-nombre" class="nav-pill px-3.5 py-1.5 rounded-lg font-semibold text-xs sm:text-sm border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition">Mi nombre</button>
             </nav>
 
             <!-- PROGRESO, ESTRELLAS Y UTILIDADES -->
@@ -285,6 +286,8 @@
                 <li class="step-item flex items-center gap-1.5" data-step="evaluacion"><button onclick="navigateTo('evaluacion')" class="flex items-center gap-1.5 group"><span class="step-dot w-5 h-5 rounded-full border border-slate-400 bg-white text-slate-500 text-[11px] font-bold flex items-center justify-center">5</span><span class="text-[11px] sm:text-xs font-semibold text-slate-600 group-hover:text-slate-900">Evaluación</span></button></li>
                 <li aria-hidden="true" class="w-4 sm:w-6 h-px bg-slate-300"></li>
                 <li class="step-item flex items-center gap-1.5" data-step="diccionario"><button onclick="navigateTo('diccionario')" class="flex items-center gap-1.5 group"><span class="step-dot w-5 h-5 rounded-full border border-slate-400 bg-white text-slate-500 text-[11px] font-bold flex items-center justify-center">6</span><span class="text-[11px] sm:text-xs font-semibold text-slate-600 group-hover:text-slate-900">Diccionario</span></button></li>
+                <li aria-hidden="true" class="w-4 sm:w-6 h-px bg-slate-300"></li>
+                <li class="step-item flex items-center gap-1.5" data-step="mi-nombre"><button onclick="navigateTo('mi-nombre')" class="flex items-center gap-1.5 group"><span class="step-dot w-5 h-5 rounded-full border border-slate-400 bg-white text-slate-500 text-[11px] font-bold flex items-center justify-center">7</span><span class="text-[11px] sm:text-xs font-semibold text-slate-600 group-hover:text-slate-900">Mi nombre</span></button></li>
             </ol>
         </div>
     </header>
@@ -681,6 +684,58 @@
             <div id="dictionaryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" aria-live="polite"></div>
         </section>
 
+        <!-- ==================================================================
+             VISTA 7: MI NOMBRE EN SEÑAS (DACTILOLÓGICO / DELETREO LSC)
+             El jugador escribe su nombre y la página lo muestra letra por
+             letra con el abecedario manual (solo la mano).
+             ================================================================== -->
+        <section id="view-mi-nombre" class="view-section hidden flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6 space-y-5" aria-labelledby="miNombreTitle" role="region">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 comic-card">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <span class="px-3 py-0.5 bg-blue-50 border border-blue-200 rounded-full font-semibold text-xs text-blue-800">Experiencia personalizada</span>
+                        <h2 id="miNombreTitle" class="font-kids text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1.5">Tu nombre en Lengua de Señas</h2>
+                        <p class="text-xs sm:text-sm text-slate-600 mt-0.5">Escribe tu nombre y lo deletrearemos con el <strong class="text-slate-800">abecedario manual (dactilológico)</strong> de la LSC, letra por letra.</p>
+                    </div>
+                    <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden flex-shrink-0 shadow-sm avatar-float" id="miNombreLucas" role="img" aria-label="Ilustración de Lucas"></div>
+                </div>
+
+                <!-- Campo para escribir el nombre -->
+                <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                    <div class="flex-1">
+                        <label for="nameInput" class="sr-only">Escribe tu nombre</label>
+                        <input id="nameInput" type="text" inputmode="text" autocomplete="off" maxlength="24" placeholder="Escribe tu nombre aquí…"
+                            oninput="renderNameInSigns()" onkeydown="if(event.key==='Enter'){event.preventDefault();renderNameInSigns(true);}"
+                            class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-base font-semibold text-slate-900 placeholder:text-slate-400 focus:border-blue-500" />
+                    </div>
+                    <button onclick="renderNameInSigns(true)" class="px-5 py-3 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-xl transition flex items-center justify-center gap-2">
+                        <i data-lucide="hand" class="w-5 h-5"></i> <span>Ver en señas</span>
+                    </button>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-2">Se admiten letras A–Z y la Ñ. Las tildes se simplifican (á → A) y los espacios separan palabras.</p>
+            </div>
+
+            <!-- Aviso de validación LSC (coherente con el resto de la página) -->
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex items-start gap-2.5">
+                <i data-lucide="shield-alert" class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"></i>
+                <p class="text-xs sm:text-sm text-amber-900 leading-snug">
+                    <strong>Material en validación.</strong> Las manos del abecedario son ilustraciones de apoyo. Para usarse como referencia oficial deben ser revisadas por una persona competente en LSC (preferiblemente nativa o intérprete certificada).
+                </p>
+            </div>
+
+            <!-- Resultado: nombre deletreado en señas -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 comic-card">
+                <div id="nameSignsEmpty" class="text-center py-10 text-slate-500">
+                    <i data-lucide="sparkles" class="w-8 h-8 mx-auto mb-2 text-amber-500"></i>
+                    <p class="text-sm font-semibold">Escribe tu nombre arriba para verlo en señas.</p>
+                </div>
+                <div id="nameSignsResult" class="hidden">
+                    <p class="text-xs font-bold uppercase tracking-wide text-blue-700 mb-3" id="nameSignsHeading"></p>
+                    <div id="nameSignsGrid" class="flex flex-wrap gap-3 sm:gap-4" aria-live="polite"></div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- Diálogo de confirmación de reinicio -->
@@ -969,6 +1024,155 @@
             };
 
             return `<svg viewBox="0 0 200 200" class="w-full h-full object-contain">${gestures[signId] || gestures.hola}</svg>`;
+        }
+
+        /* ====================================================================
+           1b. ABECEDARIO MANUAL (DACTILOLÓGICO) LSC — SOLO LA MANO
+           Genera la configuración de mano de cada letra para deletrear nombres.
+           Construcción por primitivas (palma + dedos extendidos/doblados +
+           pulgar) parametrizadas por letra según el abecedario manual de la LSC.
+           NOTA DE RIGOR: son ilustraciones de APOYO; deben validarse por una
+           persona competente en LSC antes de usarse como referencia oficial.
+           ==================================================================== */
+        let handLetterCounter = 0;
+        function createHandLetterSVG(letra) {
+            handLetterCounter++;
+            const uid = `hand_${handLetterCounter}`;
+            const SKIN = '#f3b98f', SKIN_D = '#e39f74', LINE = '#7a4a2b';
+
+            // --- Primitivas de dedo (en coordenadas locales de la palma) ---
+            // Dedo extendido vertical hacia arriba desde la fila de nudillos.
+            const fingerUp = (x, len, w = 15) =>
+                `<rect x="${x - w / 2}" y="${94 - len}" width="${w}" height="${len + 12}" rx="${w / 2}" fill="${SKIN}" stroke="${LINE}" stroke-width="3"/>`;
+            // Dedo doblado (solo asoma el nudillo redondeado).
+            const fingerCurled = (x, w = 16) =>
+                `<rect x="${x - w / 2}" y="86" width="${w}" height="20" rx="8" fill="${SKIN_D}" stroke="${LINE}" stroke-width="3"/>`;
+            // Dedo medio-doblado (gancho), para C, O, etc.
+            const fingerHook = (x, w = 15) =>
+                `<path d="M ${x - w / 2} 92 q 0 -22 ${w / 2} -24 q ${w / 2} 2 ${w / 2} 24" fill="none" stroke="${SKIN}" stroke-width="${w}" stroke-linecap="round"/>
+                 <path d="M ${x - w / 2} 92 q 0 -22 ${w / 2} -24 q ${w / 2} 2 ${w / 2} 24" fill="none" stroke="${LINE}" stroke-width="2" stroke-linecap="round"/>`;
+            // Dedo extendido horizontal hacia la derecha (para G, H, apuntar de lado).
+            const fingerRight = (y, len, w = 15) =>
+                `<rect x="100" y="${y - w / 2}" width="${len}" height="${w}" rx="${w / 2}" fill="${SKIN}" stroke="${LINE}" stroke-width="3"/>`;
+
+            // Posiciones X de los 4 dedos (meñique..índice) sobre la palma.
+            const FX = { pinky: 60, ring: 78, middle: 96, index: 114 };
+            // Longitudes naturales de cada dedo cuando están extendidos.
+            const LEN = { pinky: 44, ring: 58, middle: 64, index: 56 };
+
+            // Palma (dorso de la mano) + muñeca, común a casi todas las letras.
+            const palm = `
+                <rect x="48" y="86" width="84" height="62" rx="24" fill="${SKIN}" stroke="${LINE}" stroke-width="3"/>
+                <rect x="60" y="140" width="60" height="40" rx="16" fill="${SKIN_D}" stroke="${LINE}" stroke-width="3"/>`;
+
+            // Pulgar en distintas poses.
+            const thumb = {
+                side:   `<path d="M 50 112 q -22 -4 -30 10 q -4 10 8 14 q 16 4 26 -8 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3"/>`,
+                across: `<path d="M 54 104 q 36 -6 60 2 q 8 4 2 12 q -34 6 -62 -2 Z" fill="${SKIN_D}" stroke="${LINE}" stroke-width="3"/>`,
+                up:     `<path d="M 50 104 q -14 -20 -6 -40 q 6 -8 14 -2 q 6 18 6 40 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3"/>`,
+                tuck:   `<path d="M 52 110 q -14 -2 -16 8 q 0 8 10 9 q 12 0 16 -8 Z" fill="${SKIN_D}" stroke="${LINE}" stroke-width="3"/>`
+            };
+
+            // Helper: compone una mano con dedos según un patrón.
+            // pattern: { pinky,ring,middle,index: 'up'|'curl'|'hook' , thumb: clave }
+            const build = (p, extra = '') => {
+                const f = (name) => {
+                    const st = p[name];
+                    if (st === 'up') return fingerUp(FX[name], LEN[name]);
+                    if (st === 'hook') return fingerHook(FX[name]);
+                    return fingerCurled(FX[name]); // 'curl' por defecto
+                };
+                return `${f('pinky')}${f('ring')}${f('middle')}${f('index')}${palm}${thumb[p.thumb] || thumb.tuck}${extra}`;
+            };
+
+            // --- Configuración por letra (aproximación al dactilológico LSC) ---
+            const A = ['up', 'curl'];
+            const letters = {
+                // Puño con pulgar al lado
+                a: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'side' }),
+                // Cuatro dedos juntos arriba, pulgar cruzado
+                b: build({ pinky: 'up', ring: 'up', middle: 'up', index: 'up', thumb: 'across' }),
+                // Mano en forma de C (todos en gancho)
+                c: build({ pinky: 'hook', ring: 'hook', middle: 'hook', index: 'hook', thumb: 'up' }),
+                // Índice en gancho (D/G aproximado)
+                d: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'up', thumb: 'tuck' }),
+                // Dedos doblados tocando el pulgar (E)
+                e: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'across' }),
+                // Índice y pulgar unidos, otros arriba (F)
+                f: build({ pinky: 'up', ring: 'up', middle: 'up', index: 'hook', thumb: 'tuck' }),
+                // Índice apuntando a un lado (G)
+                g: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'side' },
+                    fingerRight(100, 46)),
+                // Índice y medio apuntando de lado (H)
+                h: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'tuck' },
+                    `${fingerRight(94, 46)}${fingerRight(112, 46)}`),
+                // Meñique arriba (I)
+                i: build({ pinky: 'up', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'tuck' }),
+                // Meñique arriba con trazo de movimiento (J)
+                j: build({ pinky: 'up', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'tuck' },
+                    `<path class="lsc-arrow" d="M 60 150 q -10 18 -26 10" fill="none" stroke="${LINE}" stroke-width="3" stroke-linecap="round"/>`),
+                // Índice y medio arriba en V con pulgar arriba (K)
+                k: build({ pinky: 'curl', ring: 'curl', middle: 'up', index: 'up', thumb: 'up' }),
+                // Índice arriba + pulgar en ángulo recto (L)
+                l: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'up', thumb: 'up' }),
+                // Tres dedos doblados sobre el pulgar (M)
+                m: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'tuck' },
+                    `<line x1="78" y1="92" x2="78" y2="104" stroke="${LINE}" stroke-width="2"/><line x1="96" y1="92" x2="96" y2="104" stroke="${LINE}" stroke-width="2"/><line x1="114" y1="92" x2="114" y2="104" stroke="${LINE}" stroke-width="2"/>`),
+                // Dos dedos doblados sobre el pulgar (N)
+                n: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'tuck' },
+                    `<line x1="96" y1="92" x2="96" y2="104" stroke="${LINE}" stroke-width="2"/><line x1="114" y1="92" x2="114" y2="104" stroke="${LINE}" stroke-width="2"/>`),
+                // Como la N con trazo de movimiento (Ñ)
+                'ñ': build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'tuck' },
+                    `<line x1="96" y1="92" x2="96" y2="104" stroke="${LINE}" stroke-width="2"/><line x1="114" y1="92" x2="114" y2="104" stroke="${LINE}" stroke-width="2"/><path class="lsc-arrow" d="M 62 74 q 28 -14 56 0" fill="none" stroke="${LINE}" stroke-width="3" stroke-linecap="round"/>`),
+                // Dedos formando un círculo (O)
+                o: build({ pinky: 'hook', ring: 'hook', middle: 'hook', index: 'hook', thumb: 'across' }),
+                // Índice y medio apuntando hacia abajo/frente (P)
+                p: build({ pinky: 'curl', ring: 'curl', middle: 'up', index: 'up', thumb: 'up' },
+                    `<path class="lsc-arrow" d="M 108 36 l 0 -14 m -5 7 l 5 -7 l 5 7" fill="none" stroke="${LINE}" stroke-width="2.4" stroke-linecap="round"/>`),
+                // Pulgar e índice hacia abajo (Q)
+                q: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'up', thumb: 'up' },
+                    `<path class="lsc-arrow" d="M 114 150 l 0 16 m -5 -7 l 5 7 l 5 -7" fill="none" stroke="${LINE}" stroke-width="2.4" stroke-linecap="round"/>`),
+                // Índice y medio cruzados (R)
+                r: build({ pinky: 'curl', ring: 'curl', middle: 'up', index: 'up', thumb: 'tuck' },
+                    `<path d="M 100 70 L 110 46" stroke="${LINE}" stroke-width="2.4"/>`),
+                // Puño con trazo circular (S)
+                s: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'across' },
+                    `<circle class="lsc-arrow" cx="92" cy="60" r="12" fill="none" stroke="${LINE}" stroke-width="2.6" stroke-dasharray="4 3"/>`),
+                // Pulgar entre índice y medio (T)
+                t: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'up' }),
+                // Índice y medio juntos arriba (U)
+                u: build({ pinky: 'curl', ring: 'curl', middle: 'up', index: 'up', thumb: 'tuck' }),
+                // Índice y medio en V (V)
+                v: build({ pinky: 'curl', ring: 'curl', middle: 'up', index: 'up', thumb: 'tuck' },
+                    `<path d="M 96 40 L 114 40" stroke="${LINE}" stroke-width="0"/>`),
+                // Tres dedos arriba (W)
+                w: build({ pinky: 'curl', ring: 'up', middle: 'up', index: 'up', thumb: 'tuck' }),
+                // Índice en gancho (X)
+                x: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'hook', thumb: 'tuck' }),
+                // Meñique y pulgar extendidos (Y)
+                y: build({ pinky: 'up', ring: 'curl', middle: 'curl', index: 'curl', thumb: 'up' }),
+                // Índice dibuja una Z en el aire (Z)
+                z: build({ pinky: 'curl', ring: 'curl', middle: 'curl', index: 'up', thumb: 'tuck' },
+                    `<path class="lsc-arrow" d="M 150 44 h 20 l -20 22 h 20" fill="none" stroke="${LINE}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`)
+            };
+
+            const key = (letra || '').toLowerCase();
+            const content = letters[key];
+            // Fondo cálido de la tarjeta de la letra.
+            const bg = `<rect width="200" height="200" rx="18" fill="#fff7ea"/>`;
+            if (!content) {
+                return `<svg viewBox="0 0 200 200" class="w-full h-full object-contain">${bg}</svg>`;
+            }
+            return `<svg viewBox="0 0 200 200" class="w-full h-full object-contain" aria-hidden="true">
+                <defs>
+                    <linearGradient id="${uid}" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#ffffff"/>
+                        <stop offset="100%" stop-color="#fdeccd"/>
+                    </linearGradient>
+                </defs>
+                <rect width="200" height="200" rx="18" fill="url(#${uid})"/>
+                ${content}
+            </svg>`;
         }
 
         /* ====================================================================
@@ -1537,7 +1741,8 @@
 
         const SECTION_TITLES = {
             inicio: 'Inicio', mision: 'Misión', entrenamiento: 'Entrenamiento',
-            aventura: 'Aventura', evaluacion: 'Evaluación', diccionario: 'Diccionario'
+            aventura: 'Aventura', evaluacion: 'Evaluación', diccionario: 'Diccionario',
+            'mi-nombre': 'Mi nombre en señas'
         };
 
         function navigateTo(tabName) {
@@ -1589,6 +1794,9 @@
                 prepareEvaluationView();
             } else if (tabName === 'diccionario') {
                 filterDictionary('todas');
+            } else if (tabName === 'mi-nombre') {
+                document.getElementById('miNombreLucas').innerHTML = createLucasAvatarSVG('hola');
+                renderNameInSigns();
             }
 
             updateStepper();
@@ -2279,6 +2487,75 @@
             if (!window.lucide) {
                 console.warn('Lucide CDN no disponible: los iconos se omiten.');
                 document.querySelectorAll('[data-lucide]').forEach(el => { el.style.display = 'none'; });
+            }
+        }
+
+        /* ====================================================================
+           MI NOMBRE EN SEÑAS: deletrea el nombre con el abecedario manual LSC.
+           - Normaliza tildes (á→A), ü→U; conserva la Ñ.
+           - Separa por palabras (espacios) y muestra una tarjeta por letra.
+           - Otorga estrellas de participación la primera vez que se usa.
+           ==================================================================== */
+        let _nameStarAwarded = false;
+        function renderNameInSigns(fromButton = false) {
+            const input = document.getElementById('nameInput');
+            const empty = document.getElementById('nameSignsEmpty');
+            const result = document.getElementById('nameSignsResult');
+            const grid = document.getElementById('nameSignsGrid');
+            const heading = document.getElementById('nameSignsHeading');
+            if (!input || !grid) return;
+
+            const raw = input.value || '';
+            // Normaliza: separa tildes como diacríticos y los elimina, pero
+            // protege la Ñ/ñ (que NO debe convertirse en N).
+            const protectedStr = raw.replace(/ñ/g, '\u0001').replace(/Ñ/g, '\u0002');
+            const stripped = protectedStr.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            const restored = stripped.replace(/\u0001/g, 'ñ').replace(/\u0002/g, 'Ñ');
+
+            // Palabras compuestas solo por letras válidas del abecedario.
+            const words = restored.split(/\s+/).filter(Boolean).map(w =>
+                w.split('').filter(ch => /[a-zA-ZñÑ]/.test(ch))
+            ).filter(arr => arr.length);
+
+            const totalLetters = words.reduce((n, w) => n + w.length, 0);
+
+            if (totalLetters === 0) {
+                result.classList.add('hidden');
+                empty.classList.remove('hidden');
+                return;
+            }
+
+            empty.classList.add('hidden');
+            result.classList.remove('hidden');
+            const display = words.map(w => w.join('')).join(' ').toUpperCase();
+            heading.textContent = `${display} · ${totalLetters} ${totalLetters === 1 ? 'letra' : 'letras'}`;
+
+            // Construye el grid: una tarjeta por letra, con separación entre palabras.
+            let html = '';
+            words.forEach((word, wi) => {
+                html += '<div class="flex flex-wrap gap-3 sm:gap-4">';
+                word.forEach(ch => {
+                    const upper = ch.toUpperCase();
+                    html += `
+                        <figure class="w-24 sm:w-28 flex-shrink-0">
+                            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden border border-slate-200 comic-card bg-white">
+                                ${createHandLetterSVG(ch)}
+                            </div>
+                            <figcaption class="mt-1.5 text-center font-kids font-extrabold text-lg text-slate-900">${upper}</figcaption>
+                        </figure>`;
+                });
+                html += '</div>';
+            });
+            grid.innerHTML = html;
+            safeIcons();
+
+            // Estrella de participación la primera vez que el jugador ve su nombre.
+            if (!_nameStarAwarded) {
+                _nameStarAwarded = true;
+                addStars('participation', 5);
+                announce(`Tu nombre en señas: ${display}, ${totalLetters} letras.`);
+            } else if (fromButton) {
+                announce(`Tu nombre en señas: ${display}, ${totalLetters} letras.`);
             }
         }
 
