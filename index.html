@@ -1049,49 +1049,55 @@
                -------------------------------------------------------------- */
             // Centros X de los 4 dedos (índice, medio, anular, meñique)
             const FX = { index: 78, middle: 98, ring: 117, pinky: 134 };
-            const FW = { index: 17, middle: 18, ring: 17, pinky: 14 };   // ancho
-            const FL = { index: 60, middle: 68, ring: 60, pinky: 48 };   // largo extendido
+            const FW = { index: 16, middle: 17, ring: 16, pinky: 13 };   // ancho (más esbelto)
+            const FL = { index: 96, middle: 108, ring: 94, pinky: 74 };  // largo extendido (dedos largos estilo avatar)
+            const BASE = 104; // fila de nudillos (base de los dedos), más abajo para dedos largos
 
-            // Dedo extendido hacia arriba (con dos falanges insinuadas y uña)
+            // Dedo extendido hacia arriba, largo y esbelto, con dos falanges (crease
+            // intermedia), punta redondeada y uña. Estilo avatar 2D.
             const fExt = (name, lean = 0) => {
                 const x = FX[name], w = FW[name], L = FL[name];
-                const topY = 96 - L;
+                const topY = BASE - L;
                 const dx = lean; // inclinación lateral de la punta
+                const midY = topY + L * 0.5; // articulación intermedia
                 return `
-                    <path d="M ${x - w/2} 98
-                             L ${x - w/2 + dx*0.4} ${topY + 10}
-                             Q ${x - w/2 + dx} ${topY - 2} ${x + dx} ${topY - 4}
-                             Q ${x + w/2 + dx} ${topY - 2} ${x + w/2 + dx*0.4} ${topY + 10}
-                             L ${x + w/2} 98 Z"
+                    <path d="M ${x - w/2} ${BASE}
+                             L ${x - w/2 + dx*0.5} ${topY + 12}
+                             Q ${x - w/2 + dx} ${topY - 1} ${x + dx} ${topY - 3}
+                             Q ${x + w/2 + dx} ${topY - 1} ${x + w/2 + dx*0.5} ${topY + 12}
+                             L ${x + w/2} ${BASE} Z"
                           fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>
-                    <ellipse cx="${x + dx}" cy="${topY + 4}" rx="${w*0.28}" ry="5" fill="${NAIL}" opacity="0.9"/>
-                    <path d="M ${x - w/2 + 1} ${topY + 26} Q ${x} ${topY + 30} ${x + w/2 - 1} ${topY + 26}"
-                          fill="none" stroke="${LINE}" stroke-width="1.4" opacity="0.5"/>`;
+                    <ellipse cx="${x + dx}" cy="${topY + 5}" rx="${w*0.3}" ry="6" fill="${NAIL}" opacity="0.9"/>
+                    <path d="M ${x - w/2 + 1.5} ${midY} Q ${x + dx*0.5} ${midY + 4} ${x + w/2 - 1.5} ${midY}"
+                          fill="none" stroke="${LINE}" stroke-width="1.5" opacity="0.45"/>
+                    <path d="M ${x - w/2 + 1.5} ${topY + 20} Q ${x + dx} ${topY + 24} ${x + w/2 - 1.5} ${topY + 20}"
+                          fill="none" stroke="${LINE}" stroke-width="1.4" opacity="0.4"/>`;
             };
-            // Dedo doblado al frente (se ve el dorso de las falanges, hacia la palma)
+            // Dedo doblado al frente (se ve el dorso de las falanges, hacia la palma).
+            // Más alto que antes para acompañar la mano más larga.
             const fFold = (name) => {
                 const x = FX[name], w = FW[name];
                 return `
-                    <path d="M ${x - w/2} 98 L ${x - w/2} 80
-                             Q ${x - w/2} 68 ${x} 68 Q ${x + w/2} 68 ${x + w/2} 80 L ${x + w/2} 98 Z"
+                    <path d="M ${x - w/2} ${BASE} L ${x - w/2} 78
+                             Q ${x - w/2} 62 ${x} 62 Q ${x + w/2} 62 ${x + w/2} 78 L ${x + w/2} ${BASE} Z"
                           fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>
-                    <path d="M ${x - w/2 + 1} 82 Q ${x} 86 ${x + w/2 - 1} 82" fill="none" stroke="${LINE}" stroke-width="1.5" opacity="0.55"/>
-                    <path d="M ${x - w/2 + 1} 90 Q ${x} 94 ${x + w/2 - 1} 90" fill="none" stroke="${LINE}" stroke-width="1.5" opacity="0.4"/>`;
+                    <path d="M ${x - w/2 + 1} 78 Q ${x} 82 ${x + w/2 - 1} 78" fill="none" stroke="${LINE}" stroke-width="1.5" opacity="0.55"/>
+                    <path d="M ${x - w/2 + 1} 92 Q ${x} 96 ${x + w/2 - 1} 92" fill="none" stroke="${LINE}" stroke-width="1.5" opacity="0.4"/>`;
             };
-            // Dedo cerrado en puño (solo asoma el nudillo redondeado)
+            // Dedo cerrado en puño (asoma el nudillo redondeado)
             const fCurl = (name) => {
                 const x = FX[name], w = FW[name] + 1;
-                return `<path d="M ${x - w/2} 100 L ${x - w/2} 90 Q ${x - w/2} 82 ${x} 82 Q ${x + w/2} 82 ${x + w/2} 90 L ${x + w/2} 100 Z"
+                return `<path d="M ${x - w/2} ${BASE + 2} L ${x - w/2} 94 Q ${x - w/2} 84 ${x} 84 Q ${x + w/2} 84 ${x + w/2} 94 L ${x + w/2} ${BASE + 2} Z"
                           fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>
-                        <path d="M ${x - w/2 + 1} 91 Q ${x} 95 ${x + w/2 - 1} 91" fill="none" stroke="${LINE}" stroke-width="1.4" opacity="0.5"/>`;
+                        <path d="M ${x - w/2 + 1} 94 Q ${x} 98 ${x + w/2 - 1} 94" fill="none" stroke="${LINE}" stroke-width="1.4" opacity="0.5"/>`;
             };
-            // Dedo medio curvado (gancho) para C, O, X
+            // Dedo medio curvado (gancho) para C, O, X — más largo
             const fHook = (name) => {
                 const x = FX[name], w = FW[name];
-                return `<path d="M ${x - w/2} 98 L ${x - w/2} 84 Q ${x - w/2} 66 ${x} 66 Q ${x + w/2} 66 ${x + w/2} 78
-                             Q ${x + w/2} 86 ${x + 2} 86" fill="none" stroke="${LINE}" stroke-width="${w+3}" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M ${x - w/2} 98 L ${x - w/2} 84 Q ${x - w/2} 66 ${x} 66 Q ${x + w/2} 66 ${x + w/2} 78
-                             Q ${x + w/2} 86 ${x + 2} 86" fill="none" stroke="#f3b98f" stroke-width="${w-1}" stroke-linecap="round" stroke-linejoin="round"/>`;
+                return `<path d="M ${x - w/2} ${BASE} L ${x - w/2} 82 Q ${x - w/2} 56 ${x} 56 Q ${x + w/2} 56 ${x + w/2} 74
+                             Q ${x + w/2} 84 ${x + 2} 84" fill="none" stroke="${LINE}" stroke-width="${w+3}" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M ${x - w/2} ${BASE} L ${x - w/2} 82 Q ${x - w/2} 56 ${x} 56 Q ${x + w/2} 56 ${x + w/2} 74
+                             Q ${x + w/2} 84 ${x + 2} 84" fill="none" stroke="#f3b98f" stroke-width="${w-1}" stroke-linecap="round" stroke-linejoin="round"/>`;
             };
 
             const finger = (name, st, lean) => {
@@ -1101,24 +1107,27 @@
                 return fCurl(name);
             };
 
-            // Palma + muñeca con sombreado
+            // Palma + muñeca con sombreado (alineada con la nueva base de dedos y=104)
             const palm = `
-                <path d="M 62 150 Q 58 96 74 94 L 140 94 Q 150 96 150 118
-                         Q 150 150 120 160 L 86 160 Q 66 158 62 150 Z"
+                <path d="M 62 158 Q 58 104 74 102 L 140 102 Q 150 104 150 126
+                         Q 150 158 120 168 L 86 168 Q 66 166 62 158 Z"
                       fill="${SKIN}" stroke="${LINE}" stroke-width="3.2" stroke-linejoin="round"/>
-                <path d="M 76 150 Q 74 120 80 104" fill="none" stroke="${LINE}" stroke-width="1.5" opacity="0.35"/>
-                <path d="M 132 150 Q 136 128 132 108" fill="none" stroke="${LINE}" stroke-width="1.5" opacity="0.3"/>
-                <path d="M 70 150 Q 100 170 130 156 L 126 180 Q 100 190 78 180 Z"
+                <path d="M 76 158 Q 74 128 80 112" fill="none" stroke="${LINE}" stroke-width="1.5" opacity="0.35"/>
+                <path d="M 132 158 Q 136 136 132 116" fill="none" stroke="${LINE}" stroke-width="1.5" opacity="0.3"/>
+                <path d="M 70 158 Q 100 178 130 164 L 126 188 Q 100 196 78 186 Z"
                       fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`;
 
             // Pulgar en distintas poses (sale del lado izquierdo de la palma)
             const thumb = {
-                side:   `<path d="M 64 120 Q 40 118 32 132 Q 28 146 42 150 Q 58 152 66 138 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`,
-                up:     `<path d="M 62 118 Q 44 108 40 84 Q 42 72 54 74 Q 66 82 68 112 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>
-                         <ellipse cx="48" cy="80" rx="4.5" ry="6" fill="${NAIL}" opacity="0.9"/>`,
-                across: `<path d="M 66 108 Q 104 100 120 108 Q 126 116 118 122 Q 92 126 66 120 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`,
-                tuck:   `<path d="M 66 116 Q 50 114 46 124 Q 46 134 58 134 Q 70 132 72 122 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`,
-                front:  `<path d="M 66 112 Q 50 110 46 100 Q 48 90 60 92 Q 72 98 72 114 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`
+                // Pulgar lateral extendido (más largo y curvo), para A, L, Q, Y
+                side:   `<path d="M 64 128 Q 36 126 26 140 Q 22 156 38 160 Q 56 162 66 146 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>
+                         <ellipse cx="32" cy="150" rx="6" ry="4.5" fill="${NAIL}" opacity="0.85"/>`,
+                // Pulgar hacia arriba, largo y esbelto, para C, K, O
+                up:     `<path d="M 62 126 Q 42 116 36 82 Q 38 66 52 68 Q 66 78 68 120 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>
+                         <ellipse cx="46" cy="76" rx="5" ry="7" fill="${NAIL}" opacity="0.9"/>`,
+                across: `<path d="M 66 116 Q 104 108 120 116 Q 126 124 118 130 Q 92 134 66 128 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`,
+                tuck:   `<path d="M 66 124 Q 50 122 46 132 Q 46 142 58 142 Q 70 140 72 130 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`,
+                front:  `<path d="M 66 120 Q 50 118 46 106 Q 48 96 60 98 Q 72 104 72 122 Z" fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`
             };
 
             // Compone una mano. order dibuja pulgar según pose (detrás o delante).
@@ -1154,14 +1163,15 @@
                 f: build({ index: 'hook', middle: 'ext', ring: 'ext', pinky: 'ext', thumb: 'front' }),
                 // G: índice apuntando de lado, pulgar paralelo
                 g: build({ index: 'curl', middle: 'curl', ring: 'curl', pinky: 'curl', thumb: 'side' },
-                    `<path d="M 78 100 L 78 70 Q 78 62 72 62 L 24 62 Q 18 62 18 70 L 18 86 Q 18 94 26 94 L 78 94"
-                        fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>`),
+                    `<path d="M 78 108 L 78 74 Q 78 64 70 64 L 16 64 Q 8 64 8 74 L 8 92 Q 8 102 18 102 L 78 102"
+                        fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>
+                     <ellipse cx="12" cy="69" rx="4.5" ry="6" fill="${NAIL}" opacity="0.85"/>`),
                 // H: índice y medio juntos apuntando de lado
                 h: build({ index: 'curl', middle: 'curl', ring: 'curl', pinky: 'curl', thumb: 'tuck' },
-                    `<path d="M 80 94 L 22 94 Q 14 94 14 86 L 14 72 Q 14 64 22 64 L 80 64 Z"
+                    `<path d="M 80 102 L 14 102 Q 6 102 6 92 L 6 76 Q 6 66 14 66 L 80 66 Z"
                         fill="${SKIN}" stroke="${LINE}" stroke-width="3" stroke-linejoin="round"/>
-                     <line x1="20" y1="79" x2="78" y2="79" stroke="${LINE}" stroke-width="1.6" opacity="0.5"/>
-                     ${arrow('M 40 48 L 20 54 M 30 46 L 20 54 L 26 64')}`),
+                     <line x1="12" y1="84" x2="78" y2="84" stroke="${LINE}" stroke-width="1.6" opacity="0.5"/>
+                     ${arrow('M 40 50 L 18 56 M 28 48 L 18 56 L 24 66')}`),
                 // I: meñique arriba, resto en puño
                 i: build({ index: 'curl', middle: 'curl', ring: 'curl', pinky: 'ext', thumb: 'across' }),
                 // J: meñique arriba con trazo curvo (J en el aire)
@@ -1185,9 +1195,9 @@
                     arrow('M 98 150 L 98 176 M 90 168 L 98 176 L 106 168')),
                 // Q: como G pero apuntando hacia abajo
                 q: build({ index: 'curl', middle: 'curl', ring: 'curl', pinky: 'curl', thumb: 'side' },
-                    `<path d="M 78 96 L 78 150 Q 78 160 72 160" fill="none" stroke="${LINE}" stroke-width="20" stroke-linecap="round"/>
-                     <path d="M 78 96 L 78 150 Q 78 160 72 160" fill="none" stroke="#f3b98f" stroke-width="15" stroke-linecap="round"/>
-                     ${arrow('M 98 150 L 98 176 M 90 168 L 98 176 L 106 168')}`),
+                    `<path d="M 78 104 L 78 158 Q 78 168 72 168" fill="none" stroke="${LINE}" stroke-width="20" stroke-linecap="round"/>
+                     <path d="M 78 104 L 78 158 Q 78 168 72 168" fill="none" stroke="#f3b98f" stroke-width="15" stroke-linecap="round"/>
+                     ${arrow('M 98 158 L 98 182 M 90 174 L 98 182 L 106 174')}`),
                 // R: índice y medio cruzados
                 r: build({ index: 'ext', middle: 'ext', ring: 'curl', pinky: 'curl', thumb: 'tuck', indexLean: 6, middleLean: -6 },
                     `<path d="M 86 50 L 92 42" stroke="${LINE}" stroke-width="2" opacity="0.6"/>`),
@@ -1228,7 +1238,7 @@
                     </linearGradient>
                 </defs>
                 <rect width="200" height="200" rx="18" fill="url(#bg_${uid})"/>
-                <g transform="translate(2,6)">${content}</g>
+                <g transform="translate(10,16) scale(0.82)">${content}</g>
             </svg>`;
         }
 
